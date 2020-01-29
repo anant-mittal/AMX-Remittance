@@ -1,6 +1,6 @@
 package com.amx.jax.ui.audit;
 
-import com.amx.jax.logger.AuditEvent;
+import com.amx.jax.logger.events.AmxAuditEvent;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.AuthState.AuthFlow;
 import com.amx.jax.model.AuthState.AuthStep;
@@ -11,10 +11,9 @@ import eu.bitwalker.useragentutils.UserAgent;
 /**
  * The Class CAuthEvent.
  */
-public class CAuthEvent extends AuditEvent {
+public class CAuthEvent extends AmxAuditEvent<CAuthEvent> {
 
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 5461833493967079133L;
+	private static final long serialVersionUID = -985307669355172943L;
 
 	/**
 	 * The Enum Result.
@@ -26,7 +25,7 @@ public class CAuthEvent extends AuditEvent {
 	 * @param step the step
 	 */
 	public CAuthEvent(AuthFlow flow, AuthStep step) {
-		super(flow);
+		super(ArgUtil.ifNotEmpty(flow, AuthFlow.DEFAULT));
 		this.step = step;
 	}
 
@@ -77,8 +76,6 @@ public class CAuthEvent extends AuditEvent {
 	public CAuthEvent(AuthState state) {
 		this(state, Result.DONE, 0L);
 	}
-
-	AuthStep step = null;
 
 	String identiy = null;
 
@@ -148,24 +145,6 @@ public class CAuthEvent extends AuditEvent {
 	 */
 	public void setIdentiy(String identiy) {
 		this.identiy = identiy;
-	}
-
-	/**
-	 * Gets the step.
-	 *
-	 * @return the step
-	 */
-	public AuthStep getStep() {
-		return step;
-	}
-
-	/**
-	 * Sets the step.
-	 *
-	 * @param step the new step
-	 */
-	public void setStep(AuthStep step) {
-		this.step = step;
 	}
 
 }

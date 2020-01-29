@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 
 import com.amx.jax.swagger.ApiMockModelProperty;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class JaxAuthMeta implements Serializable {
@@ -18,8 +19,10 @@ public class JaxAuthMeta implements Serializable {
 		this.eOtpHash = "";
 		this.wOtpHash = "";
 		this.secAnsHash = "";
+		this.contactType = "";
+		this.captcha = "";
 	}
-	
+
 	public JaxAuthMeta(String id) {
 		this.id = id;
 		this.otpHash = "";
@@ -27,6 +30,7 @@ public class JaxAuthMeta implements Serializable {
 		this.eOtpHash = "";
 		this.wOtpHash = "";
 		this.secAnsHash = "";
+		this.captcha = "";
 	}
 
 	public JaxAuthMeta(String mOtp, String eOtp, String secAns) {
@@ -39,19 +43,37 @@ public class JaxAuthMeta implements Serializable {
 	@ApiMockModelProperty(example = "anx-sdff-dfdfdfd")
 	String id;
 
+	@JsonProperty(value = "otp")
 	@ApiMockModelProperty(example = "123456")
 	String otpHash;
 
+	@JsonProperty(value = "mOtp")
 	@ApiMockModelProperty(example = "123456")
 	String mOtpHash;
+
+	@JsonProperty(value = "eOtp")
 	@ApiMockModelProperty(example = "234567")
 	String eOtpHash;
+
+	@JsonProperty(value = "wOtp")
 	@ApiMockModelProperty(example = "123456")
 	String wOtpHash;
+
+	@JsonProperty(value = "captcha")
+	@ApiMockModelProperty(example = "1121212hsjkdsjhdhsdho2o23222323223232")
+	String captcha;
+
+	@JsonProperty(value = "questId")
 	@ApiMockModelProperty(example = "Q1")
 	BigDecimal questId;
+
+	@JsonProperty(value = "secAns")
 	@ApiMockModelProperty(example = "black")
 	String secAnsHash;
+
+	@JsonProperty(value = "contactType")
+	@ApiMockModelProperty(example = "SMS")
+	String contactType;
 
 	/**
 	 * @return the questId
@@ -67,7 +89,6 @@ public class JaxAuthMeta implements Serializable {
 		this.questId = questId;
 	}
 
-	
 	public String getId() {
 		return id;
 	}
@@ -114,5 +135,21 @@ public class JaxAuthMeta implements Serializable {
 
 	public void setSecAnsHash(String secAnsHash) {
 		this.secAnsHash = secAnsHash;
+	}
+
+	public String getContactType() {
+		return contactType;
+	}
+
+	public void setContactType(String contactType) {
+		this.contactType = contactType;
+	}
+
+	public String getCaptcha() {
+		return captcha;
+	}
+
+	public void setCaptcha(String captcha) {
+		this.captcha = captcha;
 	}
 }

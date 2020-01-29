@@ -13,6 +13,7 @@ public enum TemplatesMX implements ITemplate {
 	// Contact Verification
 	CONTACT_VERIFICATION_SMS("contact-verifiy-sms", Channel.NOTIPY),
 	CONTACT_VERIFICATION_EMAIL("contact-verifiy-email", Channel.NOTIPY),
+	NEW_DEVICE_LOGIN("new-device-login",Channel.NOTIPY),
 
 	SERVER_UP("health-server-up"),
 
@@ -21,8 +22,6 @@ public enum TemplatesMX implements ITemplate {
 	REMIT_RECEIPT_COPY_JASPER("TransactionReceiptCopy_jasper", PDFConverter.JASPER, "TransactionReceipt.json"),
 	REMIT_RECEIPT_JASPER_NO_HEADER("TransactionReceiptNoHeader_jasper", PDFConverter.JASPER, "TransactionReceipt.json"),
 	REMIT_APPLICATION_RECEIPT_JASPER("ApplicationReceipt_jasper", PDFConverter.JASPER, "ApplicationReceipt.json"),
-
-
 
 	REMIT_RECEIPT_COPY("TransactionReceiptCopy"), REMIT_STATMENT("TransactionList"),
 	REMIT_STATMENT_EMAIL("RemittanceStatmentEmail"),
@@ -36,14 +35,15 @@ public enum TemplatesMX implements ITemplate {
 	// Rate Alert, PlaceOrder
 	RATE_ALERT("place-order"), RATE_ALERT_COMPLETION("place-order-executed"),
 
-	BRANCH_SEARCH_EMPTY("BranchSearchEmpty"), TEST("test"), BRANCH_FEEDBACK("trnx-feedback"), TT("tt"), EFT("eft"),
-	CASH("cash"),
+	BRANCH_SEARCH_EMPTY("BranchSearchEmpty"), TEST("test"), BRANCH_FEEDBACK("trnx-feedback", Channel.FEED), TT("tt", Channel.FEED), EFT("eft", Channel.NOTIPY),
+	CASH("cash", Channel.FEED),
 
 	CIVILID_EXPIRY("civilexpiry"), CIVILID_EXPIRED("civilexpired"),
 
 	PARTIAL_REGISTRATION_EMAIL("PartialRegistrationCompletionEMail"), TRANSACTION_FAILURE("TransactionFailure"),
 
 	PROMOTION_WINNER("PromotionWinner"), PROMOTION_COUPON("PromotionCoupon"),
+	WANTIT_BUYIT_PROMOTION("WantITBuyItPromotionCoupon"),
 
 	SERVER_PING("server-ping"),
 
@@ -56,11 +56,60 @@ public enum TemplatesMX implements ITemplate {
 	FXO_RECEIPT("FXO_RECEIPT", PDFConverter.JASPER, "fxo-receipt.json"),
 	FXO_RECEIPT_BRANCH("FXO_RECEIPT_BRANCH", PDFConverter.JASPER, "fxo-receipt.json"),
 	FXO_STATMENT("FxoTransactionList"),
+	FC_OUTOF_STOCK_SUPPORT("FcOutOfStockSupport"),
+	FC_OUTOF_STOCK_CUSTOMER("FcOutOfStockCustomer"),
+
+
 	SUSPICIOUS_USER("suspicious-user"), PROFILE_CHANGE_SMS("profile-change-sms", Channel.ALERTY),
 	EMAIL_CHANGE_OLD_EMAIL("EmailChangeOldEmail"),
 	FINGERPRINT_LINKED_SUCCESS("FingerprintLinkedSuccess"),
 	FINGERPRINT_DELINKED_SUCCESS("FingerprintDelinkedSuccess"),
 	FINGERPRINT_DELINKED_ATTEMP_SUCCESS("FingerprintDelinkInCorrectAttem"),
+	
+	
+	// GIG Policy Event Notification Templates
+	POLICY_CONFIRMATION("PolicyConfirmation"),
+	POLICY_OPTOUT_CUSTOMER("PolicyOptoutCustomer"),
+	POLICY_OPTOUT_SYSTEM("PolicyOptoutSystem"),
+	POLICY_EXPIRY_REMINDER("PolicyExpiryReminder"),
+	POLICY_EXPIRED("PolicyExpired"),
+	POLICY_PENDING_TRNX("PolicyPendingTrnx"),
+
+	HOMESEND_TRANSACTION_FAILAURE("HomeSendTransactionFailure"),
+
+	PAYMENT_LINK("PaymentLink",Channel.NOTIPY),
+	
+	//Add Bene Templates
+	BENE_SUCC("BeneCreationSuccess"),
+	BENE_SUCC_SMS("bene-success-sms",Channel.NOTIPY),
+	BRANCH_SEARCH_EMPTY_BRANCH("BranchSearchEmpty"),
+
+	// Online coupon template
+	ONLINE_COUPON("OnlineCoupon"),
+	
+	//WU Notifications Templates
+	
+	WU_TRNX_SUCCESS("WUTrnxSuccess"),
+	WU_PICKUP_REMINDER("WUPickupReminder"),
+	WU_CANCEL_REMINDER("WUCancelReminder"),
+	WU_TRNX_CANCELLED("WUTrnxCancelled"),
+	RESEND_VERIFICATION_LINK("resend-verification"),
+	
+	EVENT_DARLY_ONG("EventDarlyOng"),
+	BPI_JOLLIBEE("BpiJollibee"),
+	BIRTHDAY_WISH("BirthdayWish"),
+
+
+	//Refer friend
+	FRIEND_REFER("friend-refer"),
+	FRIEND_REFERED("friend-refered"),
+	WIRE_TRANSFER_PAYMENT_SUCCESS("WireTransferPaymentSuccess"),
+	WIRE_TRANSFER_CANCEL_BRANCH("WireTransferCancelBranch"),
+	
+	//PEP_FORM("PepForm"),
+	PEP_FORM_JASPER("PepForm_jasper", PDFConverter.JASPER, "PepForm.json"),
+	
+	VERIFICATION_NOTIFY("VerificationNotify"),
 
 	// Default add enums above this
 	DEFAULT("default");
@@ -79,6 +128,11 @@ public enum TemplatesMX implements ITemplate {
 	@Override
 	public String getHtmlFile() {
 		return "html/" + getFileName();
+	}
+
+	@Override
+	public String getSMSFile() {
+		return "html/sms/" + getFileName();
 	}
 
 	@Override

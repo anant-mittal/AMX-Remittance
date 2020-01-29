@@ -114,7 +114,13 @@ public class OrderManagementView {
 	BigDecimal recPayBranchId;
 	
 	@Column(name="GOVERNORATES_ID")
-	BigDecimal governateId; 
+	BigDecimal governateId;
+	
+	@Column(name = "DELIVERY_CREATED_DATE")
+	Date deliveryCreatedDate;
+	
+	@Column(name = "RECEIPT_CREATED_DATE")
+	Date receiptCreatedDate;
 	
 	public BigDecimal getCollectionDocFinanceYear() {
 		return collectionDocFinanceYear;
@@ -353,5 +359,19 @@ public class OrderManagementView {
 	public void setGovernateId(BigDecimal governateId) {
 		this.governateId = governateId;
 	}
-										
+	
+	public Date getDeliveryCreatedDate() {
+		return deliveryCreatedDate;
+	}
+	public void setDeliveryCreatedDate(Date deliveryCreatedDate) {
+		this.deliveryCreatedDate = deliveryCreatedDate;
+	}
+	
+	public Date getReceiptCreatedDate() {
+		return receiptCreatedDate;
+	}
+	public void setReceiptCreatedDate(Date receiptCreatedDate) {
+		this.receiptCreatedDate = receiptCreatedDate;
+	}
+											
 }

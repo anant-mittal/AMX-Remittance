@@ -3,6 +3,7 @@ package com.amx.jax.model.response.fx;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.amx.jax.api.ResponseCodeDetailDTO;
 import com.amx.jax.constants.JaxTransactionStatus;
 import com.amx.jax.model.AbstractModel;
 
@@ -20,6 +21,8 @@ public class FxOrderTransactionStatusResponseDto extends AbstractModel{
 	String errorCategory;
 	String receiptNo;
 	List<FxOrderTransactionHistroyDto>  fxOrderTrnxHistroyDTO;
+	ResponseCodeDetailDTO responseCodeDetail;
+	
 	public BigDecimal getNetAmount() {
 		return netAmount;
 	}
@@ -63,6 +66,12 @@ public class FxOrderTransactionStatusResponseDto extends AbstractModel{
 	}
 	public void setReceiptNo(String receiptNo) {
 		this.receiptNo = receiptNo;
+	}
+	public ResponseCodeDetailDTO getResponseCodeDetail() {
+		return responseCodeDetail;
+	}
+	public void setResponseCodeDetail(ResponseCodeDetailDTO responseCodeDetail) {
+		this.responseCodeDetail = responseCodeDetail;
 	}
 	
 

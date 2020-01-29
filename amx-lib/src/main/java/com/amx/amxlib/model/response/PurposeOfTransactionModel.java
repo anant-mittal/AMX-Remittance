@@ -8,7 +8,7 @@ import com.amx.jax.model.AbstractModel;
 public class PurposeOfTransactionModel extends AbstractModel {
 
 	public List<AddAdditionalBankDataDto> dto;
-
+	
 	@Override
 	public String getModelType() {
 		return "purpose-of-txn";
@@ -22,4 +22,7 @@ public class PurposeOfTransactionModel extends AbstractModel {
 		this.dto = dto;
 	}
 
+	
+	
+	
 }

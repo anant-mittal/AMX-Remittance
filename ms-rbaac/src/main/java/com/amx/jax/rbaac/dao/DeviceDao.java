@@ -5,16 +5,14 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.constant.DeviceState;
 import com.amx.jax.dbmodel.BranchSystemDetail;
 import com.amx.jax.dbmodel.Device;
-import com.amx.jax.dbmodel.DeviceStateInfo;
 import com.amx.jax.dict.UserClient.ClientType;
-import com.amx.jax.rbaac.dbmodel.Employee;
+import com.amx.jax.rbaac.dbmodel.FSEmployee;
 import com.amx.jax.rbaac.dto.request.DeviceRegistrationRequest;
 import com.amx.jax.rbaac.error.RbaacServiceError;
 import com.amx.jax.rbaac.exception.AuthServiceException;
@@ -37,6 +35,9 @@ public class DeviceDao {
 	AppConfig appConfig;
 	@Autowired
 	RbaacDao rbaacDao;
+	
+	@Autowired
+	BranchDetailDao branchDetailDao;
 
 	/**
 	 * 
@@ -53,7 +54,7 @@ public class DeviceDao {
 			device.setBranchSystemInventoryId(branchSystem.getCountryBranchSystemInventoryId());
 		}
 		if (request.getIdentityInt() != null) {
-			Employee employee = rbaacDao.fetchEmpDetails(request.getIdentityInt());
+			FSEmployee employee = rbaacDao.fetchEmpDetails(request.getIdentityInt());
 
 			if (ArgUtil.isEmpty(employee)) {
 				throw new AuthServiceException(RbaacServiceError.INVALID_USER_DETAILS,
@@ -114,6 +115,22 @@ public class DeviceDao {
 		return devices;
 	}
 	
+	public List<Device> findAllActiveDevicesByTerminal(BigDecimal branchSystemInvId, String branchSystemInvIp) {
+		BigDecimal branchSystemInvId2 = null;
+		if (ArgUtil.is(branchSystemInvIp)) {
+			BranchSystemDetail branchSystem = branchDetailDao.getBranchSystemDetail(branchSystemInvIp);
+			if(ArgUtil.is(branchSystem)) {
+				branchSystemInvId2 = branchSystem.getCountryBranchSystemInventoryId();				
+			}
+		}
+		return deviceRepository.findByBranchSystemInventoryIdAndStatus(branchSystemInvId,branchSystemInvId2,
+				 Constants.YES);
+	}
+	
+	public List<Device> findAllActiveDevicesByDevice(BigDecimal deviceRegId, String deviceId) {
+		return deviceRepository.findByDeviceRegIdAndActiveDevicesByDeviceId(deviceRegId, deviceId);
+	}
+
 	public List<Device> findAllActiveDevicesForEmployee(BigDecimal employeeId, ClientType deviceType) {
 		List<Device> devices = deviceRepository.findByEmployeeIdAndDeviceTypeAndStatus(employeeId, deviceType,
 				Constants.YES);

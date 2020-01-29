@@ -1,6 +1,7 @@
 package com.amx.jax.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import java.math.BigDecimal;
+
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.scope.TenantScoped;
@@ -44,11 +45,50 @@ public class JaxTenantProperties {
 
 	@TenantValue("${jax.properties.device.autoactivate}")
 	Boolean deviceAutoActivate;
+	
+	@TenantValue("${wantit.buyit.startdate}")
+	private String startDate;
+	
+	@TenantValue("${wantit.buyit.enddate}")
+	private String endDate;
+	
+	@TenantValue("${jax.max.captcha.count}")
+	private Integer maxCaptchaCount;
+	
+	@TenantValue("${support.app.email}")
+	private String appSupportEmail;
+
+	@TenantValue("${jax.max.captcha.enabled}")
+	Boolean captchaEnable;
+	
+	@TenantValue("${jax.properties.hash.signature}")
+	private Boolean hashSigEnable;
+	
+	
+	@TenantValue("${key.store.location}")
+	private String keyStoreLocatin;
+	
+	
+	@TenantValue("${key.alias.in.keystore}")
+	private String keyStoreAlias;
+	
+	
+	@TenantValue("${key.store.password}")
+	private String keyStorePwd;
+	
+	@TenantValue("${signature.algorithem}")
+	private String sigAlgorithem;
+	
+	@TenantValue("${jax.max.loyalty.count}")
+	private BigDecimal loyaltyCount;
+	
+	@TenantValue("${support.online.email}")
+	String supportOnlineEmail;
 
 	public Boolean getCashDisable() {
 		return cashDisable;
 	}
-
+	
 	public void setCashDisable(Boolean cashDisable) {
 		this.cashDisable = cashDisable;
 	}
@@ -100,4 +140,105 @@ public class JaxTenantProperties {
 	public void setComplianceEmail(String complianceEmail) {
 		this.complianceEmail = complianceEmail;
 	}
+
+	public String getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
+	}
+
+	public String getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
+	}
+
+	public Integer getMaxCaptchaCount() {
+		return maxCaptchaCount;
+	}
+
+	public void setMaxCaptchaCount(Integer maxCaptchaCount) {
+		this.maxCaptchaCount = maxCaptchaCount;
+	}
+
+
+	public String getAppSupportEmail() {
+		return appSupportEmail;
+	}
+
+	public void setAppSupportEmail(String appSupportEmail) {
+		this.appSupportEmail = appSupportEmail;
+	}
+
+
+	public Boolean getHashSigEnable() {
+		return hashSigEnable;
+	}
+
+	public void setHashSigEnable(Boolean hashSigEnable) {
+		this.hashSigEnable = hashSigEnable;
+	}
+
+	public String getKeyStoreLocatin() {
+		return keyStoreLocatin;
+	}
+
+	public void setKeyStoreLocatin(String keyStoreLocatin) {
+		this.keyStoreLocatin = keyStoreLocatin;
+	}
+
+	public String getKeyStoreAlias() {
+		return keyStoreAlias;
+	}
+
+	public void setKeyStoreAlias(String keyStoreAlias) {
+		this.keyStoreAlias = keyStoreAlias;
+	}
+
+	public String getKeyStorePwd() {
+		return keyStorePwd;
+	}
+
+	public void setKeyStorePwd(String keyStorePwd) {
+		this.keyStorePwd = keyStorePwd;
+	}
+
+	public String getSigAlgorithem() {
+		return sigAlgorithem;
+	}
+
+	public void setSigAlgorithem(String sigAlgorithem) {
+		this.sigAlgorithem = sigAlgorithem;
+	}
+	public Boolean getCaptchaEnable() {
+		return captchaEnable;
+	}
+
+	public void setCaptchaEnable(Boolean captchaEnable) {
+		this.captchaEnable = captchaEnable;
+
+	}
+
+	public BigDecimal getLoyaltyCount() {
+		return loyaltyCount;
+	}
+
+	public void setLoyaltyCount(BigDecimal loyaltyCount) {
+		this.loyaltyCount = loyaltyCount;
+	}
+
+	public String getSupportOnlineEmail() {
+		return supportOnlineEmail;
+	}
+
+	public void setSupportOnlineEmail(String supportOnlineEmail) {
+		this.supportOnlineEmail = supportOnlineEmail;
+	}
+
+	
+
 }

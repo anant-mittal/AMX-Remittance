@@ -6,7 +6,9 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
+import org.jasypt.util.text.BasicTextEncryptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,9 +86,11 @@ public final class CryptoUtil {
 
 	public static boolean validateHMAC(long currentTime, long interval, long tolerance, String secretKey,
 			String message, String hash) {
-		LOGGER.debug("validateHMAC I:{} S:{} M:{} C:{} H:{} T:{}", interval, secretKey, message, currentTime, hash,
-				tolerance);
-		if (generateHMAC(interval, secretKey, message).equals(hash)) {
+
+		LOGGER.debug("validateHMAC C:{} I:{} T:{} S:{} M:{} H:{}", currentTime, interval, tolerance, secretKey,
+				message, hash);
+
+		if (generateHMAC(interval, secretKey, message, currentTime).equals(hash)) {
 			return true;
 		} else if (generateHMAC(interval, secretKey, message, currentTime - tolerance * 1000).equals(hash)) {
 			return true;
@@ -97,16 +101,41 @@ public final class CryptoUtil {
 	}
 
 	public static boolean validateNumHMAC(long currentTime, long interval, long tolerance, String secretKey,
-			String message, String numHash) {
-		LOGGER.debug("validateHMAC I:{} S:{} M:{} C:{} H:{} T:{}", interval, secretKey, message, currentTime, numHash,
-				tolerance);
-		if (toNumeric(numHash.length(), generateHMAC(interval, secretKey, message)).equals(numHash)) {
+			String message, String numHash, int length) {
+
+		LOGGER.debug("validateHMAC C:{} I:{} T:{} S:{} M:{} H:{}", currentTime, interval, tolerance, secretKey,
+				message, numHash);
+
+		if (toNumeric(length, generateHMAC(interval, secretKey, message, currentTime)).equals(numHash)) {
 			return true;
-		} else if (toNumeric(numHash.length(),
+		} else if (toNumeric(length,
 				generateHMAC(interval, secretKey, message, currentTime - tolerance * 1000)).equals(numHash)) {
 			return true;
-		} else if (toNumeric(numHash.length(),
+		} else if (toNumeric(length,
 				generateHMAC(interval, secretKey, message, currentTime + tolerance * 1000)).equals(numHash)) {
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean validateNumHMAC(long currentTime, long interval, long tolerance, String secretKey,
+			String message, String numHash) {
+		return validateNumHMAC(currentTime, interval, tolerance, secretKey, message, numHash, numHash.length());
+	}
+
+	public static boolean validateComplexHMAC(long currentTime, long interval, long tolerance, String secretKey,
+			String message, String complexHash, int length) {
+
+		LOGGER.debug("validateHMAC C:{} I:{} T:{} S:{} M:{} H:{}", currentTime, interval, tolerance, secretKey,
+				message, complexHash);
+
+		if (toComplex(length, generateHMAC(interval, secretKey, message, currentTime)).equals(complexHash)) {
+			return true;
+		} else if (toComplex(length,
+				generateHMAC(interval, secretKey, message, currentTime - tolerance * 1000)).equals(complexHash)) {
+			return true;
+		} else if (toComplex(length,
+				generateHMAC(interval, secretKey, message, currentTime + tolerance * 1000)).equals(complexHash)) {
 			return true;
 		}
 		return false;
@@ -114,20 +143,8 @@ public final class CryptoUtil {
 
 	public static boolean validateComplexHMAC(long currentTime, long interval, long tolerance, String secretKey,
 			String message, String complexHash) {
-
-		LOGGER.debug("validateHMAC I:{} S:{} M:{} C:{} H:{} T:{}", interval, secretKey, message, currentTime,
-				complexHash, tolerance);
-
-		if (toComplex(complexHash.length(), generateHMAC(interval, secretKey, message)).equals(complexHash)) {
-			return true;
-		} else if (toComplex(complexHash.length(),
-				generateHMAC(interval, secretKey, message, currentTime - tolerance * 1000)).equals(complexHash)) {
-			return true;
-		} else if (toComplex(complexHash.length(),
-				generateHMAC(interval, secretKey, message, currentTime + tolerance * 1000)).equals(complexHash)) {
-			return true;
-		}
-		return false;
+		return validateComplexHMAC(currentTime, interval, tolerance, secretKey, message, complexHash,
+				complexHash.length());
 	}
 
 	@Deprecated
@@ -334,11 +351,15 @@ public final class CryptoUtil {
 		private long currentTime;
 		private String output;
 		private String hash;
+		private int length;
+		private boolean isToleranceSet;
 
 		public HashBuilder() {
 			this.currentTime = System.currentTimeMillis();
 			this.interval = INTERVAL;
 			this.tolerance = TOLERANCE;
+			this.length = 0;
+			this.isToleranceSet = false;
 		}
 
 		/**
@@ -354,6 +375,7 @@ public final class CryptoUtil {
 
 		public HashBuilder tolerance(long tolerance) {
 			this.tolerance = tolerance;
+			this.isToleranceSet = true;
 			return this;
 		}
 
@@ -376,6 +398,11 @@ public final class CryptoUtil {
 
 		public HashBuilder hash(String hash) {
 			this.hash = hash;
+			return this;
+		}
+
+		public HashBuilder length(int length) {
+			this.length = length;
 			return this;
 		}
 
@@ -420,13 +447,28 @@ public final class CryptoUtil {
 			return this;
 		}
 
+		public HashBuilder toNumeric() {
+			this.output = CryptoUtil.toNumeric(this.length, this.hash);
+			return this;
+		}
+
 		public HashBuilder toComplex(int length) {
 			this.output = CryptoUtil.toComplex(length, this.hash).toString();
 			return this;
 		}
 
+		public HashBuilder toComplex() {
+			this.output = CryptoUtil.toComplex(this.length, this.hash).toString();
+			return this;
+		}
+
 		public HashBuilder toHex(int length) {
 			this.output = CryptoUtil.toHex(length, this.hash);
+			return this;
+		}
+
+		public HashBuilder toHex() {
+			this.output = CryptoUtil.toHex(this.length, this.hash);
 			return this;
 		}
 
@@ -438,25 +480,93 @@ public final class CryptoUtil {
 			return ArgUtil.isEmpty(this.output) ? this.hash : this.output;
 		}
 
+		public boolean equals(String hash) {
+			return hash.equals(this.output());
+		}
+
 		public boolean validate(String hash) {
 			// return CryptoUtil.validateHMAC(this.interval, this.secret, this.message,
 			// this.currentTime, hash);
-
-			return CryptoUtil.validateHMAC(this.currentTime, this.interval, this.tolerance, this.secret, this.message,
-					hash);
-
+			if (isToleranceSet) {
+				return CryptoUtil.validateHMAC(this.currentTime, this.interval, this.tolerance, this.secret,
+						this.message,
+						hash);
+			} else {
+				return CryptoUtil.validateHMAC(this.currentTime, this.interval, this.interval, this.secret,
+						this.message,
+						hash);
+			}
 		}
 
 		public boolean validateNumHMAC(String numHash) {
+			int lengthThis = this.length;
+			if (lengthThis == 0) {
+				lengthThis = numHash.length();
+			}
 			return CryptoUtil.validateNumHMAC(this.currentTime, this.interval, this.tolerance, this.secret,
-					this.message, numHash);
+					this.message, numHash, lengthThis);
 		}
 
 		public boolean validateComplexHMAC(String complexHash) {
+			int lengthThis = this.length;
+			if (lengthThis == 0) {
+				lengthThis = complexHash.length();
+			}
 			return CryptoUtil.validateComplexHMAC(this.currentTime, this.interval, this.tolerance, this.secret,
-					this.message, complexHash);
+					this.message, complexHash, lengthThis);
 		}
 
+	}
+
+	private static BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
+	static {
+		textEncryptor.setPasswordCharArray("ZNEAYuVTsC".toCharArray());
+	}
+
+	public static class Encoder {
+		private String output;
+
+		public Encoder message(String message) {
+			this.output = message;
+			return this;
+		}
+
+		public <T> Encoder obzect(T obj) {
+			this.output = JsonUtil.toJson(obj);
+			return this;
+		}
+
+		public Encoder decodeBase64() {
+			this.output = new String(Base64.getDecoder().decode(this.output));
+			return this;
+		}
+
+		public Encoder encodeBase64() {
+			this.output = Base64.getEncoder().encodeToString(this.output.getBytes());
+			return this;
+		}
+
+		public Encoder encrypt() {
+			this.output = textEncryptor.encrypt(this.output);
+			return this;
+		}
+
+		public Encoder decrypt() {
+			this.output = textEncryptor.decrypt(this.output);
+			return this;
+		}
+
+		public <T> T toObzect(Class<T> type) {
+			return JsonUtil.fromJson(this.output, type);
+		}
+
+		public String toString() {
+			return this.output;
+		}
+	}
+
+	public static Encoder getEncoder() {
+		return new Encoder();
 	}
 
 }

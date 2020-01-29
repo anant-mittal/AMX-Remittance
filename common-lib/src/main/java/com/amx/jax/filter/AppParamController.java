@@ -2,13 +2,13 @@ package com.amx.jax.filter;
 
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,9 +17,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.AppConfig;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.AppParam;
+import com.amx.jax.AppSharedConfig;
 import com.amx.jax.AppTenantConfig;
+import com.amx.jax.VendorAuthConfig;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.def.IndicatorListner;
+import com.amx.jax.def.IndicatorListner.GaugeIndicator;
 import com.amx.jax.exception.AmxApiError;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest;
@@ -27,6 +33,7 @@ import com.amx.jax.http.RequestType;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.scope.TenantProperties;
+import com.amx.jax.scope.VendorContext.ApiVendorHeaders;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.CryptoUtil.HashBuilder;
 import com.amx.utils.JsonUtil;
@@ -39,6 +46,8 @@ public class AppParamController {
 	public static final String PUB_AMX_PREFIX = "/pub/amx";
 	public static final String PUBG_AMX_PREFIX = "/pubg/";
 	public static final String PARAM_URL = PUB_AMX_PREFIX + "/params";
+	public static final String FEATURE_URL = PUB_AMX_PREFIX + "/features";
+	public static final String METRIC_URL = PUB_AMX_PREFIX + "/metric";
 
 	@Autowired
 	CommonHttpRequest commonHttpRequest;
@@ -49,6 +58,12 @@ public class AppParamController {
 	@Autowired
 	AppTenantConfig appTenantConfig;
 
+	@Autowired(required = false)
+	VendorAuthConfig vendorAuthConfig;
+
+	@Autowired(required = false)
+	List<IndicatorListner> listners;
+
 	@ApiRequest(type = RequestType.NO_TRACK_PING)
 	@RequestMapping(value = PARAM_URL, method = RequestMethod.GET)
 	public AppParam[] geoLocation(@RequestParam(required = false) AppParam id) {
@@ -57,6 +72,32 @@ public class AppParamController {
 			LOGGER.info("App Param {} changed to {}", id, id.isEnabled());
 		}
 		return AppParam.values();
+	}
+
+	@ApiVendorHeaders
+	@ApiRequest(type = RequestType.NO_TRACK_PING)
+	@RequestMapping(value = FEATURE_URL, method = RequestMethod.GET)
+	public Object[] features() {
+		if (vendorAuthConfig != null) {
+			return vendorAuthConfig.getFeaturesList().toArray();
+		}
+		return null;
+	}
+
+	@ApiRequest(type = RequestType.NO_TRACK_PING)
+	@RequestMapping(value = METRIC_URL, method = RequestMethod.GET)
+	public Map<String, Object> metric() {
+		Map<String, Object> map = new HashMap<String, Object>();
+		for (AppParam eachAppParam : AppParam.values()) {
+			map.put(eachAppParam.toString(), eachAppParam);
+		}
+		GaugeIndicator gaugeIndicator = new GaugeIndicator();
+		if (!ArgUtil.isEmpty(listners)) {
+			for (IndicatorListner eachListner : listners) {
+				map.putAll(eachListner.getIndicators(gaugeIndicator));
+			}
+		}
+		return map;
 	}
 
 	@Autowired
@@ -74,8 +115,25 @@ public class AppParamController {
 		return ArgUtil.parseAsString(value);
 	}
 
-	@RequestMapping(value = "/pub/amx/device", method = RequestMethod.GET)
-	public AmxApiResponse<UserDevice, Map<String, Object>> userDevice(@RequestParam(required = false) String key) {
+	@Autowired(required = false)
+	private List<AppSharedConfig> listAppSharedConfig;
+
+	@RequestMapping(value = "/pub/amx/config/shared/clear", method = RequestMethod.GET)
+	public AmxApiResponse<BoolRespModel, Object> clearSharedConfig() {
+		if (ArgUtil.is(listAppSharedConfig)) {
+			for (AppSharedConfig appSharedConfig : listAppSharedConfig) {
+				appSharedConfig.clear(null);
+			}
+		}
+		return AmxApiResponse.build(new BoolRespModel(true));
+	}
+
+	@Autowired(required = false)
+	VendorAuthConfig appVendorConfigForAuth;
+
+	@RequestMapping(value = "/pub/amx/device", method = { RequestMethod.GET, RequestMethod.POST })
+	public AmxApiResponse<UserDevice, Map<String, Object>> userDevice(@RequestParam(required = false) String key,
+			@RequestParam(required = false) String vendor) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("getAppSpecifcDecryptedProp", appConfig.getAppSpecifcDecryptedProp());
 		map.put("getTenantSpecifcDecryptedProp2", appTenantConfig.getTenantSpecifcDecryptedProp2());
@@ -83,13 +141,20 @@ public class AppParamController {
 		map.put("defaultTenant", appConfig.getDefaultTenant());
 		map.put(TenantContextHolder.TENANT, TenantContextHolder.currentSite(false));
 
+		AppContextUtil.setVendor(VendorAuthConfig.class, vendor);
+
+		map.put("getBasicAuthPassword", appVendorConfigForAuth.getBasicAuthPassword());
+		map.put("getBasicAuthUser", appVendorConfigForAuth.getBasicAuthUser());
+		map.put("commonHttpRequest.getIPAddress", commonHttpRequest.getIPAddress());
+
 		if (!ArgUtil.isEmpty(key)) {
 			map.put(key, prop(key));
 		}
 
+		AppContextUtil.addWarning("THis is a warning for no reason");
 		AmxApiResponse<UserDevice, Map<String, Object>> resp = new AmxApiResponse<UserDevice, Map<String, Object>>();
 		resp.setMeta(map);
-		resp.setData(commonHttpRequest.getUserDevice());
+		resp.setData(commonHttpRequest.getUserDevice().toSanitized());
 		return resp;
 	}
 
@@ -157,4 +222,5 @@ public class AppParamController {
 		error.setException(exception);
 		return error;
 	}
+
 }

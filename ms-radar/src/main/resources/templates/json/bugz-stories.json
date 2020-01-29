@@ -1,0 +1,315 @@
+{
+  "aggs": {
+    "16": {
+      "terms": {
+        "field": "story_id",
+        "size": 10000,
+        "order": {
+          "13": "desc"
+        }
+      },
+      "aggs": {
+        "6": {
+          "terms": {
+            "field": "story_final.keyword",
+            "size": 1000,
+            "order": {
+              "_key": "desc"
+            },
+            "missing": "__missing__"
+          },
+          "aggs": {
+            "17": {
+              "terms": {
+                "field": "story_phase.keyword",
+                "size": 500,
+                "order": {
+                  "13": "desc"
+                },
+                "missing": "__missing__"
+              },
+              "aggs": {
+                "13": {
+                  "max": {
+                    "field": "deadline"
+                  }
+                },
+                "18": {
+                  "terms": {
+                    "field": "user_phase.keyword",
+                    "size": 500,
+                    "order": {
+                      "13": "desc"
+                    },
+                    "missing": "__missing__"
+                  },
+                  "aggs": {
+                    "13": {
+                      "max": {
+                        "field": "deadline"
+                      }
+                    },
+                    "20": {
+                      "terms": {
+                        "script": {
+                          "inline": "def statuss = [\n'---': '---', \n'HTML' : 'UI',\n'ANDROID' : 'AND',\n'BACKEND' : 'BE',\n'JS' : 'UI',\n'SUPPORT' : 'QA'];\ndef returnValue = '';\nif(doc.containsKey('cf_layer.keyword')\n&& doc['cf_layer.keyword'].value != 'NONE' \n&& doc['cf_layer.keyword'].value != '---' \n){\nreturnValue =  doc['cf_layer.keyword'].value;\n} else if(doc.containsKey('user_layer.keyword')\n&& doc['user_layer.keyword'].value != 'NONE' \n&& doc['user_layer.keyword'].value != '---' \n){\nreturnValue = doc['user_layer.keyword'].value\n}\ndef gstatus = statuss[returnValue]; \nif(gstatus==null ){\n  return returnValue\n}\nreturn gstatus;",
+                          "lang": "painless"
+                        },
+                        "size": 50,
+                        "order": {
+                          "_key": "desc"
+                        },
+                        "valueType": "string",
+                        "missing": "__missing__"
+                      },
+                      "aggs": {
+                        "5": {
+                          "sum": {
+                            "field": "estimated_time"
+                          }
+                        },
+                        "7": {
+                          "sum": {
+                            "script": {
+                              "inline": "if (doc['who'].value == doc['assigned_to'].value) { \nif (doc['bug_status.keyword'].value == 'RESOLVED' ) {\n  return 0\n} else if (doc['bug_status.keyword'].value == 'CLOSED' ) { \n   return 0\n} else if (doc['remaining_time'].value == 0) {\n    return doc['estimated_time'].value-0.0\n} else if(doc.containsKey('remaining_time') && doc['remaining_time'].value != 0){\n   return doc['remaining_time'].value-0.0\n} else {\n   return null;\n}\n} else {\n return null\n}",
+                              "lang": "painless"
+                            }
+                          }
+                        },
+                        "8": {
+                          "cardinality": {
+                            "field": "bug_id"
+                          }
+                        },
+                        "9": {
+                          "sum": {
+                            "script": {
+                              "inline": "if (doc['bug_status.keyword'].value == 'CLOSED'\n|| doc['bug_status.keyword'].value == 'RESOLVED'\n ) {\n  return 1\n}   return 0",
+                              "lang": "painless"
+                            }
+                          }
+                        },
+                        "13": {
+                          "max": {
+                            "field": "deadline"
+                          }
+                        },
+                        "14": {
+                          "sum": {
+                            "field": "ss_estimated_time"
+                          }
+                        },
+                        "15": {
+                          "sum": {
+                            "field": "sss_estimated_time"
+                          }
+                        },
+                        "19": {
+                          "sum": {
+                            "field": "work_hours"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "13": {
+          "max": {
+            "field": "deadline"
+          }
+        }
+      }
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "stored_fields": [
+    "*"
+  ],
+  "script_fields": {
+    "remaining_time_open": {
+      "script": {
+        "inline": "if (doc['who'].value == doc['assigned_to'].value) { \nif (doc['bug_status.keyword'].value == 'RESOLVED' ) {\n  return 0\n} else if (doc['bug_status.keyword'].value == 'CLOSED' ) { \n   return 0\n} else if (doc['remaining_time'].value == 0) {\n    return doc['estimated_time'].value-0.0\n} else if(doc.containsKey('remaining_time') && doc['remaining_time'].value != 0){\n   return doc['remaining_time'].value-0.0\n} else {\n   return null;\n}\n} else {\n return null\n}",
+        "lang": "painless"
+      }
+    },
+    "week_of_time": {
+      "script": {
+        "inline": "if(doc.containsKey('bug_when')){\ndef wk = (doc['bug_when'].value.millis/1000-1554057000)/(60*60*24*7);\nwk = wk<0 ? 0 :wk;\nreturn wk<10 ? ('W0' + wk) : ('W'+ wk);\n} return null;\n\n",
+        "lang": "painless"
+      }
+    },
+    "estimated_time_my": {
+      "script": {
+        "inline": "if (doc['who'].value == doc['assigned_to'].value) { \n   return doc['estimated_time'].value\n} else {\n return 0\n}",
+        "lang": "painless"
+      }
+    },
+    "actvt_added_left_my": {
+      "script": {
+        "inline": "if (doc['bug_status.keyword'].value == 'RESOLVED' ) {\n  return 0\n} else if (doc['bug_status.keyword'].value == 'CLOSED' ) { \n   return 0\n} else if (doc['remaining_time'].value == 0) {\n    return doc['estimated_time'].value\n} else if(doc.containsKey('actvt_added_left') && doc['actvt_added_left'].value != 0){\n   return doc['actvt_added_left'].value\n} else {\n   return null;\n}",
+        "lang": "painless"
+      }
+    },
+    "is_resolved": {
+      "script": {
+        "inline": "if (doc['bug_status.keyword'].value == 'RESOLVED' ) {\n  return 1\n}   return 0",
+        "lang": "painless"
+      }
+    },
+    "is_opened": {
+      "script": {
+        "inline": "if (doc['bug_status.keyword'].value == 'OPEN' \n|| doc['bug_status.keyword'].value == 'Re-Open' \n|| doc['bug_status.keyword'].value == 'UNCONFIRMED' \n) {\n  return 1\n}   return 0",
+        "lang": "painless"
+      }
+    },
+    "in_progress": {
+      "script": {
+        "inline": "if (doc['bug_status.keyword'].value == 'IN-PROGRESS' ) {\n  return 1\n}   return 0",
+        "lang": "painless"
+      }
+    },
+    "story_phase_short": {
+      "script": {
+        "inline": "def statuss = [\n'---': '---', \n'DEVELOPMENT' : 'DEV',\n'Missing' : '---',\n'DEFINITION' : 'DFN',\n'DESIGN' : 'DSN',\n'QA' : 'QA',\n'FIX' : 'FIX',\n'PRODUCTION' : 'PRD'];\ndef path = doc['story_phase.keyword'].value;\ndef gstatus = statuss[path]; \nif(gstatus==null ){\n   if (path != null) {\n       return  (path +\"    \").substring(0, 3);\n   }\n   return \"---\";\n} \nreturn gstatus;",
+        "lang": "painless"
+      }
+    },
+    "is_closed": {
+      "script": {
+        "inline": "if (doc['bug_status.keyword'].value == 'CLOSED' ) {\n  return 1\n}   return 0",
+        "lang": "painless"
+      }
+    },
+    "is_done": {
+      "script": {
+        "inline": "if (doc['bug_status.keyword'].value == 'CLOSED'\n|| doc['bug_status.keyword'].value == 'RESOLVED'\n ) {\n  return 1\n}   return 0",
+        "lang": "painless"
+      }
+    },
+    "bug_age": {
+      "script": {
+        "inline": "(new Date().getTime()-doc['creation_ts'].value.getMillis())",
+        "lang": "painless"
+      }
+    },
+    "layer": {
+      "script": {
+        "inline": "def statuss = [\n'---': '---', \n'HTML' : 'UI',\n'ANDROID' : 'AND',\n'BACKEND' : 'BE',\n'JS' : 'UI',\n'SUPPORT' : 'QA'];\ndef returnValue = '';\nif(doc.containsKey('cf_layer.keyword')\n&& doc['cf_layer.keyword'].value != 'NONE' \n&& doc['cf_layer.keyword'].value != '---' \n){\nreturnValue =  doc['cf_layer.keyword'].value;\n} else if(doc.containsKey('user_layer.keyword')\n&& doc['user_layer.keyword'].value != 'NONE' \n&& doc['user_layer.keyword'].value != '---' \n){\nreturnValue = doc['user_layer.keyword'].value\n}\ndef gstatus = statuss[returnValue]; \nif(gstatus==null ){\n  return returnValue\n}\nreturn gstatus;",
+        "lang": "painless"
+      }
+    },
+    "remainig_time_open_task": {
+      "script": {
+        "inline": "if (doc['cf_type.keyword'].value != 'Task' ) {\n  return 0\n}\n\nif (doc['who'].value == doc['assigned_to'].value) { \nif (doc['bug_status.keyword'].value == 'RESOLVED' ) {\n  return 0\n} else if (doc['bug_status.keyword'].value == 'CLOSED' ) { \n   return 0\n} else if (doc['remaining_time'].value == 0) {\n    return doc['estimated_time'].value-0.0\n} else if(doc.containsKey('remaining_time') && doc['remaining_time'].value != 0){\n   return doc['remaining_time'].value-0.0\n} else {\n   return null;\n}\n} else {\n return null\n}",
+        "lang": "painless"
+      }
+    },
+    "remaining_time_open_enh": {
+      "script": {
+        "inline": "if (doc['cf_type.keyword'].value != 'Enhancement' ) {\n  return 0\n}\n\nif (doc['who'].value == doc['assigned_to'].value) { \nif (doc['bug_status.keyword'].value == 'RESOLVED' ) {\n  return 0\n} else if (doc['bug_status.keyword'].value == 'CLOSED' ) { \n   return 0\n} else if (doc['remaining_time'].value == 0) {\n    return doc['estimated_time'].value-0.0\n} else if(doc.containsKey('remaining_time') && doc['remaining_time'].value != 0){\n   return doc['remaining_time'].value-0.0\n} else {\n   return null;\n}\n} else {\n return null\n}",
+        "lang": "painless"
+      }
+    },
+    "remaining_time_open_bugs": {
+      "script": {
+        "inline": "if (doc['cf_type.keyword'].value != 'Bug' ) {\n  return 0\n}\n\nif (doc['who'].value == doc['assigned_to'].value) { \nif (doc['bug_status.keyword'].value == 'RESOLVED' ) {\n  return 0\n} else if (doc['bug_status.keyword'].value == 'CLOSED' ) { \n   return 0\n} else if (doc['remaining_time'].value == 0) {\n    return doc['estimated_time'].value-0.0\n} else if(doc.containsKey('remaining_time') && doc['remaining_time'].value != 0){\n   return doc['remaining_time'].value-0.0\n} else {\n   return null;\n}\n} else {\n return null\n}",
+        "lang": "painless"
+      }
+    },
+    "remaining_time_open_task": {
+      "script": {
+        "inline": "if (doc['cf_type.keyword'].value != 'Task' ) {\n  return 0\n}\n\nif (doc['who'].value == doc['assigned_to'].value) { \nif (doc['bug_status.keyword'].value == 'RESOLVED' ) {\n  return 0\n} else if (doc['bug_status.keyword'].value == 'CLOSED' ) { \n   return 0\n} else if (doc['remaining_time'].value == 0) {\n    return doc['estimated_time'].value-0.0\n} else if(doc.containsKey('remaining_time') && doc['remaining_time'].value != 0){\n   return doc['remaining_time'].value-0.0\n} else {\n   return null;\n}\n} else {\n return null\n}",
+        "lang": "painless"
+      }
+    },
+    "day_of_month": {
+      "script": {
+        "inline": "def dayss = [\n1: 'Mo', \n2 : 'Tu',\n3 : 'We',\n4 : 'Th',\n5 : 'Fr',\n6 : 'Sa',\n7 : 'Su'];\nif(doc.containsKey('bug_when')){\ndef wk = doc['bug_when'].date.dayOfMonth;\nwk = wk<0 ? 0 :wk;\ndef dy = doc['bug_when'].date.dayOfWeek;\ndef gstatus = dayss[dy];\nreturn (wk<10 ? ('D0' + wk) : ('D'+ wk)) +gstatus ;\n} return null;\n\n",
+        "lang": "painless"
+      }
+    }
+  },
+  "docvalue_fields": [
+    {
+      "field": "@timestamp",
+      "format": "date_time"
+    },
+    {
+      "field": "bug_when",
+      "format": "date_time"
+    },
+    {
+      "field": "creation_ts",
+      "format": "date_time"
+    },
+    {
+      "field": "deadline",
+      "format": "date_time"
+    },
+    {
+      "field": "delta_ts",
+      "format": "date_time"
+    },
+    {
+      "field": "lastdiffed",
+      "format": "date_time"
+    }
+  ],
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match_all": {}
+        },
+        {
+          "range": {
+            "delta_ts": {
+              "gte": "now-90d",
+              "lte": "now",
+              "format": "epoch_millis"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "_type": {
+              "query": "bug"
+            }
+          }
+        },
+        {
+          "bool": {
+            "minimum_should_match": 1,
+            "should": [
+              {
+                "match_phrase": {
+                  "cf_type.keyword": "Bug"
+                }
+              },
+              {
+                "match_phrase": {
+                  "cf_type.keyword": "Enhancement"
+                }
+              },
+              {
+                "match_phrase": {
+                  "cf_type.keyword": "Task"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "filter": [],
+      "should": [],
+      "must_not": []
+    }
+  }
+}

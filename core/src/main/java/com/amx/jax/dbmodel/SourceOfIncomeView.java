@@ -8,9 +8,11 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.amx.jax.model.IResourceEntity;
+
 @Entity
 @Table(name="JAX_VW_SOURCE_OF_INCOME")
-public class SourceOfIncomeView implements Serializable{
+public class SourceOfIncomeView implements IResourceEntity,Serializable{
 
 	/**
 	 * 
@@ -19,12 +21,15 @@ public class SourceOfIncomeView implements Serializable{
 	@Id
 	@Column(name="SOURCE_OF_INCOME_ID")
 	private BigDecimal sourceofIncomeId;
-	@Column(name="LANGUAGE_Id")
+	@Column(name="LANGUAGE_ID")
 	private BigDecimal languageId;
 	@Column(name="FULL_DESC")
 	private String description;
 	@Column(name="SHORT_DESC")
 	private String shortDesc;
+	@Column(name="LOCAL_FULL_DESC")
+	private String localName;
+	
 	public BigDecimal getSourceofIncomeId() {
 		return sourceofIncomeId;
 	}
@@ -49,4 +54,27 @@ public class SourceOfIncomeView implements Serializable{
 	public void setShortDesc(String shortDesc) {
 		this.shortDesc = shortDesc;
 	}
+	public String getLocalName() {
+		return localName;
+	}
+	public void setLocalName(String localName) {
+		this.localName = localName;
+	}
+	@Override
+	public BigDecimal resourceId() {
+		return this.sourceofIncomeId;
+	}
+	@Override
+	public String resourceName() {
+		return this.description;
+	}
+	@Override
+	public String resourceCode() {
+		return this.shortDesc;
+	}
+	@Override
+	public String resourceLocalName() {
+		return this.localName;
+	}
+	
 }

@@ -8,11 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.amx.jax.model.IResourceEntity;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
@@ -55,7 +51,7 @@ public class CountryMasterView implements java.io.Serializable, IResourceEntity 
 	private String countryMobileLength;
 	private Integer beneCountryRisk;
 	private Integer remitterCountryRisk;
-
+	
 	public CountryMasterView() {
 		super();
 	}
@@ -292,5 +288,13 @@ public class CountryMasterView implements java.io.Serializable, IResourceEntity 
 	public void setRemitterCountryRisk(Integer remitterCountryRisk) {
 		this.remitterCountryRisk = remitterCountryRisk;
 	}
+
+	@Override
+	public String resourceLocalName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
 
 }

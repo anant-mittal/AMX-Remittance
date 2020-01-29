@@ -24,10 +24,14 @@ import com.amx.amxlib.meta.model.AddAdditionalBankDataDto;
 import com.amx.amxlib.meta.model.AddDynamicLabel;
 import com.amx.amxlib.meta.model.AdditionalBankDetailsViewDto;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.LanguageCodeType;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.dbmodel.LanguageType;
+import com.amx.jax.dbmodel.PurposeTrnxAmicDesc;
 import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
@@ -39,6 +43,8 @@ import com.amx.jax.repository.IAdditionalBankDetailsDao;
 import com.amx.jax.repository.IAdditionalBankRuleMapDao;
 import com.amx.jax.repository.IAdditionalDataDisplayDao;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
+import com.amx.jax.repository.ILanguageTypeRepository;
+import com.amx.jax.repository.IPurposeTrnxAmicDescRepository;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -57,6 +63,12 @@ public class PurposeOfTransactionService extends AbstractService {
 
 	@Autowired
 	private ApplicationProcedureDao applicationProcedureDao;
+	
+	@Autowired
+	ILanguageTypeRepository languageTypeRepository;
+	
+	@Autowired
+	IPurposeTrnxAmicDescRepository purposeTrnxAmicDescRepository;
 
 	@Autowired
 	MetaData meta;
@@ -80,7 +92,8 @@ public class PurposeOfTransactionService extends AbstractService {
 		try {
 			listAdditionalBankDataTable = new ArrayList<>();
 			listDynamicLabel = new ArrayList<>();
-			List<AdditionalDataDisplayView> serviceAppRuleList = additionalDataDisplayDao.getAdditionalDataFromServiceApplicability(applicationCountryId, countryId, currencyId,remittanceModeId, deliveryModeId,IAdditionalDataDisplayDao.flexiFieldIn);
+			List<AdditionalDataDisplayView> serviceAppRuleList = additionalDataDisplayDao.getAdditionalDataFromServiceApplicability(applicationCountryId, countryId, currencyId,remittanceModeId, deliveryModeId,IAdditionalDataDisplayDao.flexiFieldIn,
+					ConstantDocument.No);
 			if (!serviceAppRuleList.isEmpty()) {
 				for (AdditionalDataDisplayView serviceRule : serviceAppRuleList) {
 					AddDynamicLabel addDynamic = new AddDynamicLabel();
@@ -142,6 +155,7 @@ public class PurposeOfTransactionService extends AbstractService {
 
 								// setting dynamic functionality
 								adddata.setMandatory(dyamicLabel.getMandatory());
+								
 								if (dyamicLabel.getMinLenght() != null) {
 									adddata.setMinLenght(dyamicLabel.getMinLenght().intValue());
 								} else {
@@ -187,6 +201,7 @@ public class PurposeOfTransactionService extends AbstractService {
 					adddata.setRenderSelect(false);
 					adddata.setRenderOneSelect(false);
 					adddata.setFlexiField(dyamicLabel.getFlexiField());
+
 					if (dyamicLabel.getLebelDesc() != null) {
 						adddata.setAdditionalDesc(dyamicLabel.getLebelDesc());
 					} else {
@@ -242,7 +257,7 @@ public class PurposeOfTransactionService extends AbstractService {
 		try {
 			BeanUtils.copyProperties(dto, viewModel);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			logger.error("bene list display", e);
+			logger.debug("bene list display", e);
 		}
 		return dto;
 	}
@@ -276,15 +291,28 @@ public class PurposeOfTransactionService extends AbstractService {
 		BigDecimal remittanceModeId = (BigDecimal) routingDetails.get("P_REMITTANCE_MODE_ID");
 		BigDecimal deliveryModeId = (BigDecimal) routingDetails.get("P_DELIVERY_MODE_ID");
 		BigDecimal bankId = (BigDecimal) routingDetails.get("P_ROUTING_BANK_ID");
-		
-		List<AddAdditionalBankDataDto> dto = this.getPutrposeOfTransaction(applicationCountryId, rountingCountry, currencyId,remittanceModeId, deliveryModeId, bankId);
 		PurposeOfTransactionModel purposeOfTxnModel = new PurposeOfTransactionModel();
-		purposeOfTxnModel.setDto(dto);
-		response.getData().getValues().add(purposeOfTxnModel);
-		response.setResponseStatus(ResponseStatus.OK);
-		response.getData().setType(purposeOfTxnModel.getModelType());
+		List<AddAdditionalBankDataDto> dto = this.getPutrposeOfTransaction(applicationCountryId, rountingCountry, currencyId,remittanceModeId, deliveryModeId, bankId);
+		LanguageType languageType = new LanguageType();
+		List<PurposeTrnxAmicDesc> PurposeTrnxAmicDesc;
+
+		languageType = languageTypeRepository.findBylanguageId(meta.getLanguageId());
+		if(languageType.getLanguageName().equals(LanguageCodeType.Arabic.toString())){
+			// convert english description to arabic description
+			List<AddAdditionalBankDataDto> arabicdto = getLocalAmicCodeDesc(dto, meta.getLanguageId());
+			purposeOfTxnModel.setDto(arabicdto);
+			response.getData().getValues().add(purposeOfTxnModel);
+			response.setResponseStatus(ResponseStatus.OK);
+			response.getData().setType(purposeOfTxnModel.getModelType());
+		}else {
+			purposeOfTxnModel.setDto(dto);
+			response.getData().getValues().add(purposeOfTxnModel);
+			response.setResponseStatus(ResponseStatus.OK);
+			response.getData().setType(purposeOfTxnModel.getModelType());
+		}
 		return response;
 	}
+	
 
 	private HashMap<String, Object> getBeneBankDetails(BenificiaryListView beneficiary) {
 
@@ -301,5 +329,76 @@ public class PurposeOfTransactionService extends AbstractService {
 		beneBankDetails.put("P_BENEFICARY_ACCOUNT_SEQ_ID", beneficiary.getBeneficiaryAccountSeqId());
 		return beneBankDetails;
 	}
-
+	
+	private List<AddAdditionalBankDataDto> getLocalAmicCodeDesc(List<AddAdditionalBankDataDto> engPurposeOfTrnxDto,BigDecimal languageId){
+		List<String> amiecCode = new ArrayList<>();
+		HashMap<String, String> arabicPurposeOfTrnx = new HashMap<>();
+		List<AdditionalBankDetailsViewDto> listadditionAmiecData = new ArrayList<>();
+		List<AddAdditionalBankDataDto> arbPurposeOfTrnxDto = new ArrayList<>();
+		
+		for (AddAdditionalBankDataDto addAdditionalBankDataDto : engPurposeOfTrnxDto) {
+			if(addAdditionalBankDataDto.getListadditionAmiecData() != null && addAdditionalBankDataDto.getListadditionAmiecData().size() != 0) {
+				for (AdditionalBankDetailsViewDto additionalBankDetailsViewDto : addAdditionalBankDataDto.getListadditionAmiecData()) {
+					if(!amiecCode.contains(additionalBankDetailsViewDto.getAmiecCode())) {
+						amiecCode.add(additionalBankDetailsViewDto.getAmiecCode());
+					}
+				}
+			}
+		}
+		
+		if(amiecCode != null && amiecCode.size()!= 0) {
+			List<PurposeTrnxAmicDesc> purposeTrnxAmicDescs = purposeTrnxAmicDescRepository.fetchAllAmiecDataByLanguageId(amiecCode, languageId);
+			for (PurposeTrnxAmicDesc purposeTrnxAmic : purposeTrnxAmicDescs) {
+				arabicPurposeOfTrnx.put(purposeTrnxAmic.getAmicCode(), purposeTrnxAmic.getLocalFulldesc());
+			}
+		}
+		
+		if(arabicPurposeOfTrnx != null && arabicPurposeOfTrnx.size() != 0) {
+			for (AddAdditionalBankDataDto addAdditionalBankDataDto : engPurposeOfTrnxDto) {
+				AddAdditionalBankDataDto addBankData = addAdditionalBankDataDto;
+				if(addAdditionalBankDataDto.getListadditionAmiecData() != null && addAdditionalBankDataDto.getListadditionAmiecData().size() != 0) {
+					for (AdditionalBankDetailsViewDto additionalBankDetailsViewDto : addAdditionalBankDataDto.getListadditionAmiecData()) {
+						additionalBankDetailsViewDto.setLocalName(arabicPurposeOfTrnx.get(additionalBankDetailsViewDto.getAmiecCode()));
+						listadditionAmiecData.add(additionalBankDetailsViewDto);
+					}
+					addBankData.setListadditionAmiecData(listadditionAmiecData);
+				}
+				arbPurposeOfTrnxDto.add(addBankData);
+			}
+		}
+		
+		return arbPurposeOfTrnxDto;
+	}
+	
+	/*public List<PurposeTrnxAmicDescDto> convert(List<PurposeTrnxAmicDesc> purposeTrnxAmicDesc) {
+		List<PurposeTrnxAmicDescDto> purposeTrnxAmicDescDto = new ArrayList<>();
+		
+		if(purposeTrnxAmicDesc!=null && purposeTrnxAmicDesc.size()!=0) {	
+		for (PurposeTrnxAmicDesc purposeTrnxAmicDesccc : purposeTrnxAmicDesc) {	
+			PurposeTrnxAmicDescDto dto = new PurposeTrnxAmicDescDto();
+	
+		dto.setAmicCode(purposeTrnxAmicDesccc.getAmicCode());
+		dto.setFullDesc(purposeTrnxAmicDesccc.getFullDesc());
+		dto.setId(purposeTrnxAmicDesccc.getId());
+		dto.setLanguageId(purposeTrnxAmicDesccc.getLanguageId());
+		dto.setLocalFulldesc(purposeTrnxAmicDesccc.getFullDesc());
+		dto.setShortDesc(purposeTrnxAmicDesccc.getShortDesc());
+		purposeTrnxAmicDescDto.add(dto);
+}
+		}
+		return purposeTrnxAmicDescDto;
+	}*/
+	
+	List<AddAdditionalBankDataDto> getlistAmicDesc(List<AdditionalBankDetailsViewDto> additionalBankDetailsViewDto,  HashMap<String, Object> localAmicDesc ){
+		
+		for(AdditionalBankDetailsViewDto additionalBankDetailsViewList :additionalBankDetailsViewDto) {
+			additionalBankDetailsViewList.setLocalName(localAmicDesc.get("P_LOCAL_FULL_DESC").toString());
+			
+		}
+		
+		return null;
+		
+		
+		
+	}
 }

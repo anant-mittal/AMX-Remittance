@@ -5,23 +5,39 @@ import java.math.BigDecimal;
 import com.amx.jax.swagger.ApiMockModelProperty;
 
 public class LocalAddressDetails {
+	
+	public LocalAddressDetails() {
+		super();
+	}
+
+	public LocalAddressDetails(BigDecimal countryId, BigDecimal stateId, BigDecimal districtId) {
+		super();
+		this.countryId = countryId;
+		this.stateId = stateId;
+		this.districtId = districtId;
+	}
 
 	@ApiMockModelProperty(example="49")
 	private BigDecimal contactTypeId;
 	
 	@ApiMockModelProperty(example="1011")
+	
 	private String block;
 	
 	@ApiMockModelProperty(example="Gandhi Road")
+	
 	private String street;
 	
 	@ApiMockModelProperty(example="Runwall")
+	
 	private String house;
 	
 	@ApiMockModelProperty(example="5")
+	
 	private String flat;
 	
 	@ApiMockModelProperty(example="91")
+	
 	private BigDecimal countryId;
 	
 	@ApiMockModelProperty(example="584")

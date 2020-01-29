@@ -2,13 +2,14 @@ package com.amx.jax.postman.audit;
 
 import java.util.List;
 
+import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.Message.IChannel;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.WAMessage;
-import com.amx.jax.postman.model.Message.IChannel;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
@@ -34,6 +35,7 @@ public class PMGaugeEvent extends AuditEvent {
 		SEND_EMAIL,
 		// WhatsApp Events
 		SEND_WHATSAPP,
+		ON_WHATSAPP,
 		// PDF Events
 		CREATE_PDF,
 
@@ -53,7 +55,7 @@ public class PMGaugeEvent extends AuditEvent {
 		 */
 		@Override
 		public EventMarker marker() {
-			return null;
+			return EventMarker.GAUGE;
 		}
 
 	}
@@ -157,6 +159,11 @@ public class PMGaugeEvent extends AuditEvent {
 
 	public PMGaugeEvent set(Result result) {
 		this.result = result;
+		return this;
+	}
+
+	public PMGaugeEvent result(Result result, AmxApiException excep) {
+		super.result(result, excep);
 		return this;
 	}
 

@@ -6,16 +6,7 @@ public class UserwiseTransactionDto {
 
 	
 	
-	
-	/*private BigDecimal refundAmount= new BigDecimal(0);
-	private BigDecimal cash= new BigDecimal(0);
-	private BigDecimal cheque= new BigDecimal(0);
-	private BigDecimal kNet= new BigDecimal(0);
-	private BigDecimal others= new BigDecimal(0);
-	private BigDecimal cheqe= new BigDecimal(0);
-	private BigDecimal bankTransfer= new BigDecimal(0);
-	private BigDecimal lastTrnx= new BigDecimal(0);
-	*/
+
 	
 	private BigDecimal totaltrnx=new BigDecimal(0);
 	private BigDecimal employeeId;

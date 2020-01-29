@@ -84,6 +84,8 @@ public class PaymentService {
 			metaInfo.setCountryId(paymentResponseDto.getApplicationCountryId());
 			metaInfo.setCustomerId(paymentResponseDto.getCustomerId());
 			headers.add(AppConstants.META_XKEY, new ObjectMapper().writeValueAsString(metaInfo));
+			LOGGER.info("amount in params :"+params.getAmount());
+			paymentResponseDto.setAmount(params.getAmount());
 
 			if (ArgUtil.isEmpty(params.getProduct())) {
 				return restService.ajax(appConfig.getJaxURL() + "/remit/save-remittance/")
@@ -114,7 +116,13 @@ public class PaymentService {
 	public PaymentResponseDto generatePaymentResponseDTO(PayGParams params,
 			PaymentGateWayResponse payGServiceResponse) {
 		PaymentResponseDto paymentResponseDto = new PaymentResponseDto();
-
+		
+		//For Local References
+		paymentResponseDto.setPayId(params.getPayId());
+		paymentResponseDto.setAmount(params.getAmount());
+	
+		
+		//For Service Reference
 		paymentResponseDto.setApplicationCountryId(payGServiceResponse.getApplicationCountryId());
 
 		paymentResponseDto.setAuth_appNo(payGServiceResponse.getAuth());

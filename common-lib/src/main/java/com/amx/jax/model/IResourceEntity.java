@@ -9,5 +9,7 @@ public interface IResourceEntity {
 	public String resourceName();
 
 	public String resourceCode();
-
+	
+	public String resourceLocalName();
+	
 }

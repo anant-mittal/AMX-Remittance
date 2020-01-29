@@ -3,8 +3,20 @@ package com.amx.jax.model.response.remittance;
 import java.math.BigDecimal;
 import java.util.List;
 
-public class BranchRemittanceApplResponseDto {
+import com.amx.jax.dict.PayGServiceCode;
+import com.amx.jax.model.AbstractModel;
+import com.amx.jax.model.CivilIdOtpModel;
+import com.amx.jax.response.payatbranch.PaymentModesDTO;
 
+
+
+
+public class BranchRemittanceApplResponseDto extends AbstractModel{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/*Total Gross amount */
 	BigDecimal totalLocalAmount =BigDecimal.ZERO;
 	/* total net amount with commission */
@@ -14,9 +26,38 @@ public class BranchRemittanceApplResponseDto {
 	BigDecimal totalLoyaltyPointAvaliable =BigDecimal.ZERO;
 	BigDecimal totalNetCollectionAmount =BigDecimal.ZERO;
 	String warnigMsg;
+	ConfigDto configDto = new ConfigDto();
+	private CivilIdOtpModel civilIdOtpModel;
+	private PayGServiceCode pgCode = PayGServiceCode.DEFAULT;
+	private Boolean addToCart=true;
+	private List<PaymentModesDTO> paymentModeList;
 	
-	
+	public List<PaymentModesDTO> getPaymentModeList() {
+		return paymentModeList;
+	}
+	public void setPaymentModeList(List<PaymentModesDTO> paymentModeList) {
+		this.paymentModeList = paymentModeList;
+	}
+	public ConfigDto getConfigDto() {
+		return configDto;
+	}
+	public void setConfigDto(ConfigDto configDto) {
+		this.configDto = configDto;
+	}
+	/* application records */
 	List<CustomerShoppingCartDto> shoppingCartDetails;
+	
+
+	List<PlaceOrderApplDto> placeOrderApplList;
+	
+
+	List<PaymentLinkAppDto> paymentLinkAppDto;  
+	public List<PaymentLinkAppDto> getPaymentLinkAppDto() {
+		return paymentLinkAppDto;
+	}
+	public void setPaymentLinkAppDto(List<PaymentLinkAppDto> paymentLinkAppDto) {
+		this.paymentLinkAppDto = paymentLinkAppDto;
+	}
 	public BigDecimal getTotalLocalAmount() {
 		return totalLocalAmount;
 	}
@@ -64,5 +105,23 @@ public class BranchRemittanceApplResponseDto {
 	}
 	public void setWarnigMsg(String warnigMsg) {
 		this.warnigMsg = warnigMsg;
+	}
+	public CivilIdOtpModel getCivilIdOtpModel() {
+		return civilIdOtpModel;
+	}
+	public void setCivilIdOtpModel(CivilIdOtpModel civilIdOtpModel) {
+		this.civilIdOtpModel = civilIdOtpModel;
+	}
+	public Boolean getAddToCart() {
+		return addToCart;
+	}
+	public void setAddToCart(Boolean addToCart) {
+		this.addToCart = addToCart;
+	}
+  public List<PlaceOrderApplDto> getPlaceOrderApplList() {
+		return placeOrderApplList;
+	}
+	public void setPlaceOrderApplList(List<PlaceOrderApplDto> placeOrderApplList) {
+		this.placeOrderApplList = placeOrderApplList;
 	}
 }

@@ -19,7 +19,6 @@ public class PricingRequestDTO implements Serializable {
 
 	private BigDecimal customerId;
 
-	@NotNull(message = "Local Country Id Can not be Null or Empty")
 	private BigDecimal localCountryId;
 
 	@NotNull(message = "Foreign Country Id Can not be Null or Empty")
@@ -28,13 +27,11 @@ public class PricingRequestDTO implements Serializable {
 	private BigDecimal localAmount;
 	private BigDecimal foreignAmount;
 
-	@NotNull(message = "Local Currency Id Can not be Null or Empty")
 	private BigDecimal localCurrencyId;
 
 	@NotNull(message = "Foreign Currency Id Can not be Null or Empty")
 	private BigDecimal foreignCurrencyId;
 
-	@NotNull(message = "Country Branch Id Can not be Null or Empty")
 	private BigDecimal countryBranchId;
 
 	private List<BigDecimal> routingBankIds;

@@ -212,4 +212,10 @@ public class AdditionalBankRuleAmiec implements IResourceEntity {
 		return this.amiecCode;
 	}
 
+	@Override
+	public String resourceLocalName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

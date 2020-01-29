@@ -18,9 +18,23 @@ public class PricingResponseDTO implements Serializable {
 
 	private Map<BigDecimal, BankDetailsDTO> bankDetails;
 
+	private Map<BigDecimal, String> serviceIdDescription;
+
 	private Map<String, Object> info;
 
 	private CUSTOMER_CATEGORY customerCategory;
+
+	/*public PricingResponseDTO() {
+		super();
+	}
+
+	public PricingResponseDTO(PricingResponseDTO that) {
+		this.sellRateDetails = that.sellRateDetails;
+		this.bankDetails = that.bankDetails;
+		this.serviceIdDescription = that.serviceIdDescription;
+		this.info = that.info;
+		this.customerCategory = that.customerCategory;
+	}*/
 
 	public List<ExchangeRateDetails> getSellRateDetails() {
 		return sellRateDetails;
@@ -52,6 +66,14 @@ public class PricingResponseDTO implements Serializable {
 
 	public void setCustomerCategory(CUSTOMER_CATEGORY customerCategory) {
 		this.customerCategory = customerCategory;
+	}
+
+	public Map<BigDecimal, String> getServiceIdDescription() {
+		return serviceIdDescription;
+	}
+
+	public void setServiceIdDescription(Map<BigDecimal, String> serviceIdDescription) {
+		this.serviceIdDescription = serviceIdDescription;
 	}
 
 }

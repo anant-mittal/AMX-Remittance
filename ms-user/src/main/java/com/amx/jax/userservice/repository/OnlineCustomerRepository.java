@@ -33,5 +33,11 @@ public interface OnlineCustomerRepository extends JpaRepository<CustomerOnlineRe
 	@Query("select c from CustomerOnlineRegistration c where loginId=?1")
 	public CustomerOnlineRegistration getCustomerIDByuserId(String userName);
 	
+	
+	@Query("select c from CustomerOnlineRegistration c where userName=?1")
+	public CustomerOnlineRegistration getLoginCustomersDeatilsById(String userName);
+	
+	public CustomerOnlineRegistration findByCustomerId(BigDecimal customerId);
+	
 
 }

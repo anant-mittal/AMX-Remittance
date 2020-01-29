@@ -11,12 +11,29 @@ multitenancy:
         url: jdbc:oracle:thin:@10.28.42.10:1521:TEMOS
         username: TEMOS
         password: TEMOS
+        #url: jdbc:oracle:thin:@192.170.161.99:1521:QEMOS
+        #username: QEMOS
+        #password: QEMOS
         driverClassName: oracle.jdbc.OracleDriver
+        # Following Connection Pool Values to be Set in Prod, Customize and change as per required.
+        #initialSize: 25
+        #maxActive: 300
+        #maxIdle: 100
+        #minIdle: 25
       -
         tenantId: KWT2
+        #url: jdbc:oracle:thin:@192.170.161.99:1521:QEMOS
         url: jdbc:oracle:thin:@192.170.161.99:1521:QEMOS
-        username: QEMOS
-        password: QEMOS
+        #username: QEMOS
+        #password: QEMOS
+        username: QJOAMX_USER
+        password: QJOAMX#456
+        driverClassName: oracle.jdbc.OracleDriver
+      -
+        tenantId: KWD
+        url: jdbc:oracle:thin:@10.28.42.10:1521:DEMOS
+        username: DEMOS
+        password: DEMOS
         driverClassName: oracle.jdbc.OracleDriver
       -
         tenantId: BHR

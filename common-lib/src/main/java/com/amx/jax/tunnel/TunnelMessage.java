@@ -27,6 +27,10 @@ public class TunnelMessage<M> implements Serializable {
 		this.context = context;
 	}
 
+	public TunnelMessage() {
+		this(null);
+	}
+
 	public String getId() {
 		return id;
 	}

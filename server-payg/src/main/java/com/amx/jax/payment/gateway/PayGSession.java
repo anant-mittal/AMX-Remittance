@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppContextUtil;
-import com.amx.jax.cache.TransactionModel;
+import com.amx.jax.cache.TxCacheBox;
 import com.amx.jax.payg.PayGParams;
 import com.amx.jax.payment.gateway.PayGSession.PayGModels;
 import com.amx.utils.ArgUtil;
@@ -15,7 +15,7 @@ import com.amx.utils.Constants;
 
 @Component
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class PayGSession extends TransactionModel<PayGModels> {
+public class PayGSession extends TxCacheBox<PayGModels> {
 
 	public static class PayGModels implements Serializable {
 

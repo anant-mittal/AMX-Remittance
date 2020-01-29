@@ -2,8 +2,10 @@ package com.amx.jax.service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,7 @@ import com.amx.jax.dbmodel.CountryMasterView;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.CountryMasterRepository;
 import com.amx.jax.repository.CountryRepository;
+import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.services.AbstractService;
 /**
  * 
@@ -35,12 +38,29 @@ public class CountryService extends AbstractService {
 	CountryMasterRepository countryMasterRepository;
 	
 	@Autowired
+	CustomerRepository customerRepository;
+	
+	@Autowired
 	MetaData meta;
 	
+	private Logger logger = Logger.getLogger(CountryService.class);
 	
-	public AmxApiResponse<CountryMasterView, Object> getCountryListResponse(){
-		List<CountryMasterView> countryList = countryRepository.findByLanguageId(meta.getLanguageId());
+	public AmxApiResponse<CountryMasterView, Object> getCountryListResponse() {
+	
+		List<CountryMasterView> countryList = null;
+		BigDecimal languageIdValue = new BigDecimal("1");
 		ApiResponse response = getBlackApiResponse();
+		
+		if(meta.getLanguageId()!=null)
+		countryList = countryRepository.findByLanguageId(meta.getLanguageId());
+
+		if (countryList.isEmpty() || meta.getLanguageId()==null) {
+			
+			countryList = countryRepository.findByLanguageId(languageIdValue);
+		response.getData().getValues().addAll(countryList);
+		response.setResponseStatus(ResponseStatus.OK);
+		}
+		
 		if(countryList.isEmpty()) {
 			throw new GlobalException("Country list is not abaliable");
 		}else {
@@ -154,5 +174,23 @@ public class CountryService extends AbstractService {
 			}
 		}
 		return countryMasterDesc;
+	}
+	
+	public Boolean getIsArabicCountry(BigDecimal countryId) {
+		Boolean isArabic = false;
+		
+		CountryMaster countryMaster = countryMasterRepository.getCountryCodeValue(countryId);
+		logger.debug("countrycode:"+countryMaster.getCountryCode());
+		String countrycode = countryMaster.getCountryCode();
+		String [] codes = {"005", "051", "009", "001", "010", "022"};
+		
+		if(Arrays.asList(codes).contains(countrycode)) {
+			isArabic = true;
+		}else {
+		isArabic = false;
+		}
+		logger.debug("isarabicValue" +isArabic);
+		return isArabic;
+		
 	}
 }

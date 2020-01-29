@@ -23,7 +23,8 @@
     dev: false,
     remoteServerUrl: '',
     remoteJsUrl: 'http://10.28.42.83/onlinewebapp',
-    dummyApi: false
+    dummyApi: false,
+    remoteJsVersion: '[[${CDN_VERSION}]]', //
   };
   var config = getJson(window.localStorage.getItem('debugConfig'));
   if (config) {
@@ -40,7 +41,7 @@
   js.src = window.CONST.remoteJsUrl + '/dist/main.bundle.js';
   var css = document.createElement('link');
   css.rel = 'stylesheet';
-  css.href = window.CONST.remoteJsUrl + '/dist/style.css';
+  css.href = window.CONST.remoteJsUrl + '/dist/main.css';
   head.appendChild(css);
   head.appendChild(js);
 

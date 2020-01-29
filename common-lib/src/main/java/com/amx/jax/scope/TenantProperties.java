@@ -137,13 +137,14 @@ public class TenantProperties {
 	}
 
 	private static Properties getPropertiesInternal(String tenant, Object object) {
+		LOGGER.debug("getPropertiesInternal:START");
 		Properties tenantProperties = new Properties();
 		String propertyFile = "application." + tenant + ".properties";
 		InputStream inSideInputStream = null;
 		InputStream outSideInputStream = null;
 
 		try {
-
+			LOGGER.debug("Loading Properties from classpath: {}", propertyFile);
 			URL ufile = FileUtil.getResource(propertyFile, object.getClass());
 			if (ufile != null) {
 				inSideInputStream = ufile.openStream();
@@ -165,6 +166,7 @@ public class TenantProperties {
 		}
 
 		try {
+			LOGGER.debug("Loading Properties from jarpath: {}", propertyFile);
 			outSideInputStream = FileUtil.getExternalResourceAsStream(propertyFile, object.getClass());
 			if (outSideInputStream != null) {
 				// tenantProperties.load(outSideInputStream);
@@ -183,6 +185,7 @@ public class TenantProperties {
 				LOGGER.debug("Silent_Fail_of_File_Closing_OutSideInputStream");
 			}
 		}
+		LOGGER.debug("getPropertiesInternal:END");
 		return tenantProperties;
 	}
 
@@ -212,6 +215,11 @@ public class TenantProperties {
 					String propertyName = annotation.value().replace("${", "").replace("}", "");
 					currentPropertyName = propertyName;
 					Object propertyValue = tenantProperties.getProperty(propertyName);
+
+					if (propertyValue == null) {
+						propertyValue = getAppEnvProperties(propertyName);
+					}
+
 					if (propertyValue != null) {
 						// ArgUtil.parseAsT(propertyValue, defaultValue, required)
 						Type type = field.getGenericType();

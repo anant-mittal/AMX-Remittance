@@ -1,5 +1,6 @@
 package com.amx.jax;
 
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -11,13 +12,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 
+import com.amx.jax.api.AmxFieldError;
+import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
+import com.amx.utils.StringUtils;
 import com.amx.utils.UniqueID;
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -25,14 +30,29 @@ public class AppContextUtil {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AppContextUtil.class);
 
+	public static void setSessionPrefix(String sessionPrefix) {
+		ContextUtil.map().put(AppConstants.SESSION_PREFIX_XKEY, sessionPrefix);
+	}
+
+	public static void setRequestUser(String sessionSuffix) {
+		ContextUtil.map().put(AppConstants.SESSION_SUFFIX_XKEY, sessionSuffix);
+	}
+
+	public static String getRequestUser() {
+		return ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.SESSION_SUFFIX_XKEY),
+				Constants.BLANK);
+	}
+
 	public static void setSessionId(Object sessionId) {
 		ContextUtil.map().put(AppConstants.SESSION_ID_XKEY, sessionId);
 	}
 
 	public static String getSessionId(boolean generate, String defautSessionId) {
 		String sessionId = ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.SESSION_ID_XKEY), defautSessionId);
+		String sessionPrefix = ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.SESSION_PREFIX_XKEY),
+				Constants.BLANK);
 		if (generate && ArgUtil.isEmptyString(sessionId)) {
-			sessionId = UniqueID.generateSessionId();
+			sessionId = UniqueID.generateSessionId(sessionPrefix);
 			setSessionId(sessionId);
 		}
 		return sessionId;
@@ -58,11 +78,11 @@ public class AppContextUtil {
 			if (ArgUtil.isEmpty(sessionId)) {
 				sessionId = getSessionId(true);
 			}
-			return ContextUtil.generateTraceId(sessionId);
+			return ContextUtil.generateTraceId(sessionId, getRequestUser());
 		}
 		String traceId = ContextUtil.getTraceId(false);
 		if (generate && ArgUtil.isEmpty(traceId)) {
-			return ContextUtil.getTraceId(true, sessionId);
+			return ContextUtil.getTraceId(true, sessionId, getRequestUser());
 		}
 		return traceId;
 	}
@@ -100,6 +120,15 @@ public class AppContextUtil {
 		return ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.ACTOR_ID_XKEY));
 	}
 
+	public static Language getLang() {
+		return (Language) ArgUtil.parseAsEnum(ContextUtil.map().get(AppConstants.LANG_PARAM_KEY), Language.EN,
+				Language.class);
+	}
+
+	public static Language getLang(Language lang) {
+		return (Language) ArgUtil.parseAsEnum(ContextUtil.map().get(AppConstants.LANG_PARAM_KEY), lang, Language.class);
+	}
+
 	public static UserDeviceClient getUserClient() {
 		Object userDeviceClientObject = ContextUtil.map().get(AppConstants.USER_CLIENT_XKEY);
 		UserDeviceClient userDeviceClient = null;
@@ -127,15 +156,20 @@ public class AppContextUtil {
 
 	public static RequestType getRequestType() {
 		return (RequestType) ArgUtil.parseAsEnum(ContextUtil.map().get(AppConstants.REQUEST_TYPE_XKEY),
-				RequestType.DEFAULT);
+				RequestType.DEFAULT, RequestType.class);
 	}
 
 	public static String getSessionIdFromTraceId() {
 		String traceId = getTraceId();
 		if (!ArgUtil.isEmptyString(traceId)) {
-			Matcher matcher = UniqueID.SYSTEM_STRING_PATTERN.matcher(traceId);
+			Matcher matcher = UniqueID.SYSTEM_STRING_PATTERN_V2.matcher(traceId);
 			if (matcher.find()) {
-				setSessionId(matcher.group(1) + "-" + matcher.group(2));
+				setSessionId(matcher.group(1) + "-" + matcher.group(2) + "-" + matcher.group(3));
+			} else {
+				Matcher matcher2 = UniqueID.SYSTEM_STRING_PATTERN.matcher(traceId);
+				if (matcher2.find()) {
+					setSessionId(matcher2.group(1) + "-" + matcher2.group(2) + "-" + matcher2.group(3));
+				}
 			}
 		}
 		return getSessionId(true);
@@ -147,6 +181,18 @@ public class AppContextUtil {
 
 	public static void setTenant(Tenant tenant) {
 		TenantContextHolder.setCurrent(tenant);
+	}
+
+	public static void setVendor(Class<?> class1, String vendor) {
+		ContextUtil.map().put("scopedTarget." + StringUtils.decapitalize(class1.getSimpleName()), vendor);
+	}
+
+	public static String getVendor(Class<?> class1) {
+		return (String) ContextUtil.map().get("scopedTarget." + StringUtils.decapitalize(class1.getSimpleName()));
+	}
+
+	public static String getVendor(String scopedTargetClassName) {
+		return (String) ContextUtil.map().get(scopedTargetClassName);
 	}
 
 	public static void setTranceId(String traceId) {
@@ -165,12 +211,28 @@ public class AppContextUtil {
 		ContextUtil.setFlowfix(flowfix);
 	}
 
+	public static void setFlow(String flow) {
+		getParams().put("flow", flow);
+	}
+
+	public static String getFlow() {
+		return ArgUtil.parseAsString(getParams().get("flow"));
+	}
+
 	public static void setTraceTime(long timestamp) {
 		ContextUtil.map().put(AppConstants.TRACE_TIME_XKEY, timestamp);
 	}
 
+	public static void resetTraceTime() {
+		ContextUtil.map().put(AppConstants.TRACE_TIME_XKEY, System.currentTimeMillis());
+	}
+
 	public static void setActorId(Object actorId) {
 		ContextUtil.map().put(AppConstants.ACTOR_ID_XKEY, actorId);
+	}
+
+	public static void setLang(Object lang) {
+		ContextUtil.map().put(AppConstants.LANG_PARAM_KEY, lang);
 	}
 
 	public static void setRequestType(RequestType reqType) {
@@ -179,6 +241,29 @@ public class AppContextUtil {
 
 	public static void setUserClient(UserDeviceClient userClient) {
 		ContextUtil.map().put(AppConstants.USER_CLIENT_XKEY, userClient);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static List<AmxFieldError> getWarnings() {
+		Object userDeviceClientObject = ContextUtil.map().get(AppConstants.REQUEST_WARNING_XKEY);
+		List<AmxFieldError> warnings = null;
+		if (userDeviceClientObject == null) {
+			warnings = new ArrayList<AmxFieldError>();
+			ContextUtil.map().put(AppConstants.REQUEST_WARNING_XKEY, warnings);
+		} else {
+			warnings = (List<AmxFieldError>) userDeviceClientObject;
+		}
+		return warnings;
+	}
+
+	public static void addWarning(AmxFieldError warning) {
+		getWarnings().add(warning);
+	}
+
+	public static void addWarning(String warning) {
+		AmxFieldError w = new AmxFieldError();
+		w.setDescription(warning);
+		addWarning(w);
 	}
 
 	public static void setParams(String requestParamsJson, String requestdParamsJson) {
@@ -284,6 +369,7 @@ public class AppContextUtil {
 		String contextId = getContextId();
 		String tranxId = getTranxId();
 		String userId = getActorId();
+		Language lang = getLang();
 		UserDeviceClient userClient = getUserClient();
 		Map<String, Object> params = getParams();
 		httpHeaders.add(TenantContextHolder.TENANT, getTenant().toString());
@@ -293,6 +379,9 @@ public class AppContextUtil {
 		}
 		if (!ArgUtil.isEmpty(traceId)) {
 			httpHeaders.add(AppConstants.TRACE_ID_XKEY, traceId);
+		}
+		if (!ArgUtil.isEmpty(traceId)) {
+			httpHeaders.add(AppConstants.LANG_PARAM_KEY, lang.toString());
 		}
 		if (!ArgUtil.isEmpty(contextId)) {
 			httpHeaders.add(AppConstants.CONTEXT_ID_XKEY, contextId);
@@ -316,7 +405,7 @@ public class AppContextUtil {
 	 * 
 	 * @param httpHeaders
 	 */
-	public static void importAppContextFrom(HttpHeaders httpHeaders) {
+	public static void importAppContextFromResponseHEader(HttpHeaders httpHeaders) {
 		if (httpHeaders.containsKey(AppConstants.TRANX_ID_XKEY)) {
 			List<String> tranxids = httpHeaders.get(AppConstants.TRANX_ID_XKEY);
 			if (tranxids.size() >= 0) {

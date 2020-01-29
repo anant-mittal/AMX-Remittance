@@ -18,7 +18,7 @@ public class SSOTranx extends TxCacheBox<SSOModel> {
 		private static final long serialVersionUID = -2178734153442648084L;
 
 		private String appUrl = null;
-		private String returnUrl = SSOConstants.APP_LOGGEDIN_URL;
+		private String returnUrl;
 
 		private String appToken = null;
 		private String motp = null;
@@ -31,11 +31,14 @@ public class SSOTranx extends TxCacheBox<SSOModel> {
 
 		private ClientType clientType;
 		private BigDecimal terminalId;
+		private Long createdStamp;
 
 		private EmployeeDetailsDTO userDetails = null;
 
 		public SSOModel() {
+			this.returnUrl = SSOConstants.APP_LOGGEDIN_URL;
 			this.userClient = new UserClientDto();
+			this.createdStamp = System.currentTimeMillis();
 		}
 
 		public String getReturnUrl() {
@@ -110,6 +113,14 @@ public class SSOTranx extends TxCacheBox<SSOModel> {
 
 		public void setTerminalId(BigDecimal terminalId) {
 			this.terminalId = terminalId;
+		}
+
+		public Long getCreatedStamp() {
+			return createdStamp;
+		}
+
+		public void setCreatedStamp(Long createdStamp) {
+			this.createdStamp = createdStamp;
 		}
 
 	}

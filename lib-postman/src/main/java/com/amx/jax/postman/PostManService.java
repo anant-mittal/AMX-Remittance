@@ -6,6 +6,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.ExceptionReport;
 import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.MessageBox;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.SupportEmail;
@@ -34,5 +35,7 @@ public interface PostManService {
 	public AmxApiResponse<File, Object> processTemplate(File file) throws PostManException;
 
 	public AmxApiResponse<Email, Object> sendEmailBulk(List<Email> emailList);
+
+	public AmxApiResponse<MessageBox, Object> send(MessageBox messageBox);
 
 }

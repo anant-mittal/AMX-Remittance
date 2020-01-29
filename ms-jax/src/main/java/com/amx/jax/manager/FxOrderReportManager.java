@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.api.ResponseCodeDetailDTO;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxTransactionStatus;
 import com.amx.jax.dal.LoyaltyInsuranceProDao;
@@ -38,6 +39,7 @@ import com.amx.jax.dbmodel.ViewDistrict;
 import com.amx.jax.dbmodel.ViewState;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.FxOrderTransactionModel;
+import com.amx.jax.dict.PayGRespCodeJSONConverter;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
@@ -182,23 +184,26 @@ public class FxOrderReportManager {
 		if(fxOrderTrnxList != null && !fxOrderTrnxList.isEmpty()){
 
 			if(JaxUtil.isNullZeroBigDecimalCheck(customerId) && customerId.compareTo(fxOrderTrnxList.get(0).getCustomerId())!=0){
-				logger.error("custoemr not found meta data:"+customerId+"\t details :"+fxOrderTrnxList.get(0).getCustomerId());
+				logger.debug("custoemr not found meta data:"+customerId+"\t details :"+fxOrderTrnxList.get(0).getCustomerId());
 				throw new GlobalException(JaxError.INVALID_CUSTOMER, "customer not found");
 			}
 
 			List<Customer> customerList = customerDao.getCustomerByCustomerId(countryId, companyId, customerId);
 			if(customerList != null && !customerList.isEmpty()){
-				reportModel.setIdExpiryDate(DateUtil.todaysDateWithDDMMYY(customerList.get(0).getIdentityExpiredDate(),"0"));
-				reportModel.setCivilId(customerList.get(0).getIdentityInt());
-				customerReferenceId = customerList.get(0).getCustomerReference();
-				phoneNo =  customerList.get(0).getMobile();
-				loyaltyPoints = customerList.get(0).getLoyaltyPoints()==null?BigDecimal.ZERO:customerList.get(0).getLoyaltyPoints();
-				email = customerList.get(0).getEmail();
+				Customer customer = customerList.get(0);
+				if(customer.getIdentityExpiredDate() != null) {
+					reportModel.setIdExpiryDate(DateUtil.todaysDateWithDDMMYY(customer.getIdentityExpiredDate(),"0"));
+				}
+				reportModel.setCivilId(customer.getIdentityInt());
+				customerReferenceId = customer.getCustomerReference();
+				phoneNo =  customer.getMobile();
+				loyaltyPoints = customer.getLoyaltyPoints()==null?BigDecimal.ZERO:customer.getLoyaltyPoints();
+				email = customer.getEmail();
 				reportModel.setLoyaltyPoints(loyaltyPoints);
 				reportModel.setEmail(email);
 				reportModel.setCustomerReferenceId(customerReferenceId);
 			}else{
-				logger.error("customer not found :"+customerId);
+				logger.debug("customer not found :"+customerId);
 				throw new GlobalException(JaxError.INVALID_CUSTOMER, "customer not found");
 			}
 
@@ -207,7 +212,7 @@ public class FxOrderReportManager {
 			if(fxOrderTrnxListDto !=null && !fxOrderTrnxListDto.isEmpty()){
 				finalList = applTrnxManager.getMultipleTransactionHistroy(fxOrderTrnxListDto);
 			}else{
-				logger.error("fxOrderTrnxListDto trnx list not found :"+customerId+"\t Colle : "+collNo+"\t Coll fyr :"+collFyr);
+				logger.debug("fxOrderTrnxListDto trnx list not found :"+customerId+"\t Colle : "+collNo+"\t Coll fyr :"+collFyr);
 				throw new GlobalException(JaxError.NO_RECORD_FOUND, "customer not found");
 			}
 
@@ -291,7 +296,7 @@ public class FxOrderReportManager {
 				}
 				reportModel.setArabicCompanyInfo(arabicCompanyInfo.toString());
 			}else{
-				logger.error("companyMaster not found :");
+				logger.debug("companyMaster not found :");
 				throw new GlobalException(JaxError.INVALID_COMPANY_ID, "customer not found");
 			}
 
@@ -315,7 +320,7 @@ public class FxOrderReportManager {
 					reportModel.setRefundedAmount(localCurrQuoteName+"     ******"+collectRefundAmount);
 				}
 			}else{
-				logger.error("collectionDetailList1 not found :");
+				logger.debug("collectionDetailList1 not found :");
 				throw new GlobalException(JaxError.PAYMENT_DETAILS_NOT_FOUND, "Payment details not found");
 			}
 
@@ -358,7 +363,7 @@ public class FxOrderReportManager {
 			reportModel.setLocalCurrency(localCurrQuoteName);
 			
 		}else{
-			logger.error("trnx list not found :"+customerId+"\t Colle : "+collNo+"\t Coll fyr :"+collFyr);
+			logger.debug("trnx list not found :"+customerId+"\t Colle : "+collNo+"\t Coll fyr :"+collFyr);
 			throw new GlobalException(JaxError.NO_RECORD_FOUND, "customer not found");
 		}
 
@@ -416,7 +421,7 @@ public class FxOrderReportManager {
 		if(applReceipt != null && !applReceipt .isEmpty() && applReceipt.get(0).getDeliveryDetSeqId()!=null){
 			fxDelDetailModel = deliveryDetailsRepos.findOne(applReceipt.get(0).getDeliveryDetSeqId());
 		}else{
-			logger.error(" getTransactionStatus custoemrId - paymentSeqId :"+custoemrId +"-"+paymentSeqId);
+			logger.debug(" getTransactionStatus custoemrId - paymentSeqId :"+custoemrId +"-"+paymentSeqId);
 			throw new GlobalException(JaxError.NO_RECORD_FOUND,"No record found :");
 		}
 		JaxTransactionStatus jaxTrnxStatus = getJaxTransactionStatus(pgDetailsModel,applReceipt);
@@ -446,6 +451,26 @@ public class FxOrderReportManager {
 			deliveryCharges = fxDelDetailModel.getDeliveryCharges();
 		}	
 
+		if(pgDetailsModel.getResultCode() != null) {
+			String resultCategory = pgDetailsModel.getResultCode();
+			logger.info("Result Category from DB : "+resultCategory);
+			if(resultCategory.contains(" ")) {
+				resultCategory = resultCategory.replace(" ", "_");
+				logger.info("Result Category from SPACE : "+resultCategory);
+			}
+			if(resultCategory.contains("+")) {
+				resultCategory = resultCategory.replace("+", "_");
+				logger.info("Result Category from PLUS : "+resultCategory);
+			}
+			ResponseCodeDetailDTO responseCodeDetail = PayGRespCodeJSONConverter.getResponseCodeDetail(resultCategory);
+			
+			responseCodeDetail.setPgPaymentId(pgDetailsModel.getPgPaymentId());
+			responseCodeDetail.setPgReferenceId(pgDetailsModel.getPgReferenceId());
+			responseCodeDetail.setPgTransId(pgDetailsModel.getPgTransactionId());
+			responseCodeDetail.setPgAuth(pgDetailsModel.getPgAuthCode());
+			
+			responseModel.setResponseCodeDetail(responseCodeDetail);
+		}
 
 		responseModel.setNetAmount(netAmount.add(deliveryCharges));
 		responseModel.setStatus(jaxTrnxStatus);

@@ -2,6 +2,7 @@ package com.amx.jax.dict;
 
 import java.io.Serializable;
 
+import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -16,7 +17,7 @@ public class UserClient {
 	 *
 	 */
 	public enum Channel {
-		ONLINE, KIOSK, MOBILE, BRANCH, THIRD_PARTY, SYSTEM, UNKNOWN;
+		ONLINE, KIOSK, MOBILE, BRANCH, TPC, SYSTEM, UNKNOWN,OFFSITE;
 	}
 
 	/**
@@ -53,6 +54,10 @@ public class UserClient {
 		public boolean isRelated(DeviceType check) {
 			return check.isParentOf(this.parent);
 		}
+
+		public boolean isMobile() {
+			return this.hasParent(MOBILE);
+		}
 	}
 
 	/**
@@ -73,6 +78,7 @@ public class UserClient {
 	 */
 	public enum AppType {
 		WEB, IOS(Channel.MOBILE), ANDROID(Channel.MOBILE), UNKNOWN;
+
 		Channel channel;
 
 		AppType(Channel channel) {
@@ -86,6 +92,23 @@ public class UserClient {
 		public Channel getChannel() {
 			return channel;
 		}
+
+		public boolean isMobile() {
+			return this.channel == Channel.MOBILE;
+		}
+	}
+
+	public enum AuthSystem {
+		TERMINAL, DEVICE;
+
+		public static AuthSystem byDeviceType(DeviceType deviceType) {
+			if (DeviceType.COMPUTER.isParentOf(deviceType)) {
+				return TERMINAL;
+			} else if (DeviceType.MOBILE.isParentOf(deviceType)) {
+				return DEVICE;
+			}
+			return null;
+		}
 	}
 
 	public enum ClientType {
@@ -93,35 +116,51 @@ public class UserClient {
 		NOTP_APP(DeviceType.MOBILE, Channel.MOBILE),
 
 		// branch cleints
-		BRANCH_WEB_OLD(DeviceType.COMPUTER, Channel.BRANCH), BRANCH_WEB(DeviceType.COMPUTER, Channel.BRANCH), SIGNATURE_PAD(DeviceType.TABLET,
+		BRANCH_WEB_OLD(DeviceType.COMPUTER, Channel.BRANCH), BRANCH_WEB(DeviceType.COMPUTER, Channel.BRANCH),
+		SIGNATURE_PAD(DeviceType.TABLET,
 				Channel.BRANCH),
-		BRANCH_ADAPTER(DeviceType.COMPUTER,Channel.BRANCH),
+		BRANCH_ADAPTER(DeviceType.COMPUTER, Channel.BRANCH),
 
 		// Other Channels
-		OFFSITE_PAD(DeviceType.TABLET, Channel.BRANCH), KIOSK(DeviceType.COMPUTER, Channel.KIOSK), DELIVERY_APP(DeviceType.MOBILE,
-				Channel.BRANCH),
+		OFFSITE_PAD(DeviceType.TABLET, Channel.BRANCH), KIOSK(DeviceType.COMPUTER, Channel.KIOSK),
+		DELIVERY_APP(DeviceType.MOBILE, Channel.BRANCH),
+		OFFSITE_WEB(DeviceType.COMPUTER, Channel.OFFSITE, AuthSystem.DEVICE),
 
 		// Customer Facing interfaces
-		ONLINE_WEB(DeviceType.COMPUTER, Channel.ONLINE), ONLINE_AND(DeviceType.MOBILE, Channel.MOBILE), ONLINE_IOS(DeviceType.MOBILE,Channel.MOBILE),
+		ONLINE_WEB(DeviceType.COMPUTER, Channel.ONLINE), ONLINE_AND(DeviceType.MOBILE, Channel.MOBILE),
+		ONLINE_IOS(DeviceType.MOBILE, Channel.MOBILE),
 
 		// Unknown
 		SYSTEM, UNKNOWN;
 
 		DeviceType deviceType;
-		
-		Channel channel = Channel.ONLINE;
 
-		ClientType(DeviceType deviceType) {
-			this.deviceType = deviceType;
-		}
-		
-		ClientType(DeviceType deviceType, Channel channel) {
+		Channel channel = Channel.ONLINE;
+		AuthSystem authSystem = AuthSystem.TERMINAL;
+
+		ClientType(DeviceType deviceType, Channel channel, AuthSystem authSystem) {
 			this.deviceType = deviceType;
 			this.channel = channel;
+			this.authSystem = authSystem;
+			if (ArgUtil.isEmpty(this.authSystem)) {
+				this.authSystem = AuthSystem.byDeviceType(this.deviceType);
+			}
+		}
+
+		ClientType(DeviceType deviceType, Channel channel) {
+			this(deviceType, channel, null);
+		}
+
+		ClientType(DeviceType deviceType) {
+			this(deviceType, null, null);
 		}
 
 		ClientType() {
-			this.deviceType = DeviceType.COMPUTER;
+			this(DeviceType.COMPUTER, null, null);
+		}
+
+		public AuthSystem getAuthSystem() {
+			return authSystem;
 		}
 
 		/**
@@ -144,7 +183,7 @@ public class UserClient {
 		public void setChannel(Channel channel) {
 			this.channel = channel;
 		}
-		
+
 	}
 
 	@JsonInclude(Include.NON_NULL)
@@ -169,6 +208,12 @@ public class UserClient {
 
 		@JsonProperty("ct")
 		private ClientType clientType;
+
+		@JsonProperty("cv")
+		private String clientVersion;
+
+		@JsonProperty("lang")
+		private Language lang;
 
 		public String getIp() {
 			return ip;
@@ -224,7 +269,35 @@ public class UserClient {
 			this.setIp(userDevice.getIp());
 			this.setFingerprint(userDevice.getFingerprint());
 			this.setClientType(userDevice.getClientType());
+			this.setClientVersion(userDevice.getClientVersion());
 			return this;
+		}
+
+		public String getClientVersion() {
+			return clientVersion;
+		}
+
+		public void setClientVersion(String clientVersion) {
+			this.clientVersion = clientVersion;
+		}
+
+		public Language getLang() {
+			return lang;
+		}
+
+		public void setLang(Language lang) {
+			this.lang = lang;
+		}
+		}
+
+	public static boolean isAuthSystem(ClientType clientType, AuthSystem authSystem) {
+		if (ArgUtil.isEmpty(clientType) || ArgUtil.isEmpty(authSystem)) {
+			return false;
+		}
+		if (ArgUtil.is(clientType.getAuthSystem())) {
+			return clientType.getAuthSystem().equals(authSystem);
+		} else {
+			return authSystem.equals(AuthSystem.byDeviceType(clientType.getDeviceType()));
 		}
 	}
 

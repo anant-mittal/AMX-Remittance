@@ -119,9 +119,13 @@ public class RemittanceCreationFailureAlert implements IAlert {
 	}
 	
 	private boolean isApplicable(AbstractJaxException ex) {
-		if (ex.getErrorKey().equals(JaxError.ADDTIONAL_FLEX_FIELD_REQUIRED.toString())) {
-			return false;
+		if (ex.getErrorKey().equals(JaxError.JAX_SYSTEM_ERROR.toString())) {
+			return true;
 		}
-		return true;
+		if (ex.getErrorKey().equals(JaxError.REMITTANCE_SETUP_ERROR.toString())) {
+			return true;
+		}
+		return false;
 	}
+	
 }

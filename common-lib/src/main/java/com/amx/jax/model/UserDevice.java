@@ -3,9 +3,14 @@ package com.amx.jax.model;
 import java.io.Serializable;
 
 import com.amx.jax.dict.UserClient.AppType;
+import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.dict.UserClient.DevicePlatform;
 import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
+import com.amx.utils.ArgUtil;
+import com.amx.utils.EntityDtoUtil;
+import com.amx.utils.StringUtils;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import eu.bitwalker.useragentutils.UserAgent;
 
@@ -14,6 +19,7 @@ import eu.bitwalker.useragentutils.UserAgent;
  * @author lalittanwar
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserDevice implements Serializable {
 
 	private static final long serialVersionUID = 4015555971724271185L;
@@ -23,6 +29,7 @@ public class UserDevice implements Serializable {
 	protected String id = null;
 	protected String appVersion = null;
 	protected AppType appType = null;
+	protected ClientType clientType = null;
 
 	protected DeviceType type = null;
 	protected DevicePlatform platform = null;
@@ -142,8 +149,33 @@ public class UserDevice implements Serializable {
 		userClient.setAppType(this.getAppType());
 		userClient.setIp(this.getIp());
 		userClient.setFingerprint(this.getFingerprint());
+		userClient.setClientType(this.getClientType());
 		return userClient;
 
+	}
+
+	public UserDevice toSanitized() {
+		UserDevice userDevice = EntityDtoUtil.entityToDto(this, new UserDevice());
+		userDevice.setIp(StringUtils.mask(userDevice.getIp()));
+		return userDevice;
+	}
+
+	public boolean isMobile() {
+		if (!ArgUtil.isEmpty(this.getAppType()) && this.getAppType().isMobile()) {
+			return true;
+		}
+		if (!ArgUtil.isEmpty(this.getType()) && this.getType().isMobile()) {
+			return true;
+		}
+		return false;
+	}
+
+	public ClientType getClientType() {
+		return clientType;
+	}
+
+	public void setClientType(ClientType clientType) {
+		this.clientType = clientType;
 	}
 
 }

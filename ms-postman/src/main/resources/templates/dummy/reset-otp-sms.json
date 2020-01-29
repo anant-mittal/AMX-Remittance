@@ -3,6 +3,8 @@
 		"mOtp": "ok",
 		"mOtpPrefix": "RXY",
 		"firstName": "Riddhi",
-		"lastName": "Madhu"
+		"lastName": "Madhu",
+		"wOtpPrefix": "WOTPrefix",
+		"wOtp": "wOtp"
 	}
 }

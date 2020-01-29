@@ -27,12 +27,12 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.FcSaleApplicationDao;
 import com.amx.jax.dao.FcSaleExchangeRateDao;
-import com.amx.jax.dbmodel.CollectDetailModel;
-import com.amx.jax.dbmodel.CollectionModel;
+import com.amx.jax.dbmodel.CollectDetailMdlv1;
+import com.amx.jax.dbmodel.CollectionMdlv1;
 import com.amx.jax.dbmodel.CompanyMaster;
-import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.CountryMaster;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PaymentModeModel;
 import com.amx.jax.dbmodel.PurposeOfTransaction;
@@ -57,9 +57,12 @@ import com.amx.jax.repository.PaymentModeRepository;
 import com.amx.jax.repository.ReceiptPaymentAppRepository;
 import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
 import com.amx.jax.service.CompanyService;
+import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.service.FinancialService;
+import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.util.JaxUtil;
+import com.amx.jax.util.RoundUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -113,7 +116,13 @@ public class FxOrderPaymentManager {
 	@Autowired
 	AuditService auditService;
 	
-
+	@Autowired
+	FcSaleApplicationTransactionManager fcSaleApplicationTransactionManager;
+	@Autowired
+	JaxNotificationService notificationService;
+	@Autowired
+	CurrencyMasterService currencyMasterService;
+	
 	
 	public PaymentResponseDto paymentCapture(PaymentResponseDto paymentResponse) {
 		logger.debug("paymment capture :" + paymentResponse.toString());
@@ -144,12 +153,14 @@ public class FxOrderPaymentManager {
 					customerId = customerId;
 				}
 
-				listOfRecAppl = receiptAppRepository.fetchreceiptPaymentAppl(customerId,
-						new BigDecimal(paymentResponse.getUdf3()));
-
+				listOfRecAppl = receiptAppRepository.fetchreceiptPaymentAppl(customerId,new BigDecimal(paymentResponse.getUdf3()));
+				/** aded new code for appl amount and knet amount cehck  on 30 may 2019 by rabil**/
+				validateAmountMismatch(listOfRecAppl, paymentResponse);
+				/** end **/		
+				 
 				List<ReceiptPayment> receiptPayment = saveReceiptPayment(listOfRecAppl, paymentResponse);
-				CollectionModel collection = saveCollection(listOfRecAppl, paymentResponse);
-				CollectDetailModel collectDetail = saveCollectDetail(listOfRecAppl, paymentResponse, collection);
+				CollectionMdlv1 collection = saveCollection(listOfRecAppl, paymentResponse);
+				CollectDetailMdlv1 collectDetail = saveCollectDetail(listOfRecAppl, paymentResponse, collection);
 				// adding into map
 				mapAllDetailApplSave.put("RCPT_PAY", receiptPayment);
 				mapAllDetailApplSave.put("COLLECTION", collection);
@@ -219,11 +230,11 @@ public class FxOrderPaymentManager {
 				countryMas.setCountryId(applreceipt.getCountryId());
 				receiptPayment.setFsCountryMaster(countryMas);
 
-				CurrencyMasterModel localCurrency = new CurrencyMasterModel();
+				CurrencyMasterMdlv1 localCurrency = new CurrencyMasterMdlv1();
 				localCurrency.setCurrencyId(applreceipt.getLocalCurrencyId());
 				receiptPayment.setLocalFsCountryMaster(localCurrency);
 
-				CurrencyMasterModel foreignCurrency = new CurrencyMasterModel();
+				CurrencyMasterMdlv1 foreignCurrency = new CurrencyMasterMdlv1();
 				foreignCurrency.setCurrencyId(applreceipt.getForeignCurrencyId());
 				receiptPayment.setForeignFsCountryMaster(foreignCurrency);
 
@@ -238,7 +249,7 @@ public class FxOrderPaymentManager {
 				receiptPayment
 						.setCustomerReference(custRepo.findOne(applreceipt.getCustomerId()).getCustomerReference());
 
-				CountryBranch countryBranch = countryBranchRepository.findByCountryBranchId(applreceipt.getBranchId());
+				CountryBranchMdlv1 countryBranch = countryBranchRepository.findByCountryBranchId(applreceipt.getBranchId());
 				if (countryBranch != null) {
 					receiptPayment.setCountryBranch(countryBranch);
 					receiptPayment.setLocCode(countryBranch.getBranchId());
@@ -309,8 +320,8 @@ public class FxOrderPaymentManager {
 	}
 
 	/** Save collection **/
-	public CollectionModel saveCollection(List<ReceiptPaymentApp> listOfRecAppl, PayGModel paymentResponse) {
-		CollectionModel collection = new CollectionModel();
+	public CollectionMdlv1 saveCollection(List<ReceiptPaymentApp> listOfRecAppl, PayGModel paymentResponse) {
+		CollectionMdlv1 collection = new CollectionMdlv1();
 		BigDecimal totalcollectiontAmount = BigDecimal.ZERO;
 		BigDecimal deliveryCharges = BigDecimal.ZERO;
 		try {
@@ -346,14 +357,14 @@ public class FxOrderPaymentManager {
 					throw new GlobalException(JaxError.INVALID_COMPANY_ID, "Invalid company code.");
 				}
 				collection.setFsCompanyMaster(new CompanyMaster(appl.getCompanyId()));
-				CountryBranch countryBranch = countryBranchRepository.findByCountryBranchId(appl.getBranchId());
+				CountryBranchMdlv1 countryBranch = countryBranchRepository.findByCountryBranchId(appl.getBranchId());
 				if (countryBranch != null) {
 					collection.setExBankBranch(countryBranch);
 					collection.setLocCode(countryBranch.getBranchId());
 				}
 
 				collection.setCreatedDate(new Date());
-				CurrencyMasterModel localCurrency = new CurrencyMasterModel();
+				CurrencyMasterMdlv1 localCurrency = new CurrencyMasterMdlv1();
 				localCurrency.setCurrencyId(appl.getLocalCurrencyId());
 				collection.setExCurrencyMaster(localCurrency);
 				collection.setIsActive(ConstantDocument.Yes);
@@ -406,9 +417,9 @@ public class FxOrderPaymentManager {
 	}
 
 	/** Save CollectDetailModel **/
-	public CollectDetailModel saveCollectDetail(List<ReceiptPaymentApp> listOfRecAppl,
-			PaymentResponseDto paymentResponse, CollectionModel collection) {
-		CollectDetailModel collectDetail = new CollectDetailModel();
+	public CollectDetailMdlv1 saveCollectDetail(List<ReceiptPaymentApp> listOfRecAppl,
+			PaymentResponseDto paymentResponse, CollectionMdlv1 collection) {
+		CollectDetailMdlv1 collectDetail = new CollectDetailMdlv1();
 		try {
 
 			collectDetail.setFsCompanyMaster(collection.getFsCompanyMaster());
@@ -457,7 +468,8 @@ public class FxOrderPaymentManager {
 			collectDetail.setDocumentLineNo(new BigDecimal(1));
 			collectDetail.setAuthdate(new Date());
 			collectDetail.setPayId(paymentResponse.getPaymentId());
-			collectDetail.setKnetReceiptDateTime(new SimpleDateFormat("dd/MM/YYYY hh:mm").format(new Date()));
+			collectDetail.setKnetReceiptDateTime(new SimpleDateFormat("dd/MM/YYYY HH:mm:ss").format(new Date()));
+			
 		} catch (GlobalException e) {
 			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
@@ -468,7 +480,7 @@ public class FxOrderPaymentManager {
 		return collectDetail;
 	}
 
-	public BigDecimal generateDocumentNumber(CountryBranch countryBranch, BigDecimal appCountryId, BigDecimal companyId,
+	public BigDecimal generateDocumentNumber(CountryBranchMdlv1 countryBranch, BigDecimal appCountryId, BigDecimal companyId,
 			String processInd, BigDecimal finYear, BigDecimal documentId) {
 		BigDecimal branchId = countryBranch.getBranchId() == null ? ConstantDocument.ONLINE_BRANCH_LOC_CODE
 				: countryBranch.getBranchId();
@@ -484,4 +496,24 @@ public class FxOrderPaymentManager {
 		auditService.log(audit);
 	}
 
+	private void validateAmountMismatch(List<ReceiptPaymentApp> listOfRecAppl, PaymentResponseDto paymentResponse) {
+		BigDecimal localCurrencyId = listOfRecAppl.get(0).getLocalCurrencyId();
+		BigDecimal decimalNumber = currencyMasterService.getCurrencyMasterById(localCurrencyId).getDecinalNumber();
+		BigDecimal totalApplAmount = listOfRecAppl.stream().map(ReceiptPaymentApp::getLocalNetAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+		BigDecimal delCharges = fcSaleApplicationTransactionManager.getDeliveryChargesFromParameter();
+		BigDecimal totalAmountWithCharges =totalApplAmount.add(delCharges); 
+		BigDecimal paidAmount = new BigDecimal(paymentResponse.getAmount());
+		totalAmountWithCharges = RoundUtil.roundBigDecimal(totalAmountWithCharges, decimalNumber.intValue());
+		paidAmount = RoundUtil.roundBigDecimal(paidAmount, decimalNumber.intValue());
+		if(JaxUtil.isNullZeroBigDecimalCheck(totalAmountWithCharges) && JaxUtil.isNullZeroBigDecimalCheck(paidAmount)) {
+			if (!totalAmountWithCharges.equals(paidAmount)) {
+				String errorMessage = String.format("paidAmount: %s and payableAmount: %s mismatch for customerId: %s", paidAmount,
+						totalAmountWithCharges, metaData.getCustomerId());
+				logger.info(errorMessage);
+				notificationService.sendTransactionErrorAlertEmail(errorMessage, "Fxorder Amount mismatch", paymentResponse);
+				throw new GlobalException("paid and payable amount mismatch");
+			}
+		}
+	}
+	
 }

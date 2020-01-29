@@ -2,20 +2,19 @@ package com.amx.jax.meta;
 
 import java.math.BigDecimal;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.constants.JaxChannel;
-import com.amx.jax.dict.Country;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.scope.ThreadScoped;
 import com.amx.jax.services.AbstractServiceFactory;
+import com.amx.jax.util.JaxUtil;
 
 @Component
-@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+//@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+@ThreadScoped
 public class MetaData implements IMetaData {
-
+	
 	private BigDecimal countryId;
 
 	private BigDecimal languageId;
@@ -87,8 +86,9 @@ public class MetaData implements IMetaData {
 	}
 
 	public BigDecimal getLanguageId() {
-		return languageId;
+		return JaxUtil.languageScaleMeta(languageId);
 	}
+
 
 	public void setLanguageId(BigDecimal languageId) {
 		this.languageId = languageId;

@@ -25,8 +25,8 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.FcSaleExchangeRateDao;
-import com.amx.jax.dbmodel.CollectionModel;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CollectionMdlv1;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.PurposeOfTransaction;
@@ -142,7 +142,7 @@ public class FcSaleService extends AbstractService {
 	public AmxApiResponse<CurrencyMasterDTO, Object> getFcSalecurrencyList(BigDecimal countryId) {
 		validation.fcsalecurrencyList(countryId);
 		validation.validateHeaderInfo();
-		List<CurrencyMasterModel> currencyList = currencyDao.getfcCurrencyList(countryId);
+		List<CurrencyMasterMdlv1> currencyList = currencyDao.getfcCurrencyList(countryId);
 		if (currencyList.isEmpty()) {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND, "No data found");
 		}
@@ -188,7 +188,7 @@ public class FcSaleService extends AbstractService {
 		validation.validateHeaderInfo();
 		FcSaleOrderDefaultResponseModel responseModel = new FcSaleOrderDefaultResponseModel();
 		List<PurposeOfTransaction> purposeofTrnxList = purposetrnxDao.getPurposeOfTrnx();
-		List<CurrencyMasterModel> currencyList = currencyDao.getfcCurrencyList(applicationCountryId);
+		List<CurrencyMasterMdlv1> currencyList = currencyDao.getfcCurrencyList(applicationCountryId);
 		List<ParameterDetails> denominationTypeList = fcSaleExchangeRateDao.getParameterDetails(ConstantDocument.FX_CD,
 				ConstantDocument.Yes);
 		List<SourceOfIncomeView> sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
@@ -372,13 +372,13 @@ public class FcSaleService extends AbstractService {
 		return dtoList;
 	}
 
-	private List<CurrencyMasterDTO> convertToModelDto(List<CurrencyMasterModel> currencyList) {
+	private List<CurrencyMasterDTO> convertToModelDto(List<CurrencyMasterMdlv1> currencyList) {
 		List<CurrencyMasterDTO> output = new ArrayList<>();
 		currencyList.forEach(currency -> output.add(convertModel(currency)));
 		return output;
 	}
 
-	public CurrencyMasterDTO convertModel(CurrencyMasterModel currency) {
+	public CurrencyMasterDTO convertModel(CurrencyMasterMdlv1 currency) {
 		CurrencyMasterDTO dto = new CurrencyMasterDTO();
 		try {
 			BeanUtils.copyProperties(dto, currency);
@@ -428,49 +428,64 @@ public class FcSaleService extends AbstractService {
 		return list;
 	}
 	
-	public void sendKnetSuccessEmail(PaymentResponseDto payDto){
-		if(payDto!=null && (payDto.getResultCode().equalsIgnoreCase(ConstantDocument.CAPTURED) || payDto.getResultCode().equalsIgnoreCase(ConstantDocument.APPROVED))){
-			
-			if(JaxUtil.isNullZeroBigDecimalCheck(payDto.getCollectionDocumentNumber()) && JaxUtil.isNullZeroBigDecimalCheck(payDto.getCollectionFinanceYear())){
-				
+	public void sendKnetSuccessEmail(PaymentResponseDto payDto) {
+		if (payDto != null && (payDto.getResultCode().equalsIgnoreCase(ConstantDocument.CAPTURED)
+				|| payDto.getResultCode().equalsIgnoreCase(ConstantDocument.APPROVED))) {
+
+			if (JaxUtil.isNullZeroBigDecimalCheck(payDto.getCollectionDocumentNumber())
+					&& JaxUtil.isNullZeroBigDecimalCheck(payDto.getCollectionFinanceYear())) {
+
 				BigDecimal countryId = metaData.getCountryId();
 				BigDecimal companyId = metaData.getCompanyId();
-				BigDecimal custoemrId = metaData.getCustomerId()==null?payDto.getCustomerId():metaData.getCustomerId();
+				BigDecimal custoemrId = metaData.getCustomerId() == null ? payDto.getCustomerId()
+						: metaData.getCustomerId();
 				List<Customer> customerList = customerDao.getCustomerByCustomerId(countryId, companyId, custoemrId);
-				FxOrderReportResponseDto reportResponseDto = reportManager.getReportDetails(custoemrId,payDto.getCollectionDocumentNumber(), payDto.getCollectionFinanceYear());
+				FxOrderReportResponseDto reportResponseDto = reportManager.getReportDetails(custoemrId,
+						payDto.getCollectionDocumentNumber(), payDto.getCollectionFinanceYear());
 				FxOrderDetailNotificationDto orderNotificationModel = new FxOrderDetailNotificationDto();
-				if(customerList!= null && !customerList.isEmpty()){
+				if (customerList != null && !customerList.isEmpty()) {
 					String customerName = getCustomerFullName(customerList);
-					if(!StringUtils.isBlank(customerName)){
+					if (!StringUtils.isBlank(customerName)) {
 						orderNotificationModel.setCustomerName(customerName);
-					}else{
-					 orderNotificationModel.setCustomerName(reportResponseDto.getCustomerName());
+					} else {
+						orderNotificationModel.setCustomerName(reportResponseDto.getCustomerName());
 					}
 					orderNotificationModel.setEmail(customerList.get(0).getEmail());
-					orderNotificationModel.setMobileNo(customerList.get(0).getMobile()==null?"":customerList.get(0).getMobile());
-					orderNotificationModel.setLoyaltyPoints(customerList.get(0).getLoyaltyPoints()==null?BigDecimal.ZERO:customerList.get(0).getLoyaltyPoints());
-				CollectionModel collModel =collRepos.getCollectionDetails(payDto.getCollectionDocumentNumber(),payDto.getCollectionFinanceYear(),ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
-				if(!StringUtils.isBlank(orderNotificationModel.getEmail()) && collModel!=null){
-				orderNotificationModel.setDate(DateUtil.todaysDateWithDDMMYY(collModel.getCreatedDate(),"0"));
-				orderNotificationModel.setLocalQurrencyQuote(currencyDao.getCurrencyList(collModel.getExCurrencyMaster().getCurrencyId()).get(0).getQuoteName());
-				orderNotificationModel.setReceiptNo(collModel.getDocumentFinanceYear().toString()+"/"+collModel.getDocumentNo().toString());
-				orderNotificationModel.setNetAmount(collModel.getNetAmount());
-				orderNotificationModel.setDeliveryDate(reportResponseDto.getDeliveryDate()==null?"":reportResponseDto.getDeliveryDate());
-				orderNotificationModel.setDeliveryTime(reportResponseDto.getDeliveryTime()==null?"":reportResponseDto.getDeliveryTime());
-				
-				
-					Email email = new Email();
-					email.setSubject("FC Delivery - Payment Success");
-					email.addTo(orderNotificationModel.getEmail());
-					email.setITemplate(TemplatesMX.FC_KNET_SUCCESS);
-					email.setHtml(true);
-					jaxNotificationService.sendTransactionNotification(reportResponseDto,orderNotificationModel);
+					orderNotificationModel.setMobileNo(
+							customerList.get(0).getMobile() == null ? "" : customerList.get(0).getMobile());
+					orderNotificationModel
+							.setLoyaltyPoints(customerList.get(0).getLoyaltyPoints() == null ? BigDecimal.ZERO
+									: customerList.get(0).getLoyaltyPoints());
+					CollectionMdlv1 collModel = collRepos.getCollectionDetails(payDto.getCollectionDocumentNumber(),
+							payDto.getCollectionFinanceYear(), ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
+					if (!StringUtils.isBlank(orderNotificationModel.getEmail()) && collModel != null) {
+						orderNotificationModel.setDate(DateUtil.todaysDateWithDDMMYY(collModel.getCreatedDate(), "0"));
+						orderNotificationModel.setLocalQurrencyQuote(
+								currencyDao.getCurrencyList(collModel.getExCurrencyMaster().getCurrencyId()).get(0)
+										.getQuoteName());
+						orderNotificationModel.setReceiptNo(collModel.getDocumentFinanceYear().toString() + "/"
+								+ collModel.getDocumentNo().toString());
+						orderNotificationModel.setNetAmount(collModel.getNetAmount());
+						orderNotificationModel.setDeliveryDate(
+								reportResponseDto.getDeliveryDate() == null ? "" : reportResponseDto.getDeliveryDate());
+						orderNotificationModel.setDeliveryTime(
+								reportResponseDto.getDeliveryTime() == null ? "" : reportResponseDto.getDeliveryTime());
+
+						Email email = new Email();
+						email.setSubject("FC Delivery - Payment Success");
+						email.addTo(orderNotificationModel.getEmail());
+						email.setITemplate(TemplatesMX.FC_KNET_SUCCESS);
+						email.setHtml(true);
+						if(customerList.get(0).canSendEmail()) {
+							jaxNotificationService.sendTransactionNotification(reportResponseDto, orderNotificationModel);
+						}
+						
 					}
 				}
 			}
-			
+
 		}
-		
+
 	}
 	
 public String getCustomerFullName(List<Customer> customerList){

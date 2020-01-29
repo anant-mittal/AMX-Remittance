@@ -39,6 +39,7 @@ import com.amx.jax.sso.SSOTranx;
 import com.amx.jax.sso.SSOTranx.SSOModel;
 import com.amx.jax.sso.SSOUser;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.CryptoUtil;
 import com.amx.utils.HttpUtils;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.Random;
@@ -111,12 +112,44 @@ public class SSOAppController {
 			HttpServletResponse response) throws MalformedURLException, URISyntaxException {
 		AmxApiResponse<Object, Map<String, Object>> result = AmxApiResponse.buildMeta(new HashMap<String, Object>());
 		String tranxId = ssoUser.ssoTranxId();
-		URLBuilder builder = new URLBuilder(targetUrl).queryParam(AppConstants.TRANX_ID_XKEY, tranxId)
-				.queryParam(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken())
-				.queryParam(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
-				.queryParam(SSOConstants.PARAM_SESSION_TOKEN, AppContextUtil.getTraceId());
+
+//		URLBuilder builder = new URLBuilder(targetUrl)
+//						.queryParam(AppConstants.TRANX_ID_XKEY, tranxId)
+//						.queryParam(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken())
+//						.queryParam(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
+//						.queryParam(SSOConstants.PARAM_SESSION_TOKEN, AppContextUtil.getTraceId());
+//		result.setTargetUrl(builder.getURL(), Target._BLANK);
+
+		URLBuilder builder = new URLBuilder(appConfig.getAppPrefix() + '/' + SSOConstants.APP_LOGIN_URL_SESSION
+				+ "/" +CryptoUtil.getEncoder().message(targetUrl).encrypt().encodeBase64().toString() + "/");
 		result.setTargetUrl(builder.getURL(), Target._BLANK);
 		return JsonUtil.toJson(result);
+	}
+
+	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
+	@RequestMapping(value = SSOConstants.APP_LOGIN_URL_SESSION + "/{targeturlD}/*", method = { RequestMethod.GET })
+	public String loginJSONPreAuthPage(@PathVariable(value = "targeturlD") String targeturlD, HttpServletRequest request,
+			HttpServletResponse response,
+			Model model) throws MalformedURLException, URISyntaxException {
+		String tranxId = ssoUser.ssoTranxId();
+//		AmxApiResponse<Object, Map<String, Object>> result = AmxApiResponse.buildMeta(new HashMap<String, Object>());
+//		URLBuilder builder = new URLBuilder(
+//				CryptoUtil.getEncoder().message(targeturlD).decodeBase64().decrypt().toString())
+//						.queryParam(AppConstants.TRANX_ID_XKEY, tranxId)
+//						.queryParam(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken())
+//						.queryParam(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
+//						.queryParam(SSOConstants.PARAM_SESSION_TOKEN, AppContextUtil.getTraceId());
+//		result.setTargetUrl(builder.getURL(), Target._BLANK);
+
+		model.addAttribute("actionUrl", CryptoUtil.getEncoder().message(targeturlD).decodeBase64().decrypt().toString())
+				.addAttribute(AppConstants.TRANX_ID_XKEY_CLEAN, tranxId)
+				.addAttribute(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken())
+				.addAttribute(SSOConstants.PARAM_SESSION_TOKEN_CLEAN, AppContextUtil.getTraceId())
+				.addAttribute(SSOConstants.PARAM_STEP, SSOAuthStep.DONE);
+
+		// response.setHeader("Location", builder.getURL());
+		// response.setStatus(302);
+		return "sso_old_java";
 	}
 
 	/**

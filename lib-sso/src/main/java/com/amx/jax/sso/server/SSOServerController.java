@@ -1,10 +1,12 @@
 package com.amx.jax.sso.server;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -25,10 +27,13 @@ import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.adapter.DeviceConnectorClient;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.AmxFieldError;
 import com.amx.jax.device.CardData;
 import com.amx.jax.device.DeviceBox;
 import com.amx.jax.device.DeviceConstants;
 import com.amx.jax.device.DeviceData;
+import com.amx.jax.dict.UserClient;
+import com.amx.jax.dict.UserClient.AuthSystem;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
@@ -37,6 +42,7 @@ import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.logger.AuditActor;
+import com.amx.jax.logger.AuditActor.ActorType;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
@@ -59,8 +65,11 @@ import com.amx.jax.sso.SSOTranx;
 import com.amx.jax.sso.SSOTranx.SSOModel;
 import com.amx.jax.sso.SSOUser;
 import com.amx.jax.sso.server.ApiHeaderAnnotations.ApiDeviceHeaders;
+import com.amx.jax.stomp.StompTunnelSessionManager;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
+import com.amx.utils.TimeUtils;
+import com.amx.utils.URLBuilder;
 import com.amx.utils.Urly;
 
 import io.swagger.annotations.ApiParam;
@@ -100,6 +109,9 @@ public class SSOServerController {
 	@Autowired
 	private SessionContextService sessionContextService;
 
+	@Autowired
+	StompTunnelSessionManager stompTunnelSessionManager;
+
 	private Map<String, Object> getModelMap() {
 		ssoUser.ssoTranxId();
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -108,6 +120,7 @@ public class SSOServerController {
 		map.put(SSOConstants.PARAM_SSO_LOGIN_PREFIX, appConfig.getAppPrefix());
 		map.put(SSOConstants.SECURITY_CODE_KEY, ssoUser.getSelfSAC());
 		map.put(SSOConstants.PARTNER_SECURITY_CODE_KEY, ssoUser.getPartnerSAC());
+		map.put(SSOConstants.SSO_TENANT_KEY, AppContextUtil.getTenant());
 
 		String adapterUrl = sSOConfig.getAdapterUrl();
 		Cookie kooky = commonHttpRequest.getCookie("adapter.url");
@@ -115,6 +128,11 @@ public class SSOServerController {
 			adapterUrl = ArgUtil.parseAsString(kooky.getValue(), adapterUrl);
 		}
 		map.put(SSOConstants.ADAPTER_URL, adapterUrl);
+		map.put("tnt", AppContextUtil.getTenant().toString());
+		map.put("loginWithRop", sSOConfig.isRopEnabled());
+		map.put("loginWithoutCard", sSOConfig.isLoginWithoutCard());
+		map.put("loginWithPartner", sSOConfig.isLoginWithPartner());
+		map.put("loginWithDevice", sSOConfig.isLoginWithDevice());
 
 		return map;
 	}
@@ -122,9 +140,38 @@ public class SSOServerController {
 	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
 	@RequestMapping(value = SSOConstants.SSO_LOGIN_URL_HTML, method = RequestMethod.GET)
 	public String authLoginView(Model model,
-			@PathVariable(required = false, value = "htmlstep") @ApiParam(defaultValue = "REQUIRED") SSOAuthStep html) {
+			@PathVariable(required = false, value = "htmlstep") @ApiParam(defaultValue = "REQUIRED") SSOAuthStep html,
+			@RequestParam(required = false) Long refresh, HttpServletResponse resp,
+			@RequestParam(required = false, value = AppConstants.TRANX_ID_XKEY) String trnxId)
+			throws MalformedURLException, URISyntaxException {
+		if (sSOTranx.get() != null) {
+			SSOModel x = sSOTranx.get();
+			refresh = x.getCreatedStamp();
+			// System.out.println("=="+refresh+"===="+System.currentTimeMillis()+"trnx
+			// "+AppContextUtil.getTranxId());
+			if ((ArgUtil.isEmpty(refresh) || TimeUtils.isExpired(refresh, 10 * 1000))) {
+				String newTranxId = AppContextUtil.getTraceId(true, true);
+				ssoUser.setTranxId(newTranxId);
+
+				URLBuilder builder = Urly.parse(
+						ArgUtil.ifNotEmpty(sSOTranx.get().getAppUrl(),
+								appConfig.getAppPrefix() + SSOConstants.APP_LOGIN_URL_DONE))
+						.queryParam(AppConstants.TRANX_ID_XKEY, newTranxId)
+						.queryParam(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
+						.queryParam(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken());
+
+				/// builder.path(appConfig.getAppPrefix() + SSOConstants.SSO_LOGIN_URL)
+				// .queryParam("refresh", System.currentTimeMillis())
+				;
+				resp.setHeader("Location", builder.getURL());
+				resp.setStatus(302);
+			} else {
+				sSOTranx.fastPut(x);
+			}
+		}
 		ssoUser.generateSAC();
 		model.addAllAttributes(getModelMap());
+		stompTunnelSessionManager.registerUser(ActorType.E.getId(0));
 		return SSOConstants.SSO_INDEX_PAGE;
 	}
 
@@ -156,7 +203,10 @@ public class SSOServerController {
 
 		redirect = ArgUtil.parseAsBoolean(redirect, true);
 		isReturn = ArgUtil.parseAsBoolean(isReturn, false);
-		clientType = (ClientType) ArgUtil.parseAsEnum(clientType, ClientType.BRANCH_WEB);
+
+		clientType = ArgUtil.ifNotEmpty(clientType, ssoUser.getClientType(),
+				sSOConfig.getLoginWithClientType());
+		ssoUser.setClientType(clientType);
 
 		if (json == SSOAuthStep.DO) {
 			json = formdata.getStep();
@@ -176,6 +226,7 @@ public class SSOServerController {
 		if (sSOTranx.get() != null) {
 
 			UserDeviceClient userDeviceClient = commonHttpRequest.getUserDevice().toUserDeviceClient();
+			String deviceRegId = commonHttpRequest.get(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY);
 
 			if (SSOAuthStep.CREDS == json) {
 
@@ -195,22 +246,31 @@ public class SSOServerController {
 				if (appConfig.isSwaggerEnabled() && !ArgUtil.isEmpty(deviceType)) {
 					userClientDto.setDeviceType(deviceType);
 				}
+				AmxFieldError x = new AmxFieldError();
+				x.setDescription(String.format("T:%s D:%s", sSOTranx.get().getBranchAdapterId(), deviceRegId));
+				AppContextUtil.addWarning(x);
 
-				if (!ArgUtil.isEmpty(sSOTranx.get().getBranchAdapterId())) {
-					// Terminal Login
+				if (!ArgUtil.isEmpty(sSOTranx.get().getBranchAdapterId())
+						&& UserClient.isAuthSystem(userClientDto.getClientType(), AuthSystem.TERMINAL)
+						) { // Terminal Login
+
 					DeviceData branchDeviceData = deviceBox.get(sSOTranx.get().getBranchAdapterId());
 					userClientDto.setLocalIpAddress(branchDeviceData.getLocalIp());
 					userClientDto.setTerminalId(ArgUtil.parseAsBigDecimal(branchDeviceData.getTerminalId()));
-					LOGGER.info("Gloabal IPs THIS: {} ADAPTER: {}", userDeviceClient.getIp(),
-							branchDeviceData.getGlobalIp());
+					LOGGER.info("Gloabal IPs THIS: {} ADAPTER: {}, REQUEST: {}", userDeviceClient.getIp(),
+							branchDeviceData.getGlobalIp(), commonHttpRequest.getIPAddress());
+
+					ssoUser.setTerminalIp(userDeviceClient.getIp(), branchDeviceData.getGlobalIp());
 
 					// Audit
 					auditEvent.terminalId(userClientDto.getTerminalId())
 							// .clientType(ClientType.BRANCH_ADAPTER)
 							.deviceRegId(sSOTranx.get().getBranchAdapterId());
-				} else {
-					// Device LOGIN
-					String deviceRegId = commonHttpRequest.get(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY);
+
+				} else if (ArgUtil.is(deviceRegId) && sSOConfig.isLoginWithDevice()
+						&& UserClient.isAuthSystem(userClientDto.getClientType(), AuthSystem.DEVICE)
+						) { // Device LOGIN
+
 					userClientDto.setLocalIpAddress(userDeviceClient.getIp());
 					userClientDto.setDeviceId(userDeviceClient.getFingerprint());
 					userClientDto.setDeviceRegId(ArgUtil.parseAsBigDecimal(deviceRegId));
@@ -218,8 +278,11 @@ public class SSOServerController {
 							commonHttpRequest.get(DeviceConstants.Keys.CLIENT_REG_TOKEN_XKEY));
 					userClientDto.setDeviceSessionToken(
 							commonHttpRequest.get(DeviceConstants.Keys.CLIENT_SESSION_TOKEN_XKEY));
+
+					ssoUser.setTerminalIp(userDeviceClient.getIp());
 					// Audit
 					auditEvent.deviceRegId(deviceRegId);
+
 				}
 
 				ssoUser.setUserClient(userClientDto);
@@ -261,7 +324,17 @@ public class SSOServerController {
 				SSOAuditEvent auditEvent = new SSOAuditEvent(SSOAuditEvent.Type.LOGIN_OTP, Result.FAIL)
 						.clientType(clientType);
 				try {
+
 					String terminalId = ArgUtil.parseAsString(sSOTranx.get().getTerminalId());
+					String branchAdapterId = sSOTranx.get().getBranchAdapterId();
+					String terminalIpList = userDeviceClient.getIp();
+
+					if (ArgUtil.is(branchAdapterId)) {
+						DeviceData branchDeviceData = deviceBox.get(branchAdapterId);
+						if (ArgUtil.is(branchDeviceData)) {
+							terminalIpList = terminalIpList + "," + branchDeviceData.getGlobalIp();
+						}
+					}
 
 					UserAuthorisationReqDTO auth = new UserAuthorisationReqDTO();
 					auth.setEmployeeNo(formdata.getEcnumber());
@@ -269,8 +342,11 @@ public class SSOServerController {
 					if (ArgUtil.isEmpty(terminalId)) {
 						auth.setIpAddress(userDeviceClient.getIp());
 					} else {
+						ssoUser.setTerminalId(terminalId);
+						// TODO:-- TO validate
 						auth.setIpAddress(terminalId);
 					}
+					ssoUser.setTerminalIp(terminalIpList);
 
 					auth.setDeviceId(userDeviceClient.getFingerprint());
 					auth.setmOtp(formdata.getMotp());
@@ -307,6 +383,9 @@ public class SSOServerController {
 					model.put(SSOConstants.PARAM_REDIRECT, redirectUrl);
 					result.setRedirectUrl(redirectUrl);
 					result.setStatusEnum(SSOServerCodes.AUTH_DONE);
+
+					stompTunnelSessionManager.registerUser(ActorType.E.getId(empDto.getEmployeeId()));
+
 					if (redirect) {
 						resp.setHeader("Location", redirectUrl);
 						resp.setStatus(302);
@@ -322,6 +401,45 @@ public class SSOServerController {
 		return JsonUtil.toJson(result);
 	}
 
+	@Autowired
+	OutlookService outlookService;
+
+	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
+	@RequestMapping(value = SSOConstants.SSO_LOGIN_URL_OUTLOOK, method = RequestMethod.GET)
+	public String authLoginViewOutLook(Model model,
+			@PathVariable(required = false, value = "htmlstep") @ApiParam(defaultValue = "REQUIRED") SSOAuthStep html,
+			@RequestParam(required = false) Long refresh, HttpServletResponse resp,
+			@RequestParam(required = false, value = AppConstants.TRANX_ID_XKEY) String trnxId)
+			throws MalformedURLException, URISyntaxException {
+
+		UUID state = UUID.randomUUID();
+		UUID nonce = UUID.randomUUID();
+		ssoUser.setOutlookNonce(state);
+		ssoUser.setOutlookNonce(nonce);
+
+		resp.setHeader("Location", outlookService.getLoginUrl(state, nonce));
+		resp.setStatus(302);
+		model.addAllAttributes(getModelMap());
+		return SSOConstants.SSO_INDEX_PAGE;
+	}
+
+	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
+	@RequestMapping(value = SSOConstants.SSO_LOGIN_URL_OUTLOOK, method = RequestMethod.POST)
+	public String authLoginViewOutLookCallback(Model model,
+			@RequestParam("code") String code,
+			@RequestParam("id_token") String idToken,
+			@RequestParam("state") UUID state)
+			throws MalformedURLException, URISyntaxException {
+		if (state.equals(ssoUser.getOutlookState())) {
+			ssoUser.setOutlookAuthCode(code);
+			ssoUser.setOutlookIdToken(idToken);
+		} else {
+			System.out.println("Unexpected state returned from authority.");
+		}
+		model.addAllAttributes(getModelMap());
+		return SSOConstants.SSO_INDEX_PAGE;
+	}
+
 	@ApiRequest(type = RequestType.POLL)
 	@ApiSSOStatus({ SSOServerCodes.NO_TERMINAL_SESSION, SSOServerCodes.AUTH_DONE })
 	@RequestMapping(value = SSOConstants.SSO_CARD_DETAILS, method = RequestMethod.GET, produces = {
@@ -330,9 +448,10 @@ public class SSOServerController {
 	public String getCardDetails() throws InterruptedException {
 		AmxApiResponse<CardData, Map<String, Object>> resp = AmxApiResponse.build(new CardData(),
 				new HashMap<String, Object>());
-		ssoUser.ssoTranxId();
+		String trnxId = ssoUser.ssoTranxId();
 		String terminlId = ArgUtil.parseAsString(sSOTranx.get().getTerminalId());
 		resp.getMeta().put("tid", terminlId);
+		resp.getMeta().put("trnxId", trnxId);
 		if (terminlId != null) {
 			CardData card = adapterServiceClient.pollCardDetailsByTerminal(terminlId).getResult();
 			if (card != null) {

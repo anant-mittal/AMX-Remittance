@@ -5,20 +5,27 @@ import java.math.BigDecimal;
 import javax.validation.constraints.NotNull;
 
 import com.amx.jax.model.response.ExchangeRateBreakup;
-import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
+import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 public class BranchRemittanceApplRequestModel extends RemittanceAdditionalBeneFieldModel implements IRemittanceApplicationParams {
 	
-	@NotNull
-	private BranchExchangeRateBreakup branchExRateBreakup;
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3456657697014683661L;
 	private String signature;
 	private String amlRemarks;
 	private BigDecimal serviceMasterId;
 	private BigDecimal routingBankId;
+	private BigDecimal routingBankBranchId;
 	private BigDecimal routingCountryId;
 	private BigDecimal remittanceModeId;
+	
+	@NotNull
+	DynamicRoutingPricingDto dynamicRroutingPricingBreakup;
 	
 
 	private BigDecimal deliveryModeId;
@@ -62,12 +69,7 @@ public class BranchRemittanceApplRequestModel extends RemittanceAdditionalBeneFi
 		this.availLoyalityPoints = availLoyalityPoints;
 	}
 
-	public BranchExchangeRateBreakup getBranchExRateBreakup() {
-		return branchExRateBreakup;
-	}
-	public void setBranchExRateBreakup(BranchExchangeRateBreakup branchExRateBreakup) {
-		this.branchExRateBreakup = branchExRateBreakup;
-	}
+	
 	public String getSignature() {
 		return signature;
 	}
@@ -156,7 +158,8 @@ public class BranchRemittanceApplRequestModel extends RemittanceAdditionalBeneFi
 	}
 	@Override
 	public ExchangeRateBreakup getExchangeRateBreakup() {
-		return this.branchExRateBreakup;
+		//return this.branchExRateBreakup;
+		return this.dynamicRroutingPricingBreakup.getExRateBreakup();
 	}
 
 	public static BranchRemittanceApplRequestModel getInstance(IRemittanceApplicationParams request) {
@@ -171,5 +174,26 @@ public class BranchRemittanceApplRequestModel extends RemittanceAdditionalBeneFi
 		model.setServiceMasterId(request.getServiceIndicatorIdBD());
 		return model;
 	}
+
+	public BigDecimal getRoutingBankBranchId() {
+		return routingBankBranchId;
+	}
+
+	public void setRoutingBankBranchId(BigDecimal routingBankBranchId) {
+		this.routingBankBranchId = routingBankBranchId;
+	}
+
+	public DynamicRoutingPricingDto getDynamicRroutingPricingBreakup() {
+		return dynamicRroutingPricingBreakup;
+	}
+
+	public void setDynamicRroutingPricingBreakup(DynamicRoutingPricingDto dynamicRroutingPricingBreakup) {
+		this.dynamicRroutingPricingBreakup = dynamicRroutingPricingBreakup;
+	}
+
+	
+
+	
+	
 
 }

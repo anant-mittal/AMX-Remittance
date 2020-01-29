@@ -15,6 +15,11 @@ public class CustomerModel extends AbstractModel implements ICustomerModel {
 
 	private static final long serialVersionUID = -8190742045911263443L;
 
+	/**
+	 * @deprecated contact Prashant T. to add identity id in this model
+	 * 
+	 */
+	@Deprecated
 	private String identityId;
 
 	private String email;
@@ -46,6 +51,8 @@ public class CustomerModel extends AbstractModel implements ICustomerModel {
 	private boolean isRegistrationFlow;
 
 	private CustomerFlags flags;
+	
+	private String referralId;
 
 	public boolean isRegistrationFlow() {
 		return isRegistrationFlow;
@@ -197,5 +204,23 @@ public class CustomerModel extends AbstractModel implements ICustomerModel {
 	public void setFlags(CustomerFlags flags) {
 		this.flags = flags;
 	}
+	
+	public String getReferralId() {
+		return referralId;
+	}
 
+	public void setReferralId(String referralId) {
+		this.referralId = referralId;
+	}
+
+	@Override
+	public String getReferralCode() {	
+		return referralId;
+	}
+
+	@Override
+	public void setReferralCode(String referralCode) {
+		this.referralId = referralCode;	
+	}
+	
 }

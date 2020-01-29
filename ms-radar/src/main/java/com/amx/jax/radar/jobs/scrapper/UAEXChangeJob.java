@@ -11,7 +11,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,12 +24,13 @@ import com.amx.jax.dict.Currency;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.mcq.shedlock.SchedulerLock;
 import com.amx.jax.mcq.shedlock.SchedulerLock.LockContext;
-import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
 import com.amx.jax.radar.ARadarTask;
 import com.amx.jax.radar.ESRepository;
+import com.amx.jax.radar.RadarConfig;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache;
-import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncIndex;
 import com.amx.jax.radar.jobs.customer.OracleViewDocument;
+import com.amx.jax.radar.snap.SnapQueryService.BulkRequestSnapBuilder;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.rates.AmxCurRate;
 import com.amx.utils.ArgUtil;
@@ -40,7 +41,8 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 @Component
 @Service
 //@ConditionalOnExpression(TestSizeApp.ENABLE_JOBS)
-@ConditionalOnProperty("jax.jobs.scrapper.rate")
+//@ConditionalOnProperty({ "jax.jobs.scrapper.rate", "elasticsearch.enabled" })
+@ConditionalOnExpression(RadarConfig.CE_RATE_SCRAPPER_AND_ES_AND_KWT)
 public class UAEXChangeJob extends ARadarTask {
 
 	private static final String UAE_XCHANGE_URL = "https://www.uaeexchange.com.kw/Rates.aspx";
@@ -73,7 +75,7 @@ public class UAEXChangeJob extends ARadarTask {
 	}
 
 	public void doTask() {
-		LOGGER.info("Scrapper Task");
+		LOGGER.debug("Scrapper Task");
 		try {
 			Document doc0 = Jsoup.connect(UAE_XCHANGE_URL).get();
 
@@ -117,7 +119,7 @@ public class UAEXChangeJob extends ARadarTask {
 
 	public void fetchrates(Document doc, RateType type) {
 		Elements trs = doc.select("#ctl10_updatepnl table.table tbody tr");
-		BulkRequestBuilder builder = new BulkRequestBuilder();
+		BulkRequestSnapBuilder builder = new BulkRequestSnapBuilder();
 		for (Element tr : trs) {
 			Elements tds = tr.select("td");
 			Currency cur = (Currency) ArgUtil.parseAsEnum(tds.get(2).text(),
@@ -132,7 +134,7 @@ public class UAEXChangeJob extends ARadarTask {
 					trnsfrRate.setrType(type);
 					trnsfrRate.setrRate(adjustRate(type, cur, rate));
 					// System.out.println(JsonUtil.toJson(trnsfrRate));
-					builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
+					builder.update(DBSyncIndex.XRATE_JOB.getIndexName(),
 							new OracleViewDocument(trnsfrRate));
 				}
 			}

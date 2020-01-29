@@ -11,6 +11,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.jax.branch.beans.CustomerContext;
 import com.amx.jax.client.configs.JaxMetaInfo;
 
 @SpringBootApplication
@@ -31,6 +32,18 @@ public class BranchApplication extends SpringBootServletInitializer {
 	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 	public JaxMetaInfo jaxMetaInfo() {
 		return new JaxMetaInfo();
+	}
+
+	@Bean
+	@Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
+	public CustomerContext customerSession() {
+		return new CustomerContext();
+	}
+
+	@Bean
+	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+	public CustomerContext customerRequest() {
+		return new CustomerContext();
 	}
 
 }

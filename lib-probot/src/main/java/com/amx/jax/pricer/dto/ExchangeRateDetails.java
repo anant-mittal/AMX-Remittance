@@ -23,11 +23,25 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 
 	private ExchangeRateBreakup sellRateBase;
 
+	private BigDecimal rackExchangeRate;
+
+	private BigDecimal costExchangeRate;
+
 	private Map<DISCOUNT_TYPE, ExchangeDiscountInfo> customerDiscountDetails;
 
 	private boolean isDiscountAvailed = false;
 
 	private boolean isCostRateLimitReached = false;
+
+	private boolean isLowGLBalance = false;
+
+	private boolean isFundedIntermediary = false;
+
+	private boolean isBetterRateAvailable = false;
+
+	private BigDecimal betterRateAmountSlab;
+
+	private BigDecimal diffInBetterRateFcAmount;
 
 	public BigDecimal getBankId() {
 		return bankId;
@@ -85,6 +99,62 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 		this.isCostRateLimitReached = isCostRateLimitReached;
 	}
 
+	public boolean isLowGLBalance() {
+		return isLowGLBalance;
+	}
+
+	public void setLowGLBalance(boolean isLowGLBalance) {
+		this.isLowGLBalance = isLowGLBalance;
+	}
+
+	public boolean isFundedIntermediary() {
+		return isFundedIntermediary;
+	}
+
+	public void setFundedIntermediary(boolean isFunded) {
+		this.isFundedIntermediary = isFunded;
+	}
+
+	public boolean isBetterRateAvailable() {
+		return isBetterRateAvailable;
+	}
+
+	public void setBetterRateAvailable(boolean isBetterRateAvailable) {
+		this.isBetterRateAvailable = isBetterRateAvailable;
+	}
+
+	public BigDecimal getBetterRateAmountSlab() {
+		return betterRateAmountSlab;
+	}
+
+	public void setBetterRateAmountSlab(BigDecimal betterRateAmountSlab) {
+		this.betterRateAmountSlab = betterRateAmountSlab;
+	}
+
+	public BigDecimal getDiffInBetterRateFcAmount() {
+		return diffInBetterRateFcAmount;
+	}
+
+	public void setDiffInBetterRateFcAmount(BigDecimal diffInBetterRateFcAmount) {
+		this.diffInBetterRateFcAmount = diffInBetterRateFcAmount;
+	}
+
+	public BigDecimal getRackExchangeRate() {
+		return rackExchangeRate;
+	}
+
+	public void setRackExchangeRate(BigDecimal rackExchangeRate) {
+		this.rackExchangeRate = rackExchangeRate;
+	}
+
+	public BigDecimal getCostExchangeRate() {
+		return costExchangeRate;
+	}
+
+	public void setCostExchangeRate(BigDecimal costExchangeRate) {
+		this.costExchangeRate = costExchangeRate;
+	}
+
 	@Override
 	public int compareTo(ExchangeRateDetails o) {
 
@@ -103,10 +173,6 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 		try {
 
 			ExchangeRateDetails cloned = (ExchangeRateDetails) super.clone();
-
-			// cloned.customerDiscountDetails =
-			// this.customerDiscountDetails.entrySet().stream()
-			// .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
 			if (this.customerDiscountDetails != null) {
 				cloned.customerDiscountDetails = new HashMap<DISCOUNT_TYPE, ExchangeDiscountInfo>();
@@ -127,6 +193,9 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 			cloned.sellRateNet = this.sellRateNet.clone();
 			cloned.isDiscountAvailed = this.isDiscountAvailed;
 			cloned.isCostRateLimitReached = this.isCostRateLimitReached;
+			cloned.isBetterRateAvailable = this.isBetterRateAvailable;
+			cloned.betterRateAmountSlab = this.betterRateAmountSlab;
+			cloned.diffInBetterRateFcAmount = this.diffInBetterRateFcAmount;
 
 			// cloned.customerDiscountDetails =
 			// this.customerDiscountDetails.entrySet().stream()

@@ -169,8 +169,7 @@ public final class ArgUtil {
 			return ArgUtil.parseAsEnumIgnoreCase(value, clazz);
 
 		if (required) {
-			throw new IllegalArgumentException("Cannot parse Object : " + objectvalue
-					+ " as " + typeName);
+			throw new IllegalArgumentException("Cannot parse Object : " + objectvalue + " as " + typeName);
 		}
 		return value;
 	}
@@ -287,7 +286,7 @@ public final class ArgUtil {
 		} else if (value instanceof Number) {
 			return Boolean.valueOf(((Number) value).intValue() != 0);
 		} else if (value instanceof String) {
-			return Boolean.valueOf(((String) value).equalsIgnoreCase("true"));
+			return Boolean.valueOf(((String) value).trim().equalsIgnoreCase("true"));
 		}
 		return null;
 	}
@@ -445,6 +444,8 @@ public final class ArgUtil {
 			return (Double) value;
 		} else if (value instanceof Number) {
 			return Double.valueOf(((Number) value).doubleValue());
+		} else if (value instanceof BigDecimal) {
+			return Double.valueOf(((BigDecimal) value).doubleValue());
 		} else if (value instanceof String) {
 			try {
 				return Double.valueOf(Double.parseDouble((String) value));
@@ -454,6 +455,22 @@ public final class ArgUtil {
 		}
 		return null;
 	}
+	
+	public static Double parseAsDouble(Object value, Double defaultValue) {
+		if (value instanceof Double) {
+			return (Double) value;
+		} else if (value instanceof Number) {
+			return Double.valueOf(((Number) value).doubleValue());
+		} else if (value instanceof String) {
+			try {
+				return Double.valueOf(Double.parseDouble((String) value));
+			} catch (NumberFormatException e) {
+				return defaultValue;
+			}
+		}
+		return defaultValue;
+	}
+
 
 	/**
 	 * <pre>
@@ -523,37 +540,67 @@ public final class ArgUtil {
 	 * @param defaultValue the default value
 	 * @return the enum
 	 */
-	public static Enum parseAsEnum(Object value, Enum defaultValue) {
+	public static <T extends Enum> Enum parseAsEnum(Object value, Enum defaultValue, Class<T> enumType) {
 		String enumString = parseAsString(value);
 		if (enumString == null) {
 			return defaultValue;
 		}
 		String enumStringCaps = enumString.toUpperCase();
-		if (defaultValue instanceof EnumType) {
-			for (Object enumValue : defaultValue.getClass().getEnumConstants()) {
-				if (enumString.equals(((EnumType) enumValue).name())
-						|| enumStringCaps.equals(((EnumType) enumValue).name())) {
+		if (defaultValue instanceof EnumType || EnumType.class.isAssignableFrom(enumType)) {
+			for (Object enumValue : enumType.getEnumConstants()) {
+				EnumType thisEnum = (EnumType) enumValue;
+				if (enumString.equalsIgnoreCase(thisEnum.name())
+						|| enumString.equalsIgnoreCase(thisEnum.stringValue())) {
 					return (Enum) enumValue;
 				}
 			}
 			return defaultValue;
 		} else if (defaultValue instanceof EnumById) {
-			for (Object enumValue : defaultValue.getClass().getEnumConstants()) {
-				if (enumString.equals(((EnumById) enumValue).getId())
-						|| enumStringCaps.equals(((EnumById) enumValue).getId())) {
+			for (Object enumValue : enumType.getEnumConstants()) {
+				if (enumString.equalsIgnoreCase(((EnumById) enumValue).getId())) {
 					return (Enum) enumValue;
 				}
 			}
 			return defaultValue;
 		}
 		try {
-			return Enum.valueOf(defaultValue.getClass(), enumString);
+			return Enum.valueOf(enumType, enumString);
 		} catch (IllegalArgumentException e) {
 			try {
-				return Enum.valueOf(defaultValue.getClass(), enumStringCaps);
+				return Enum.valueOf(enumType, enumStringCaps);
 			} catch (IllegalArgumentException e2) {
 				return defaultValue;
 			}
+		}
+	}
+	public static <T extends Enum> T parseAsEnumT(Object value, T defaultValue, Class<T> enumType) {
+		return (T) parseAsEnum(value, defaultValue, enumType);
+	}
+
+	public static <T extends Enum> Enum parseAsEnum(Object value, Class<T> enumType) {
+		return parseAsEnum(value, null, enumType);
+	}
+
+	/**
+	 * @deprecated 
+	 * @see {{@link #parseAsEnum(Object, Enum, Class)}
+	 * @param value
+	 * @param defaultValue
+	 * @return
+	 */
+	@Deprecated
+	public static Enum parseAsEnum(Object value, Enum defaultValue) {
+		if (ArgUtil.isEmpty(defaultValue)) {
+			return null;
+		}
+		return parseAsEnum(value, defaultValue, defaultValue.getClass());
+	}
+
+	public static Enum parseAsEnum(Object value, Enum nullValue, Enum defaultValue) {
+		if (ArgUtil.isEmpty(value)) {
+			return parseAsEnum(value, nullValue);
+		} else {
+			return parseAsEnum(value, defaultValue);
 		}
 	}
 
@@ -576,7 +623,7 @@ public final class ArgUtil {
 
 	public static <T extends Enum> T parseAsEnumIgnoreCase(Object source, Class<T> enumType) {
 		String sourceStr = parseAsString(source);
-		if (sourceStr.isEmpty()) {
+		if (isEmpty(sourceStr)) {
 			return null;
 		}
 		sourceStr = sourceStr.trim();
@@ -589,15 +636,14 @@ public final class ArgUtil {
 					return candidate;
 				}
 			}
-			throw new IllegalArgumentException("No enum constant "
-					+ enumType.getCanonicalName() + "." + source);
+			throw new IllegalArgumentException("No enum constant " + enumType.getCanonicalName() + "." + source);
 		}
 	}
 
 	private static String getLettersAndDigits(String name) {
 		StringBuilder canonicalName = new StringBuilder(name.length());
-		name.chars().map((c) -> (char) c).filter(Character::isLetterOrDigit)
-				.map(Character::toLowerCase).forEach(canonicalName::append);
+		name.chars().map((c) -> (char) c).filter(Character::isLetterOrDigit).map(Character::toLowerCase)
+				.forEach(canonicalName::append);
 		return canonicalName.toString();
 	}
 
@@ -628,6 +674,14 @@ public final class ArgUtil {
 			return ArgUtil.isCollectionEmpty((Collection<?>) object);
 		}
 		return false;
+	}
+
+	public static boolean is(Object object) {
+		return !ArgUtil.isEmpty(object);
+	}
+
+	public static boolean isNotEmpty(Object object) {
+		return !isEmpty(object);
 	}
 
 	/**
@@ -677,6 +731,23 @@ public final class ArgUtil {
 
 	public static boolean nullAsTrue(Boolean a) {
 		return ArgUtil.isEmpty(a) || a;
+	}
+
+	public static <T> T assignDefaultIfNull(T assignee, T defaultVal) {
+		return (null == assignee) ? defaultVal : assignee;
+	}
+
+	public static <T> boolean presentIn(T checkFor, T... within) {
+		if (checkFor == null || within == null || within.length == 0) {
+			return false;
+		}
+
+		for (T val : within) {
+			if (checkFor.equals(val))
+				return true;
+		}
+
+		return false;
 	}
 
 }

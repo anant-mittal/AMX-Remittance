@@ -21,5 +21,6 @@ public interface IViewCityDao extends JpaRepository<ViewCity, Serializable>{
 			@Param("languageid") BigDecimal languageid);
 	
 
-	
+
+	public List<ViewCity> findByCityMasterId(BigDecimal cityid);
 }

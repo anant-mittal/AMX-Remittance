@@ -20,6 +20,20 @@ public class PaymentResponseDto extends PayGModel {
 
 	String userName;
 	String product;
+	String payId;
+
+	/**
+	 * Local Payment Reference id, is used to track payment in local application
+	 */
+	public String getPayId() {
+		return payId;
+	}
+
+	public void setPayId(String payId) {
+		this.payId = payId;
+	}
+
+	String amount;
 
 	public String getResultCode() {
 		return resultCode;
@@ -107,6 +121,14 @@ public class PaymentResponseDto extends PayGModel {
 				+ resultCode + ", transactionId=" + transactionId + ", tranData=" + tranData + ", auth_appNo="
 				+ auth_appNo + ", referenceId=" + referenceId + ", postDate=" + postDate + ", userName=" + userName
 				+ ", product=" + product + "]";
+	}
+
+	public String getAmount() {
+		return amount;
+	}
+
+	public void setAmount(String amount) {
+		this.amount = amount;
 	}
 
 }

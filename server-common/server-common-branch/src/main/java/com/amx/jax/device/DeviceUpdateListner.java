@@ -9,9 +9,8 @@ import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.ResourceUpdateEvent;
 import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
-import com.amx.utils.JsonUtil;
 
-@TunnelEventMapping(topic = AmxTunnelEvents.Names.UPDATE_DEVICE_STATUS, scheme = TunnelEventXchange.TASK_WORKER)
+@TunnelEventMapping(topic = AmxTunnelEvents.Names.UPDATE_DEVICE_STATUS, scheme = TunnelEventXchange.SHOUT_LISTNER)
 public class DeviceUpdateListner implements ITunnelSubscriber<ResourceUpdateEvent> {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
@@ -21,7 +20,7 @@ public class DeviceUpdateListner implements ITunnelSubscriber<ResourceUpdateEven
 
 	@Override
 	public void onMessage(String channel, ResourceUpdateEvent event) {
-		LOGGER.debug("======DeviceUpdateListner:onMessage==={} ====  {}", channel, JsonUtil.toJson(event));
+		LOGGER.debug("======ResourceUpdateEvent({} ,{})", event.getEventType(), event.getResourceId());
 		deviceRequest.unDeviceAuthorized(event.getResourceId());
 	}
 }

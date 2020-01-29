@@ -27,8 +27,13 @@ public class EmployeeDetailsDTO implements Serializable {
 	private String branchName;
 	private BigDecimal areaCode;
 	private String area;
+	private BigDecimal branchId;
 
 	private RoleResponseDTO userRole;
+	
+	private String tenant;
+	private String currencyQuote;
+	private BigDecimal currencyId;
 
 	public BigDecimal getEmployeeId() {
 		return employeeId;
@@ -180,6 +185,38 @@ public class EmployeeDetailsDTO implements Serializable {
 
 	public void setArea(String area) {
 		this.area = area;
+	}
+
+	public BigDecimal getBranchId() {
+		return branchId;
+	}
+
+	public void setBranchId(BigDecimal branchId) {
+		this.branchId = branchId;
+	}
+
+	public String getTenant() {
+		return tenant;
+	}
+
+	public void setTenant(String tenant) {
+		this.tenant = tenant;
+	}
+
+	public String getCurrencyQuote() {
+		return currencyQuote;
+	}
+
+	public void setCurrencyQuote(String currencyQuote) {
+		this.currencyQuote = currencyQuote;
+	}
+
+	public BigDecimal getCurrencyId() {
+		return currencyId;
+	}
+
+	public void setCurrencyId(BigDecimal currencyId) {
+		this.currencyId = currencyId;
 	}
 
 }

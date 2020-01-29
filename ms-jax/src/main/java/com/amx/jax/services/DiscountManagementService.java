@@ -11,13 +11,18 @@ import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CountryBranchDTO;
+import com.amx.jax.AmxConfig;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.pricer.PricerServiceClient;
 import com.amx.jax.pricer.dto.ExchangeRateBreakup;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
+import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
+import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
+import com.amx.jax.pricer.dto.PricingAndCostResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
-import com.amx.jax.pricer.dto.PricingResponseDTO;
+import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.repository.DiscountManagementRepository;
 import com.amx.jax.util.RoundUtil;
 
@@ -29,12 +34,16 @@ public class DiscountManagementService {
 	
 	@Autowired
 	DiscountManagementRepository discountManagementRepository;
+	
 	@Autowired
 	PricerServiceClient pricerServiceClient;
+	
+	@Autowired
+	AmxConfig amxConfig;
 
 	public AmxApiResponse<CountryBranchDTO, Object> getCountryBranch(BigDecimal countryId) {
 
-		List<CountryBranch> countryBranchList = discountManagementRepository.getCountryBranch(countryId);
+		List<CountryBranchMdlv1> countryBranchList = discountManagementRepository.getCountryBranch(countryId);
 		
 		LOGGER.info("COUNT OF BRANCHES : - " +countryBranchList.size());
 		
@@ -48,9 +57,9 @@ public class DiscountManagementService {
 	}
 	
 	
-	List<CountryBranchDTO> convertCountryBranch(List<CountryBranch> countryBranchList) {
+	List<CountryBranchDTO> convertCountryBranch(List<CountryBranchMdlv1> countryBranchList) {
 		List<CountryBranchDTO> list = new ArrayList<>();
-		for(CountryBranch incomeRange: countryBranchList) {
+		for(CountryBranchMdlv1 incomeRange: countryBranchList) {
 			CountryBranchDTO countryBranch = new CountryBranchDTO();
 			countryBranch.setBranchId(incomeRange.getBranchId());;
 			countryBranch.setBranchName(incomeRange.getBranchName());
@@ -61,10 +70,51 @@ public class DiscountManagementService {
 		return list;
 	}
 	
-	public AmxApiResponse<PricingResponseDTO, Object> fetchDiscountedRates(PricingRequestDTO pricingRequestDTO) {
-		AmxApiResponse<PricingResponseDTO, Object> response = pricerServiceClient.fetchDiscountedRates(pricingRequestDTO);
+	public AmxApiResponse<PricingAndCostResponseDTO, Object> fetchDiscountedRates(PricingRequestDTO pricingRequestDTO) {
+		if((pricingRequestDTO.getChannel().name() == "BRANCH" || pricingRequestDTO.getChannel().name() == "KIOSK") && 
+				pricingRequestDTO.getCountryBranchId() == null) {
+			throw new GlobalException("Country Branch Id can not be null or empty for BRANCH or KIOSK");
+		}
+		if(pricingRequestDTO.getChannel().name() == "ONLINE" || pricingRequestDTO.getChannel().name() == "MOBILE")
+		{
+			pricingRequestDTO.setCountryBranchId(amxConfig.getOnlineBranchId());
+		}
+		
+		pricingRequestDTO.setLocalCountryId(amxConfig.getDefaultCountryId());
+		pricingRequestDTO.setLocalCurrencyId(amxConfig.getDefaultCurrencyId());
+		
+		AmxApiResponse<PricingAndCostResponseDTO, Object> response = null;
+		try {
+			response = pricerServiceClient.fetchDiscountedRates(pricingRequestDTO);
+		} catch (PricerServiceException e) {
+			LOGGER.info("ErrorKey : - " +e.getErrorKey()+ " ErrorMessage : - " +e.getErrorMessage());
+			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
+		}
+		
 		response.getResult().getSellRateDetails().forEach(i -> applyRoundingLogic(i));
 		return response;
+	}
+
+	public AmxApiResponse<OnlineMarginMarkupInfo, Object> getOnlineMarginMarkupData(OnlineMarginMarkupReq onlineMarginMarkupReq) {
+		try {
+		onlineMarginMarkupReq.setApplicationCountryId(amxConfig.getDefaultCountryId());
+		return pricerServiceClient.getOnlineMarginMarkupData(onlineMarginMarkupReq);
+		} catch (PricerServiceException e) {
+		LOGGER.info("ErrorKey : - " +e.getErrorKey()+ " ErrorMessage : - " +e.getErrorMessage());
+		throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
+		}
+		
+	}
+
+	public AmxApiResponse<BoolRespModel, Object> saveOnlineMarginMarkupData(
+			OnlineMarginMarkupInfo onlineMarginMarkupInfo) {
+		onlineMarginMarkupInfo.setApplicationCountryId(amxConfig.getDefaultCountryId());
+		try {
+			return pricerServiceClient.saveOnlineMarginMarkupData(onlineMarginMarkupInfo);
+		} catch (PricerServiceException e) {
+			LOGGER.info("ErrorKey : - " + e.getErrorKey() + " ErrorMessage : - " + e.getErrorMessage());
+			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
+		}
 	}
 
 
@@ -81,7 +131,8 @@ public class DiscountManagementService {
 		int lcIndex = sellRateNet.getConvertedLCAmount().intValue();
 		sellRateNet.setConvertedLCAmount(RoundUtil.roundBigDecimal(lcAmount, lcIndex));
 		BigDecimal invRate = sellRateNet.getInverseRate();
-		sellRateNet.setInverseRate(RoundUtil.roundBigDecimal(invRate, 6));
+		sellRateNet.setInverseRate(invRate);
+		//sellRateNet.setInverseRate(RoundUtil.roundBigDecimal(invRate, 6));
 	}
 	
 	

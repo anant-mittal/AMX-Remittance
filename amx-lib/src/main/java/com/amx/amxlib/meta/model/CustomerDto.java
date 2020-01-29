@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.amx.jax.model.BeneficiaryListDTO;
+
 public class CustomerDto implements Serializable {
 	
 	private static final long serialVersionUID = 6882188565866584762L;

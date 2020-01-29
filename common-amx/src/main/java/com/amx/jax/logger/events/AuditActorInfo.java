@@ -17,7 +17,7 @@ public class AuditActorInfo extends AuditActor {
 	}
 
 	public AuditActorInfo() {
-		super(ActorType.GUEST, 0);
+		super(ActorType.G, 0);
 	}
 
 	@JsonProperty("tid")

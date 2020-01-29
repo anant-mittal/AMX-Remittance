@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.AppConfig;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.mcq.shedlock.LockingTaskExecutor.Task;
 import com.amx.utils.ArgUtil;
@@ -99,6 +100,7 @@ public class MCQLocker {
 	}
 
 	public void executeWithLock(Task task, Candidate lock) throws Throwable {
+		AppContextUtil.init();
 		if (isTenant(lock) && lead(lock)) {
 			try {
 				LOGGER.debug("Locked {} FD:{}", lock.queue(), lock.fixedDelay());

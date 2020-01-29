@@ -109,7 +109,8 @@ public class AESRepository {
 		return error;
 	}
 
-	public static class BulkRequestBuilder {
+	@SuppressWarnings("rawtypes")
+	public static class BulkRequestBuilder<T extends BulkRequestBuilder> {
 
 		BulkRequest request;
 
@@ -121,15 +122,16 @@ public class AESRepository {
 			return this.request;
 		}
 
-		public BulkRequestBuilder update(String index, String type, AESDocument vote) {
+		public T update(String index, String type, AESDocument vote) {
 			return this.updateById(index, type, vote.getId(), vote);
 		}
 
-		public BulkRequestBuilder update(String index, AESDocument vote) {
+		public T update(String index, AESDocument vote) {
 			return this.updateById(index, vote.getType(), vote.getId(), vote);
 		}
 
-		public BulkRequestBuilder updateById(String index, String type, String id, AESDocument vote) {
+		@SuppressWarnings("unchecked")
+		public T updateById(String index, String type, String id, AESDocument vote) {
 			if (!vote.isEmpty()) {
 				UpdateRequest updateRequest = new UpdateRequest(index, type, id);
 				try {
@@ -138,11 +140,12 @@ public class AESRepository {
 					updateRequest.upsert(voteJson, XContentType.JSON);
 					updateRequest.doc(voteJson, XContentType.JSON);
 					this.request.add(updateRequest);
+					LOGGER.debug("Updated index:{}, type:{}, id:{}", index, type, id);
 				} catch (JsonProcessingException e) {
 					LOGGER.error("JsonProcessingException", e);
 				}
 			}
-			return this;
+			return (T) this;
 		}
 
 	}

@@ -20,7 +20,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import com.amx.jax.dbmodel.BankMasterModel;
+import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.CityMaster;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.DistrictMaster;
@@ -36,7 +36,7 @@ public class BankBranch implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private BigDecimal bankBranchId;
 	private DistrictMaster fsDistrictMaster;
-	private BankMasterModel exBankMaster;
+	private BankMasterMdlv1 exBankMaster;
 	private StateMaster fsStateMaster;
 	private CityMaster fsCityMaster;
 	private CountryMaster fsCountryMaster;
@@ -124,11 +124,11 @@ public class BankBranch implements java.io.Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "BANK_ID")
-	public BankMasterModel getExBankMaster() {
+	public BankMasterMdlv1 getExBankMaster() {
 		return this.exBankMaster;
 	}
 
-	public void setExBankMaster(BankMasterModel exBankMaster) {
+	public void setExBankMaster(BankMasterMdlv1 exBankMaster) {
 		this.exBankMaster = exBankMaster;
 	}
 

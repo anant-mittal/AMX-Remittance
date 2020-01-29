@@ -30,7 +30,7 @@ import com.amx.utils.ArgUtil;
 public class WhatsAppController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WhatsAppController.class);
-	private static final long MESSAGE_TIMEOUT = 10 * 60 * 1000;
+	private static final long MESSAGE_TIMEOUT = 6 * 60 * 60 * 1000;
 
 	@Autowired
 	WhatsAppService whatsAppService;
@@ -42,14 +42,22 @@ public class WhatsAppController {
 	public AmxApiResponse<WAMessage, Object> sendWhatsAppBulk(@RequestBody List<WAMessage> msgs)
 			throws PostManException {
 		for (WAMessage waMessage : msgs) {
-			whatsAppService.send(waMessage);
+			if (isValid(waMessage)) {
+				whatsAppService.send(waMessage);
+			} else {
+				waMessage.setStatus(Status.NOT_SENT);
+			}
 		}
 		return AmxApiResponse.buildList(msgs);
 	}
 
 	@RequestMapping(value = PostManUrls.WHATS_APP_SEND, method = RequestMethod.POST)
 	public AmxApiResponse<WAMessage, Object> sendWhatsApp(@RequestBody WAMessage msg) throws PostManException {
-		whatsAppService.send(msg);
+		if (isValid(msg)) {
+			whatsAppService.send(msg);
+		} else {
+			msg.setStatus(Status.NOT_SENT);
+		}
 		return AmxApiResponse.build(msg);
 	}
 
@@ -60,7 +68,11 @@ public class WhatsAppController {
 		msg.addTo(to);
 		msg.setMessage(message);
 		msg.setChannel(channel);
-		whatsAppService.send(msg);
+		if (isValid(msg)) {
+			whatsAppService.send(msg);
+		} else {
+			msg.setStatus(Status.NOT_SENT);
+		}
 		return msg;
 	}
 
@@ -72,7 +84,11 @@ public class WhatsAppController {
 		msg.addTo(to);
 		msg.setMessage(message);
 		msg.setChannel(channel);
-		whatsAppService.send(msg);
+		if (isValid(msg)) {
+			whatsAppService.send(msg);
+		} else {
+			msg.setStatus(Status.NOT_SENT);
+		}
 		return msg;
 	}
 
@@ -101,8 +117,11 @@ public class WhatsAppController {
 			throws PostManException {
 		long ageOfMessage = System.currentTimeMillis() - msg.getTimestamp();
 
-		if (ageOfMessage < MESSAGE_TIMEOUT) {
-			whatsAppService.send(msg, ArgUtil.parseAsBigDecimal(q, BigDecimal.ZERO));
+		if (ageOfMessage < MESSAGE_TIMEOUT || msg.getAttempt() < 5) {
+			msg.setAttempt(msg.getAttempt() + 1);
+			if (isValid(msg)) {
+				whatsAppService.send(msg, ArgUtil.parseAsBigDecimal(q, BigDecimal.ZERO));
+			}
 		} else {
 			msg.setStatus(Status.FAILED);
 			return statusWhatsApp(msg, "TIMEOUT");
@@ -124,6 +143,19 @@ public class WhatsAppController {
 		}
 		auditService.log(pMGaugeEvent);
 		return AmxApiResponse.build(msg);
+	}
+
+	private boolean isValid(WAMessage msg) {
+		if (ArgUtil.isEmpty(msg.getTo()) || (msg.getTo().size() == 0) || ArgUtil.isEmpty(msg.getTo().get(0))
+				|| (ArgUtil.isEmpty(msg.getMessage()) && ArgUtil.isEmpty(msg.getTemplate()))) {
+			PMGaugeEvent pMGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.SEND_WHATSAPP);
+			pMGaugeEvent.setTo(msg.getTo());
+			pMGaugeEvent.setMessage(msg.getMessage());
+			pMGaugeEvent.setResult(Result.REJECTED);
+			auditService.log(pMGaugeEvent);
+			return false;
+		}
+		return true;
 	}
 
 }

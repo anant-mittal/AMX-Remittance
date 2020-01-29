@@ -3,7 +3,9 @@ package com.amx.jax.model.request;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.Email;
@@ -12,7 +14,10 @@ import org.springframework.format.annotation.NumberFormat;
 import com.amx.jax.AbstractModel;
 import com.amx.jax.constants.CustomerRegistrationType;
 import com.amx.jax.model.ResourceDTO;
+import com.amx.jax.model.request.customer.CustomerPassportData;
+import com.amx.jax.model.request.customer.ICustomerContactData;
 import com.amx.jax.swagger.ApiMockModelProperty;
+import com.amx.jax.util.AmxDBConstants;
 
 /**
  * Customer personal detail model
@@ -20,7 +25,7 @@ import com.amx.jax.swagger.ApiMockModelProperty;
  * @author Prashant
  * @since 2018-04-30
  */
-public class CustomerPersonalDetail extends AbstractModel {
+public class CustomerPersonalDetail extends AbstractModel implements ICustomerContactData {
 
 	/**
 	 * 
@@ -53,7 +58,7 @@ public class CustomerPersonalDetail extends AbstractModel {
 	 * Prefix/title
 	 */
 	@NotNull(message = "Title may not be null")
-	@ApiMockModelProperty(example = "180")
+	@ApiMockModelProperty(example = "181")
 	private String title;
 
 	@NotNull(message = "FirstName may not be null")
@@ -77,12 +82,14 @@ public class CustomerPersonalDetail extends AbstractModel {
 	@Size(min = 1)
 	@NumberFormat
 	@ApiMockModelProperty(example = "98714345")
+	@Pattern(regexp = "^[1-9]\\d*$", message = "Invalid mobile")
 	private String mobile;
 
 	/** country telephone prefix */
 	@NotNull(message = "TelPrefix may not be null")
 	@NumberFormat
 	@ApiMockModelProperty(example = "965")
+	@Pattern(regexp = "^[1-9]\\d*$", message = "Invalid telPrefix")
 	private String telPrefix;
 
 	@ApiMockModelProperty(example = "يبلءيا")
@@ -111,17 +118,33 @@ public class CustomerPersonalDetail extends AbstractModel {
 
 	@ApiMockModelProperty(example = "9321484252")
 	private BigDecimal watsAppMobileNo;
-	
+
 	@ApiMockModelProperty(example = "Y")
 	private String isWatsApp;
-	
+
 	@ApiMockModelProperty(example = "OFF_CUSTOMER")
 	private CustomerRegistrationType registrationType;
-	
+
 	BigDecimal customerId;
 	String customerSignature;
-	
+
 	private ResourceDTO customerCategory;
+
+	Boolean pepsIndicator;
+	
+	@ApiMockModelProperty(example = "Male")
+	private String gender;
+	
+	@ApiMockModelProperty(example = "Indian")
+	private String nationality;
+	
+	private BigDecimal annualTxnLimitFrom;
+	private BigDecimal annualTxnLimitTo;
+	private String premiumInsurance;
+	@Valid
+	//@NotNull
+	private CustomerPassportData customerPassportData;
+
 
 	public CustomerRegistrationType getRegistrationType() {
 		return registrationType;
@@ -274,7 +297,7 @@ public class CustomerPersonalDetail extends AbstractModel {
 	public void setWatsAppMobileNo(BigDecimal watsAppMobileNo) {
 		this.watsAppMobileNo = watsAppMobileNo;
 	}
-	
+
 	public String getIsWatsApp() {
 		return isWatsApp;
 	}
@@ -285,13 +308,11 @@ public class CustomerPersonalDetail extends AbstractModel {
 
 	@Override
 	public String toString() {
-		return "CustomerPersonalDetail [countryId=" + countryId + ", nationalityId=" + nationalityId + ", identityInt="
-				+ identityInt + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName + ", email="
-				+ email + ", mobile=" + mobile + ", telPrefix=" + telPrefix + ", firstNameLocal=" + firstNameLocal
-				+ ", lastNameLocal=" + lastNameLocal + ", issueDate=" + issueDate + ", expiryDate=" + expiryDate
-				+ ", dateOfBirth=" + dateOfBirth + ", identityTypeId=" + identityTypeId + ", insurance=" + insurance
-				+ ", watsAppTelePrefix=" + watsAppTelePrefix + ", watsAppMobileNo=" + watsAppMobileNo  
-				+ ", isWatsApp=" + isWatsApp + "]";
+		return "CustomerPersonalDetail [countryId=" + countryId + ", nationalityId=" + nationalityId + ", identityInt=" + identityInt + ", title="
+				+ title + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", mobile=" + mobile + ", telPrefix="
+				+ telPrefix + ", firstNameLocal=" + firstNameLocal + ", lastNameLocal=" + lastNameLocal + ", issueDate=" + issueDate + ", expiryDate="
+				+ expiryDate + ", dateOfBirth=" + dateOfBirth + ", identityTypeId=" + identityTypeId + ", insurance=" + insurance
+				+ ", watsAppTelePrefix=" + watsAppTelePrefix + ", watsAppMobileNo=" + watsAppMobileNo + ", isWatsApp=" + isWatsApp + "]";
 	}
 
 	public BigDecimal getCustomerId() {
@@ -313,9 +334,66 @@ public class CustomerPersonalDetail extends AbstractModel {
 	public ResourceDTO getCustomerCategory() {
 		return customerCategory;
 	}
-	
+
 	public void setCustomerCategory(ResourceDTO customerCategory) {
 		this.customerCategory = customerCategory;
 	}
 
+	public Boolean getPepsIndicator() {
+		return pepsIndicator;
+	}
+
+	public void setPepsIndicator(Boolean pepsIndicator) {
+		this.pepsIndicator = pepsIndicator;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public BigDecimal getAnnualTxnLimitFrom() {
+		return annualTxnLimitFrom;
+	}
+
+	public void setAnnualTxnLimitFrom(BigDecimal annualTxnLimitFrom) {
+		this.annualTxnLimitFrom = annualTxnLimitFrom;
+	}
+
+	public BigDecimal getAnnualTxnLimitTo() {
+		return annualTxnLimitTo;
+	}
+
+	public void setAnnualTxnLimitTo(BigDecimal annualTxnLimitTo) {
+		this.annualTxnLimitTo = annualTxnLimitTo;
+	}
+
+	public String getPremiumInsurance() {
+		return premiumInsurance;
+	}
+
+	public void setPremiumInsurance(String premiumInsurance) {
+		this.premiumInsurance = premiumInsurance;
+	}
+
+	public String getNationality() {
+		return nationality;
+	}
+
+	public void setNationality(String nationality) {
+		this.nationality = nationality;
+	}
+
+	public CustomerPassportData getCustomerPassportData() {
+		return customerPassportData;
+	}
+
+	public void setCustomerPassportData(CustomerPassportData customerPassportData) {
+		this.customerPassportData = customerPassportData;
+	}
+
+	
 }

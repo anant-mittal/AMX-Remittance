@@ -45,6 +45,22 @@
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
+
+					<execution>
+						<id>install-jar-lib-knet2</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>com.knet2</groupId>
+							<artifactId>knet2</artifactId>
+							<version>2.0.original</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/../../lib/knet2/ipaypipe.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 
@@ -52,5 +68,3 @@
 	</build>
 
 </project>
-
-

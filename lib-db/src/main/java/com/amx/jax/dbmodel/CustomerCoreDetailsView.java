@@ -124,6 +124,28 @@ public class CustomerCoreDetailsView implements Serializable{
 	private BigDecimal corporateDiscountAmount;
 	
 	
+	@Column(name="CORPORATE_DISCOUNT_AMT_ONL")
+	private BigDecimal corporateoDiscountAmountforOnline;
+	
+	
+	@Column(name="CORP_DISCOUNT_ID_BR")
+	private BigDecimal corporateIdForBranch;
+	
+	@Column(name="CORP_DISCOUNT_ID_ONLINE")
+	private BigDecimal corporateIdForOnline;
+	
+	@Column(name="DISC_ON_COM_PERCENTAGE_ONLINE")
+	private BigDecimal discountOnComPercentage;
+	
+	
+	@Column(name="DISC_ON_COM_PER_CORP_ID_ONLINE")
+	private BigDecimal discountOnComPercentageId;
+	
+	
+	
+	
+	
+	
 	
 	public BigDecimal getCustomerID() {
 		return customerID;
@@ -340,6 +362,36 @@ public class CustomerCoreDetailsView implements Serializable{
 	}
 	public void setCorporateDiscountAmount(BigDecimal corporateDiscountAmount) {
 		this.corporateDiscountAmount = corporateDiscountAmount;
+	}
+	public BigDecimal getCorporateoDiscountAmountforOnline() {
+		return corporateoDiscountAmountforOnline;
+	}
+	public void setCorporateoDiscountAmountforOnline(BigDecimal corporateoDiscountAmountforOnline) {
+		this.corporateoDiscountAmountforOnline = corporateoDiscountAmountforOnline;
+	}
+	public BigDecimal getCorporateIdForBranch() {
+		return corporateIdForBranch;
+	}
+	public void setCorporateIdForBranch(BigDecimal corporateIdForBranch) {
+		this.corporateIdForBranch = corporateIdForBranch;
+	}
+	public BigDecimal getCorporateIdForOnline() {
+		return corporateIdForOnline;
+	}
+	public void setCorporateIdForOnline(BigDecimal corporateIdForOnline) {
+		this.corporateIdForOnline = corporateIdForOnline;
+	}
+	public BigDecimal getDiscountOnComPercentage() {
+		return discountOnComPercentage;
+	}
+	public void setDiscountOnComPercentage(BigDecimal discountOnComPercentage) {
+		this.discountOnComPercentage = discountOnComPercentage;
+	}
+	public BigDecimal getDiscountOnComPercentageId() {
+		return discountOnComPercentageId;
+	}
+	public void setDiscountOnComPercentageId(BigDecimal discountOnComPercentageId) {
+		this.discountOnComPercentageId = discountOnComPercentageId;
 	}
 	
 	

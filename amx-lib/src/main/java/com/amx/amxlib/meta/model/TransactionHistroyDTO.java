@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import com.amx.jax.model.BeneficiaryErrorStatusDto;
+
 public class TransactionHistroyDTO implements Serializable {
 	/**
 	 * 
@@ -79,6 +81,12 @@ public class TransactionHistroyDTO implements Serializable {
     private BigDecimal srlId;
 
 	private Boolean beneIsActive;
+	
+	private BigDecimal exRateApplied;
+	
+	private BigDecimal exRateReversed;
+	
+	private String receiptNumber;
 	
 	
 	public String getTransactionReference() {
@@ -380,5 +388,29 @@ public class TransactionHistroyDTO implements Serializable {
     public void setBeneIsActive(Boolean beneIsActive) {
         this.beneIsActive = beneIsActive;
     }
+
+	public BigDecimal getExRateApplied() {
+		return exRateApplied;
+	}
+
+	public void setExRateApplied(BigDecimal exRateApplied) {
+		this.exRateApplied = exRateApplied;
+	}
+
+	public BigDecimal getExRateReversed() {
+		return exRateReversed;
+	}
+
+	public void setExRateReversed(BigDecimal exRateReversed) {
+		this.exRateReversed = exRateReversed;
+	}
+
+	public String getReceiptNumber() {
+		return receiptNumber;
+	}
+
+	public void setReceiptNumber(String receiptNumber) {
+		this.receiptNumber = receiptNumber;
+	}
 
 }

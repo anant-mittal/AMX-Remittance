@@ -11,7 +11,7 @@ import com.amx.jax.rest.RestService;
 
 @Component
 public class AppRequestInterceptor extends HandlerInterceptorAdapter {
-	
+
 	@Autowired
 	RestService restService;
 

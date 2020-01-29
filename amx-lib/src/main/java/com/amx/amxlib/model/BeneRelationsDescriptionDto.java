@@ -2,7 +2,11 @@ package com.amx.amxlib.model;
 
 import java.math.BigDecimal;
 
-public class BeneRelationsDescriptionDto {
+import com.amx.jax.model.ResourceDTO;
+
+public class BeneRelationsDescriptionDto extends ResourceDTO {
+
+	private static final long serialVersionUID = -5304305030408790573L;
 
 	BigDecimal relationsId;
 
@@ -16,6 +20,7 @@ public class BeneRelationsDescriptionDto {
 
 	public void setRelationsId(BigDecimal relationsId) {
 		this.relationsId = relationsId;
+		//this.resourceId = relationsId;
 	}
 
 	public BigDecimal getLangId() {

@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.exception.jax.InvalidCivilIdException;
 import com.amx.amxlib.meta.model.DeclarationDTO;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.ViewAreaDto;
@@ -32,7 +31,7 @@ import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
-import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.DeclarationModel;
 import com.amx.jax.dbmodel.OnlineConfiguration;
 import com.amx.jax.dbmodel.ViewAreaModel;
@@ -177,7 +176,7 @@ public class MetaService extends AbstractService {
 	}
 	//Validation for CountryBranchId
 	public void validateCountryBranchId(FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest) {
-		List<CountryBranch> countryBranch = countryBranchRepository.getCountryBranchIdList(fcDeliveryBranchOrderSearchRequest.getCountryBranchId());
+		List<CountryBranchMdlv1> countryBranch = countryBranchRepository.getCountryBranchIdList(fcDeliveryBranchOrderSearchRequest.getCountryBranchId());
 		if(countryBranch.isEmpty()) {
 			throw new GlobalException(JaxError.INVALID_COUNTRY_BRANCH_ID,"Country Branch Id is not valid!");
 		}
@@ -281,7 +280,7 @@ public class MetaService extends AbstractService {
 		try {
 			BeanUtils.copyProperties(dto, output.get(0));
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			logger.error("unable to convert OnlineConfigurationDto", e);
+			logger.debug("unable to convert OnlineConfigurationDto", e);
 		}
 		return AmxApiResponse.build(dto);
 	}
@@ -293,8 +292,13 @@ public class MetaService extends AbstractService {
 	}
 
 	private List<ServiceGroupMasterDescDto> getServiceGroupDto() {
+		BigDecimal defaultLanguageId = new BigDecimal("1");
 		List<ServiceGroupMasterDesc> output = serviceGroupMasterDescRepository
 				.findActiveByLanguageId(metaData.getLanguageId());
+		if(output.isEmpty()) {
+			output = serviceGroupMasterDescRepository
+					.findActiveByLanguageId(defaultLanguageId);
+		}
 
 		final List<ServiceGroupMasterDescDto> outputDto = new ArrayList<>();
 

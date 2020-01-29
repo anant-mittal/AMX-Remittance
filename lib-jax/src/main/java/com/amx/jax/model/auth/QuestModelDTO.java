@@ -2,9 +2,10 @@ package com.amx.jax.model.auth;
 
 import java.math.BigDecimal;
 
-import com.amx.jax.model.AbstractModel;
+import com.amx.jax.model.ResourceDTO;
 
-public class QuestModelDTO extends AbstractModel {
+public class QuestModelDTO extends ResourceDTO {
+
 
 	private static final long serialVersionUID = -1250280441336967398L;
 
@@ -91,5 +92,10 @@ public class QuestModelDTO extends AbstractModel {
 
 	public void setQuestAnswerModelDTO(QuestAnswerModelDTO questAnswerModelDTO) {
 		this.questAnswerModelDTO = questAnswerModelDTO;
+	}
+	
+	@Override
+	public String getResourceLocalName() {
+		return this.description;
 	}
 }

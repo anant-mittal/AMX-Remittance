@@ -9,8 +9,10 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+@JsonFormat(shape = JsonFormat.Shape.ANY)
 public class Dnum<E extends Dnum<E>> {
 	private static Map<Class<? extends Dnum<?>>, Map<String, Dnum<?>>> elements = new LinkedHashMap<Class<? extends Dnum<?>>, Map<String, Dnum<?>>>();
 

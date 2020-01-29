@@ -24,7 +24,7 @@ public class PipsMaster implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private BigDecimal pipsMasterId;
 	private CountryBranch countryBranch;
-	private CountryMaster countryMaster;
+	private CountryMasterModel countryMasterModel;
 	private BankMasterModel bankMaster;
 	private CurrencyMasterModel currencyMaster;
 	/* private ServiceIndicator serviceIndicator; */
@@ -75,12 +75,12 @@ public class PipsMaster implements Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "COUNTRY_ID")
-	public CountryMaster getCountryMaster() {
-		return countryMaster;
+	public CountryMasterModel getCountryMaster() {
+		return countryMasterModel;
 	}
 
-	public void setCountryMaster(CountryMaster countryMaster) {
-		this.countryMaster = countryMaster;
+	public void setCountryMaster(CountryMasterModel countryMasterModel) {
+		this.countryMasterModel = countryMasterModel;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -231,7 +231,7 @@ public class PipsMaster implements Serializable {
 	@Override
 	public String toString() {
 		return "PipsMaster [pipsMasterId=" + pipsMasterId + ", countryBranch=" + countryBranch.getCountryBranchId()
-				+ ", countryMaster=" + countryMaster.getCountryId() + ", bankMaster=" + bankMaster.getBankId()
+				+ ", countryMasterModel=" + countryMasterModel.getCountryId() + ", bankMaster=" + bankMaster.getBankId()
 				+ ", currencyMaster=" + currencyMaster.getCurrencyId() + ", pipsNo=" + pipsNo + ", isActive=" + isActive
 				+ ", createdBy=" + createdBy + ", createdDate=" + createdDate + ", modifiedBy=" + modifiedBy
 				+ ", modifiedDate=" + modifiedDate + ", fromAmount=" + fromAmount + ", toAmount=" + toAmount

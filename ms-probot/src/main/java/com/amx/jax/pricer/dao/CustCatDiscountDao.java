@@ -25,7 +25,6 @@ public class CustCatDiscountDao {
 	}
 
 	public List<CustomerCategoryDiscount> getDiscountForAllCustCategory() {
-		// TODO Auto-generated method stub
 		return (List<CustomerCategoryDiscount>) custCatDiscountRepository.findAll();
 	}
 

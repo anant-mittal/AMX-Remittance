@@ -11,12 +11,12 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
+import com.amx.jax.dbmodel.remittance.BeneTransactionCountModel;
 
 public interface ITransactionHistroyDAO extends JpaRepository<CustomerRemittanceTransactionView, Serializable> {
 
@@ -25,19 +25,19 @@ public interface ITransactionHistroyDAO extends JpaRepository<CustomerRemittance
 			+ "and trunc(th.documentDate) between  trunc(sysdate-6*30) and  trunc(sysdate) and th.beneficaryCorespondingBankName NOT IN('WU',' ') order by th.documentDate desc")
 	public List<CustomerRemittanceTransactionView> getTransactionHistroy(@Param("customerId") BigDecimal customerId);
 
-	@Query("select th from CustomerRemittanceTransactionView th where th.customerId=:customerId  and th.documentFinanceYear=:docfyr and th.documentNumber=:docNumber  ")
+	@Query("select th from CustomerRemittanceTransactionView th where th.customerId=:customerId  and th.documentFinanceYear=:docfyr and th.documentNumber=:docNumber")
 	public List<CustomerRemittanceTransactionView> getTransactionHistroyByDocumnet(
 			@Param("customerId") BigDecimal customerId, @Param("docfyr") BigDecimal remittancedocfyr,
 			@Param("docNumber") BigDecimal remittancedocNumber);
 
-	@Query(value = " select th from CustomerRemittanceTransactionView th where th.customerId=?1 and th.documentFinanceYear=?2 "
-			+ "and th.documentDate between to_date(?3,'dd/mm/yyyy') and to_date(?4,'dd/mm/yyyy')")
-	public List<CustomerRemittanceTransactionView> getTransactionHistroyDateWise(BigDecimal customerId,
-			BigDecimal docfyr, String fromDate, String toDate, Sort sort);
+	@Query(value = "select * from JAX_VW_EX_TRANSACTION_INQUIRY where CUSTOMER_ID=?1 and DOCUMENT_FINANCE_YEAR=?2  " 
+			+  "and trunc(DOCUMENT_DATE) between to_date(?3,'dd/mm/yyyy') and to_date(?4,'dd/mm/yyyy')  ORDER BY DOCUMENT_DATE DESC", nativeQuery = true)
+	public List<CustomerRemittanceTransactionView> getTransactionHistroyDocfyrDateWise(BigDecimal customerId,
+			BigDecimal docfyr, String fromDate, String toDate);
 	
-	@Query(value = " select th from CustomerRemittanceTransactionView th where th.customerId=?1 "
-			+ "and th.documentDate between to_date(?2,'dd/mm/yyyy') and to_date(?3,'dd/mm/yyyy')")
-	public List<CustomerRemittanceTransactionView> getTransactionHistroyDateWise(BigDecimal customerId, String fromDate, String toDate, Sort sort);
+	@Query(value = "  select * from JAX_VW_EX_TRANSACTION_INQUIRY where CUSTOMER_ID=?1 "
+			+ "and trunc(DOCUMENT_DATE) between to_date(?2,'dd/mm/yyyy') and to_date(?3,'dd/mm/yyyy') ORDER BY DOCUMENT_DATE DESC", nativeQuery = true)
+	public List<CustomerRemittanceTransactionView> getTransactionHistroyDateWise(BigDecimal customerId, String fromDate, String toDate);
 
 	@Query("select th from CustomerRemittanceTransactionView th where th.customerId=:customerid and th.beneficiaryRelationSeqId=:beneRelationId "
 			+ " and TRUNC(th.documentDate)=(select MAX(TRUNC(thi.documentDate)) from CustomerRemittanceTransactionView thi "
@@ -82,14 +82,6 @@ public interface ITransactionHistroyDAO extends JpaRepository<CustomerRemittance
 	public Long getCountByBenerelationshipSeqId(List<BigDecimal> idNo);
 	
 	
-	/*@Query(value="select * from JAX_VW_EX_TRANSACTION_INQUIRY t  \r\n" + 
-			"where  CREATED_BY=:username "+ 
-			"and t.DOCUMENT_DATE = (select max(f.DOCUMENT_DATE) from JAX_VW_EX_TRANSACTION_INQUIRY f where f.CREATED_BY=:username " + 
-			"and trunc(document_date)=trunc(sysdate))",nativeQuery=true)
-	public List<CustomerRemittanceTransactionView> getLastTrnxAmountFortheCustomer(@Param("username") String username);
-	*/
-	
-	
 	@Query(value= "select last_trnx_amt from ( "
 					+" select COLLECTION_DOCUMENT_NO,sum(LOCAL_NET_TRANX_AMOUNT) last_trnx_amt "
 					+" from ex_remit_trnx                                                      "
@@ -101,4 +93,14 @@ public interface ITransactionHistroyDAO extends JpaRepository<CustomerRemittance
 					+" order by COLLECTION_DOCUMENT_NO  desc ) where rownum = 1" , nativeQuery=true)
 	public BigDecimal  getLastTrnxAmountFortheUser(@Param("username") String username,@Param("accMyear") String accMyear,@Param("countrybranchId") BigDecimal countrybranchId);
 	
+
+	//	to fetch trnx histroy	
+	public List<CustomerRemittanceTransactionView> findByCustomerIdAndCollectionDocumentFinYearAndCollectionDocumentNoAndCollectionDocumentCode(BigDecimal customerId,BigDecimal collectionDocumentFinYear,BigDecimal CollectionDocumentNo,BigDecimal collectionDocumentCode); 
+
+	@Query(value = "select new com.amx.jax.dbmodel.remittance.BeneTransactionCountModel(th.beneficiaryRelationSeqId, count(*) ) from CustomerRemittanceTransactionView th where beneficiaryRelationSeqId in (?1) group by beneficiaryRelationSeqId")
+	public List<BeneTransactionCountModel> getTransactionCountByBeneRelSeqId(List<BigDecimal> beneRelSeqIds);
+	
+	@Query(value = "select distinct(beneficary_relationship_seq_id) from JAX_VW_EX_TRANSACTION_INQUIRY where beneficary_relationship_seq_id in (?1) ", nativeQuery = true)
+	public List<BigDecimal> getbeneRelSeqlIdsTranaction(List<BigDecimal> beneRelSeqIds);
+
 }

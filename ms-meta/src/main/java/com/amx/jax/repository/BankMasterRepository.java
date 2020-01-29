@@ -5,14 +5,15 @@ import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
-import com.amx.jax.dbmodel.BankMasterModel;
+import com.amx.jax.dbmodel.BankMasterMdlv1;
 
+public interface BankMasterRepository extends CrudRepository<BankMasterMdlv1, BigDecimal> {
 
-public interface BankMasterRepository extends CrudRepository<BankMasterModel, BigDecimal> {
+	public List<BankMasterMdlv1> findBybankCountryIdAndRecordStatusOrderByBankShortNameAsc(BigDecimal bankCountryId,
+			String isActive);
 
-	public List<BankMasterModel> findBybankCountryIdAndRecordStatusOrderByBankShortNameAsc(BigDecimal bankCountryId, String isActive);
-	
-	public BankMasterModel findByBankCodeAndRecordStatus(String bankCode,String isActive);
-	
+	public BankMasterMdlv1 findByBankCodeAndRecordStatus(String bankCode, String isActive);
+
+	public List<BankMasterMdlv1> findBybankCountryIdAndLanguageInd(BigDecimal bankCountryId, String languageInd);
 
 }

@@ -1,5 +1,8 @@
 package com.amx.jax.adapter.kwt;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,10 +34,7 @@ public class KWTCardReaderListner implements PaciEventHandler {
 		}
 		synchronized (lock) {
 			try {
-				return !ArgUtil.isEmpty(KWTCardReaderService.API.ValidateCardCertificate(0, false, true, true));
-			} catch (PaciException pe) {
-				LOGGER.error("AMX --- PaciException", pe);
-				return false;
+				return !ArgUtil.isEmpty(KWTCardReaderService.API.ValidateCardCertificateWithOCSP(0, null));
 			} catch (Exception e) {
 				LOGGER.error("AMX --- Exception", e);
 				return false;
@@ -55,6 +55,12 @@ public class KWTCardReaderListner implements PaciEventHandler {
 				KWTCardReaderService.CONTEXT.status(CardStatus.READING);
 				LOGGER.debug("KWTCardReaderServiceListner:CardConnectionEvent");
 				CardData data = new CardData();
+				Pattern passportPattern = Pattern.compile("^[A-Z][0-9]{5,9}$");
+				String englishName4 = KWTCardReaderService.API.getEnglishName_4(readerIndex, false);
+				Matcher checkPassport = passportPattern.matcher(englishName4);
+				if(checkPassport.find()){
+					data.setPassport(englishName4);
+				}
 
 				data.setTitle(KWTCardReaderService.API.getA_TITLE(readerIndex, false));
 				data.setIdentity(KWTCardReaderService.API.getCivil_ID(readerIndex, false));
@@ -132,18 +138,28 @@ public class KWTCardReaderListner implements PaciEventHandler {
 				KWTCardReaderService.CONTEXT.status(CardStatus.SCANNED);
 
 				try {
-					data.setGenuine(KWTCardReaderService.API.ValidateCardIsGenuine(readerIndex));
+					boolean genuine = KWTCardReaderService.API.ValidateDigitalSignatureCertificateWithOCSP(readerIndex,
+							null);
+					data.setGenuine(genuine);
 				} catch (Exception exp) {
 					data.setGenuine(false);
 					KWTCardReaderService.CONTEXT.status(CardStatus.CARD_NOT_GENUINE);
 				}
 
 				try {
-					data.setValid(KWTCardReaderService.API.ValidateCardCertificate(readerIndex, false, true, true));
-					data.setExpired(!data.isValid());
+					boolean valid = KWTCardReaderService.API.ValidateCardCertificateWithOCSP(readerIndex, null);
+					data.setValid(valid);
+					data.setExpired(!valid);
 				} catch (Exception exp) {
 					data.setValid(false);
 					data.setExpired(true);
+					KWTCardReaderService.CONTEXT.status(CardStatus.CARD_EXPIRED);
+				}
+
+				if (!data.isGenuine()) {
+					KWTCardReaderService.CONTEXT.status(CardStatus.CARD_NOT_GENUINE);
+				}
+				if (data.isExpired()) {
 					KWTCardReaderService.CONTEXT.status(CardStatus.CARD_EXPIRED);
 				}
 				KWTCardReaderService.CONTEXT.push(data);

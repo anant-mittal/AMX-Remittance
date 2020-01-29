@@ -19,17 +19,21 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.util.CollectionUtils;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.placeorder.PlaceOrderCustomer;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dal.ApplicationCoreProcedureDao;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.UserVerificationCheckListModel;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.repository.CustomerRepository;
@@ -173,8 +177,11 @@ public class CustomerDao {
 			}else {
 				cust.setMobile(model.getMobile());
 			}
-			if(cust.getUpdatedBy() == null)
-				cust.setUpdatedBy(cust.getCreatedBy());		
+			
+			JaxChannel channel = meta.getChannel();
+			if (JaxChannel.ONLINE.equals(channel) || JaxChannel.MOBILE.equals(channel)) {
+				cust.setUpdatedBy(ConstantDocument.JOAMX_USER);	
+			}
 
 			customerRepo.save(cust);
 		}
@@ -332,10 +339,30 @@ public class CustomerDao {
 		};
 		output = jdbcTemplate.call(callableStatement, declareInAndOutputParameters);
 		if (!AmxDBConstants.No.equals(output.get("P_ERROR_IND")) || output.get("P_ERROR_MSG") != null) {
-			LOGGER.error("Error in callProcedurePopulateCusmas, P_ERROR_IND: " + output.get("P_ERROR_IND")
-					+ " P_ERROR_MSG: " + output.get("P_ERROR_MSG"));
+			String errorText = "Error in callProcedurePopulateCusmas, P_ERROR_IND: " + output.get("P_ERROR_IND")
+					+ " P_ERROR_MSG: " + output.get("P_ERROR_MSG");
+			LOGGER.error(errorText);
+			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, errorText);
 		}
 		return output;
 	}
+
+	public List<Customer> findDuplicateCustomerRecords(BigDecimal nationality, String mobile, String email,
+			String firstName) {
+		return repo.getCustomerForDuplicateCheck(nationality, mobile, email, firstName);
+	}
 	
+	public Customer getActiveCustomerDetailsByCustomerId(BigDecimal customerId) {
+		Customer customer = customerRepo.getActiveCustomerDetailsByCustomerId(customerId);
+		return customer;
+	}
+	/**
+	 *  It will hit db everytime this method is called
+	 * @param customerId
+	 * @return
+	 */
+	@org.springframework.transaction.annotation.Transactional(propagation = Propagation.REQUIRES_NEW)
+	public Customer fetchCustomerFromDB(BigDecimal customerId) {
+		return repo.findOne(customerId);
+	}
 }

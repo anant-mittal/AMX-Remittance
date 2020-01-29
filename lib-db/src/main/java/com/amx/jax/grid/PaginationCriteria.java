@@ -213,7 +213,7 @@ public class PaginationCriteria {
 					fbsb.append(AND);
 				}
 				fbsb.append(BRKT_OPN)
-						.append(pair.getValue().getColumn());
+						.append(pair.getValue().toColumn());
 				fbsb.append(SPACE + pair.getValue().getOpertor().getSign());
 
 				if (FilterDataType.DATE.equals(pair.getValue().getType())) {

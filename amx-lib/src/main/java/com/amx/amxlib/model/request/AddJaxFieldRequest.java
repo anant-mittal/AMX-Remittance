@@ -3,7 +3,7 @@ package com.amx.amxlib.model.request;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.amx.amxlib.model.ValidationRegexDto;
+import com.amx.jax.model.response.jaxfield.ValidationRegexDto;
 
 public class AddJaxFieldRequest {
 

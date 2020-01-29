@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import java.util.concurrent.Future;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -28,17 +30,40 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.dict.UserClient.Channel;
-import com.amx.jax.pricer.ProbotExchangeRateService;
+import com.amx.jax.partner.dto.SrvPrvFeeInqReqDTO;
+import com.amx.jax.partner.dto.SrvPrvFeeInqResDTO;
+import com.amx.jax.pricer.PartnerDataService;
 import com.amx.jax.pricer.PricerServiceClient;
+import com.amx.jax.pricer.ProbotDataService;
+import com.amx.jax.pricer.ProbotExchangeRateService;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
+import com.amx.jax.pricer.dto.CurrencyMasterDTO;
+import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
+import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
+import com.amx.jax.pricer.dto.ExchRateEnquiryReqDto;
+import com.amx.jax.pricer.dto.ExchangeRateAndRoutingRequest;
+import com.amx.jax.pricer.dto.ExchangeRateAndRoutingResponse;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
+import com.amx.jax.pricer.dto.ExchangeRateEnquiryRespDto;
+import com.amx.jax.pricer.dto.GroupDetails;
+import com.amx.jax.pricer.dto.HolidayResponseDTO;
+import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
+import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
+import com.amx.jax.pricer.dto.PricingAndCostResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
+import com.amx.jax.pricer.dto.RateUploadRequestDto;
+import com.amx.jax.pricer.dto.RateUploadRuleDto;
+import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
+import com.amx.jax.pricer.dto.RoutingCountryBankInfo;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.service.PricerTestService;
 import com.amx.jax.pricer.var.PricerServiceConstants;
+import com.amx.jax.pricer.var.PricerServiceConstants.GROUP_TYPE;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
+import com.amx.jax.pricer.var.PricerServiceConstants.RATE_UPLOAD_STATUS;
 import com.amx.utils.ArgUtil;
 
 /**
@@ -46,7 +71,7 @@ import com.amx.utils.ArgUtil;
  */
 @RestController
 @RequestMapping("test/")
-public class PricerServiceApiTest implements ProbotExchangeRateService {
+public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDataService, PartnerDataService {
 
 	/** The rbaac service client. */
 	@Autowired
@@ -69,9 +94,26 @@ public class PricerServiceApiTest implements ProbotExchangeRateService {
 
 	@Override
 	@RequestMapping(value = ApiEndPoints.FETCH_DISCOUNTED_RATES, method = RequestMethod.POST)
-	public AmxApiResponse<PricingResponseDTO, Object> fetchDiscountedRates(
-			PricingRequestDTO pricingRequestDTO) {
+	public AmxApiResponse<PricingAndCostResponseDTO, Object> fetchDiscountedRates(PricingRequestDTO pricingRequestDTO) {
 		return pricerServiceClient.fetchDiscountedRates(pricingRequestDTO);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.FETCH_REMIT_ROUTES_PRICES, method = RequestMethod.POST)
+	public AmxApiResponse<ExchangeRateAndRoutingResponse, Object> fetchRemitRoutesAndPrices(
+			ExchangeRateAndRoutingRequest dprRequestDTO) {
+		return pricerServiceClient.fetchRemitRoutesAndPrices(dprRequestDTO);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.GET_HOLIDAYS_DATE_RANGE, method = RequestMethod.POST)
+	public AmxApiResponse<HolidayResponseDTO, Object> fetchHolidayList(
+			@RequestParam(required = true) BigDecimal countryId,
+			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fromDate,
+			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date toDate) {
+
+		return pricerServiceClient.fetchHolidayList(countryId, fromDate, toDate);
+
 	}
 
 	@RequestMapping(value = ApiEndPoints.PRICE_TEST, method = RequestMethod.POST)
@@ -209,7 +251,6 @@ public class PricerServiceApiTest implements ProbotExchangeRateService {
 							allFutureQueue.add(amxFutureResp);
 
 						} catch (Exception e) {
-							// TODO: handle exception
 							// Ignore
 						}
 
@@ -314,10 +355,6 @@ public class PricerServiceApiTest implements ProbotExchangeRateService {
 
 						}
 
-						// strBuilder.append("\n" + JsonUtil.toJson(amxResp.getResult()));
-
-						// errorPrintWriter.println(" Response Future Hash ==> " + future.hashCode());
-
 					} catch (Exception e) {
 
 						Throwable cause = e.getCause().getCause();
@@ -383,17 +420,6 @@ public class PricerServiceApiTest implements ProbotExchangeRateService {
 
 		System.out.println(" ======= Done Now ======= ");
 
-		// BufferedReader countryBranchReader = new BufferedReader(
-		// new InputStreamReader(countryBranchFile.getInputStream()));
-
-		// System.out.println("File 2 ==> " + countryCurrencyFile.getFilename());
-
-		// outPrintWriter.close();
-		// outFileWriter.close();
-
-		// errorPrintWriter.close();
-		// errorFileWriter.close();
-
 		watch.stop();
 		long timetaken = watch.getLastTaskTimeMillis();
 		System.out.println("Total time taken to Complete the Process with size: " + allFutureQueue.size() + " : "
@@ -408,6 +434,27 @@ public class PricerServiceApiTest implements ProbotExchangeRateService {
 
 	}
 
+	@Override
+	@RequestMapping(value = ApiEndPoints.GET_ROUTBANKS_AND_SEVICES, method = RequestMethod.POST)
+	public AmxApiResponse<RoutBanksAndServiceRespDTO, Object> getRbanksAndServices(
+			@RequestParam(required = true) BigDecimal countryId, @RequestParam(required = true) BigDecimal currencyId) {
+		return pricerServiceClient.getRbanksAndServices(countryId, currencyId);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.SAVE_DISCOUNT_DETAILS, method = RequestMethod.POST)
+	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> saveDiscountDetails(
+			DiscountDetailsReqRespDTO discountMgmtReqDTO) {
+		return pricerServiceClient.saveDiscountDetails(discountMgmtReqDTO);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.GET_DISCOUNT_DETAILS, method = RequestMethod.POST)
+	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> getDiscountManagemet(
+			DiscountMgmtReqDTO discountMgmtReqDTO) {
+		return pricerServiceClient.getDiscountManagemet(discountMgmtReqDTO);
+	}
+
 	@RequestMapping(value = ApiEndPoints.SERVICE_TEST, method = RequestMethod.GET)
 	public AmxApiResponse<Map<String, String>, Object> testService() {
 
@@ -418,6 +465,100 @@ public class PricerServiceApiTest implements ProbotExchangeRateService {
 		AmxApiResponse<Map<String, String>, Object> amxApiResponse = AmxApiResponse.build(testResp);
 
 		return amxApiResponse;
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.GET_CUR_GROUPING_DATA, method = RequestMethod.POST)
+	public AmxApiResponse<GroupDetails, Object> getCurrencyGroupingData() {
+		return pricerServiceClient.getCurrencyGroupingData();
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.UPDATE_CUR_GROUP_ID, method = RequestMethod.POST)
+	public AmxApiResponse<CurrencyMasterDTO, Object> updateCurrencyGroupId(
+			@RequestParam(required = true) BigDecimal groupId, @RequestParam(required = true) BigDecimal currencyId) {
+		return pricerServiceClient.updateCurrencyGroupId(groupId, currencyId);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.GET_CUR_BY_GROUP_ID, method = RequestMethod.POST)
+	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyByGroupId(
+			@RequestParam(required = true) BigDecimal groupId) {
+		return pricerServiceClient.getCurrencyByGroupId(groupId);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.GET_SERVICE_PROVIDER_QUOTE, method = RequestMethod.POST)
+	public AmxApiResponse<SrvPrvFeeInqResDTO, Object> getServiceProviderQuotation(
+			SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO) {
+		return pricerServiceClient.getServiceProviderQuotation(srvPrvFeeInqReqDTO);
+	}
+
+	@Override
+	public AmxApiResponse<OnlineMarginMarkupInfo, Object> getOnlineMarginMarkupData(
+			OnlineMarginMarkupReq OnlineMarginMarkupReq) {
+		return pricerServiceClient.getOnlineMarginMarkupData(OnlineMarginMarkupReq);
+
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> saveOnlineMarginMarkupData(
+			OnlineMarginMarkupInfo onlineMarginMarkupInfo) {
+		return pricerServiceClient.saveOnlineMarginMarkupData(onlineMarginMarkupInfo);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.GET_GROUPS_OF_TYPE, method = RequestMethod.POST)
+	public AmxApiResponse<GroupDetails, Object> getGroupsOfType(@RequestParam(required = true) GROUP_TYPE groupType) {
+		return pricerServiceClient.getGroupsOfType(groupType);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.SAVE_GROUP, method = RequestMethod.POST)
+	public AmxApiResponse<GroupDetails, Object> saveGroup(GroupDetails group) {
+		return pricerServiceClient.saveGroup(group);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.DELETE_GROUP, method = RequestMethod.POST)
+	public AmxApiResponse<Long, Object> deleteGroup(@RequestParam(required = true) BigDecimal applicationCountryId,
+			@RequestParam(required = true) BigDecimal groupId, @RequestParam(required = true) GROUP_TYPE groupType,
+			@RequestParam(required = true) String groupName) {
+		return pricerServiceClient.deleteGroup(applicationCountryId, groupId, groupType, groupName);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.ENQUIRE_EXCH_RATE, method = RequestMethod.POST)
+	public AmxApiResponse<ExchangeRateEnquiryRespDto, Object> enquireExchangeRates(
+			ExchRateEnquiryReqDto rateEnquiryReqDto) {
+		return pricerServiceClient.enquireExchangeRates(rateEnquiryReqDto);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.RATE_UPLOAD_RULE_MAKER, method = RequestMethod.POST)
+	public AmxApiResponse<Long, Object> rateUpoadRuleMaker(RateUploadRequestDto rateUploadRequestDto) {
+		return pricerServiceClient.rateUpoadRuleMaker(rateUploadRequestDto);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.RATE_UPLOAD_RULE_CHECKER, method = RequestMethod.POST)
+	public AmxApiResponse<Long, Object> rateUpoadRuleChecker(RateUploadRequestDto rateUploadRequestDto) {
+		return pricerServiceClient.rateUpoadRuleChecker(rateUploadRequestDto);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.GET_RATE_UPLOAD_RULES, method = RequestMethod.POST)
+	public AmxApiResponse<List<RateUploadRuleDto>, Object> getRateUploadRulesByStatus(
+			@RequestParam(required = true) RATE_UPLOAD_STATUS status,
+			@RequestParam(required = true) Boolean onlyActive) {
+		return pricerServiceClient.getRateUploadRulesByStatus(status, onlyActive);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.GET_ROUTE_COUNTRY_BANKS, method = RequestMethod.POST)
+	public AmxApiResponse<RoutingCountryBankInfo, Object> getRoutingCountryBanksForCurrency(
+			@RequestParam(required = true) BigDecimal currencyId) {
+		return pricerServiceClient.getRoutingCountryBanksForCurrency(currencyId);
 	}
 
 }

@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.Map;
 
 import com.amx.jax.rbaac.constants.RbaacServiceConstants;
-import com.amx.jax.rbaac.dbmodel.Employee;
+import com.amx.jax.rbaac.dbmodel.FSEmployee;
 import com.amx.jax.rbaac.dbmodel.Role;
 import com.amx.jax.rbaac.dbmodel.UserRoleMapping;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
@@ -30,7 +30,7 @@ public final class ObjectConverter {
 	 *            the employee
 	 * @return the employee details DTO
 	 */
-	public static EmployeeDetailsDTO convertEmployeeToEmpDetailsDTO(Employee employee) {
+	public static EmployeeDetailsDTO convertEmployeeToEmpDetailsDTO(FSEmployee employee) {
 
 		EmployeeDetailsDTO empDetail = new EmployeeDetailsDTO();
 
@@ -69,6 +69,7 @@ public final class ObjectConverter {
 
 		// Country Branch Details
 		empDetail.setCountryBranchId(employee.getCountryBranch().getCountryBranchId());
+		empDetail.setBranchId(employee.getCountryBranch().getBranchId());
 		empDetail.setBranchName(employee.getCountryBranch().getBranchName());
 		empDetail.setAreaCode(employee.getCountryBranch().getAreaCode());
 		empDetail.setArea(employee.getCountryBranch().getArea());

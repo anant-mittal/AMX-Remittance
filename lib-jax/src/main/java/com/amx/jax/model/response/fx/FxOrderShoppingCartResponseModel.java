@@ -8,6 +8,7 @@ public class FxOrderShoppingCartResponseModel {
 	List<ShoppingCartDetailsDto> shoppingCartList;
 	private BigDecimal deliveryCharges;
 	private BigDecimal totalNetAmount;
+	private BigDecimal totalAmount;
 	public List<ShoppingCartDetailsDto> getShoppingCartList() {
 		return shoppingCartList;
 	}
@@ -25,6 +26,12 @@ public class FxOrderShoppingCartResponseModel {
 	}
 	public void setTotalNetAmount(BigDecimal totalNetAmount) {
 		this.totalNetAmount = totalNetAmount;
+	}
+	public BigDecimal getTotalAmount() {
+		return totalAmount;
+	}
+	public void setTotalAmount(BigDecimal totalAmount) {
+		this.totalAmount = totalAmount;
 	}
 	
 	

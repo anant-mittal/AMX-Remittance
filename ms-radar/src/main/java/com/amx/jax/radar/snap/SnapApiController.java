@@ -15,6 +15,7 @@ import com.amx.jax.client.snap.SnapConstants.SnapIndexName;
 import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.dict.Currency;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
 
@@ -26,6 +27,9 @@ public class SnapApiController implements ISnapService {
 
 	@Autowired
 	RestService restService;
+
+	@Autowired
+	OracleVarsCache oracleVarsCache;
 
 	@Override
 	@ResponseBody

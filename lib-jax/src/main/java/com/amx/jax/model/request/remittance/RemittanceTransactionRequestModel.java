@@ -1,5 +1,5 @@
 /**
- * 
+ * @author Prashant
  */
 package com.amx.jax.model.request.remittance;
 
@@ -9,10 +9,8 @@ import javax.validation.constraints.NotNull;
 
 import com.amx.jax.model.response.ExchangeRateBreakup;
 
-/**
- * @author Prashant
- *
- */
+/*@JsonDeserialize(as = RemittanceTransactionDrRequestModel.class)
+@JsonIgnoreProperties(ignoreUnknown = true)*/
 public class RemittanceTransactionRequestModel extends RemittanceAdditionalBeneFieldModel implements IRemitTransReqPurpose {
 
 	/**
@@ -25,6 +23,16 @@ public class RemittanceTransactionRequestModel extends RemittanceAdditionalBeneF
 	@NotNull
 	private ExchangeRateBreakup exRateBreakup;
 	private BigDecimal placeOrderId;
+	private String paymentType;
+
+	public String getPaymentType() {
+		return paymentType;
+	}
+
+
+	public void setPaymentType(String paymentType) {
+		this.paymentType = paymentType;
+	}
 
 
 	/*
@@ -84,4 +92,6 @@ public class RemittanceTransactionRequestModel extends RemittanceAdditionalBeneF
 		return this.exRateBreakup;
 	}
 
+
 }
+

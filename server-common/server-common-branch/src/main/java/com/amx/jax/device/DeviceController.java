@@ -1,5 +1,6 @@
 package com.amx.jax.device;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -8,14 +9,18 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.amx.jax.AmxConstants;
+import com.amx.jax.AppConfig;
+import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
@@ -45,11 +50,14 @@ import com.amx.jax.sso.SSOUser;
 import com.amx.jax.sso.server.ApiHeaderAnnotations.ApiDeviceHeaders;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 import com.amx.utils.CryptoUtil;
+import com.amx.utils.MapBuilder;
+import com.amx.utils.MapBuilder.BuilderMap;
 
 import io.swagger.annotations.Api;
 
-@RestController
+@Controller
 @Api(value = "Device APIs")
 @ApiStatusService(IRbaacService.class)
 public class DeviceController {
@@ -72,18 +80,23 @@ public class DeviceController {
 	private SSOTranx sSOTranx;
 
 	@Autowired
+	private AppConfig appConfig;
+
+	@Autowired
 	private AuditService auditService;
 
 	@Autowired(required = false)
 	private SSOUser ssoUser;
 
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_TERMINALS }, method = { RequestMethod.GET })
+	@ResponseBody
 	public AmxApiResponse<BranchSystemDetailDto, Object> getTerminals() {
 		return metaClient.listBranchSystemInventory();
 	}
 
 	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_PAIR }, method = { RequestMethod.POST })
+	@ResponseBody
 	public AmxApiResponse<DevicePairingCreds, Object> registerNewDevice(@Valid @RequestBody DevicePairingRequest req) {
 
 		String deivceTerminalIp = req.getDeivceTerminalId();
@@ -127,9 +140,20 @@ public class DeviceController {
 
 	}
 
+	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
+	@RequestMapping(value = { DeviceConstants.Path.DEVICE_PAIR }, method = { RequestMethod.GET })
+	public String registerNewDevice(Model model) {
+		model.addAttribute("lang", commonHttpRequest.getLanguage());
+		model.addAttribute("cdnUrl", appConfig.getCdnURL());
+		model.addAttribute("appContext", appConfig.getAppPrefix());
+		model.addAttribute(AppConstants.DEVICE_ID_KEY, commonHttpRequest.getUserDevice().getFingerprint());
+		return "sso_device";
+	}
+
 	@Deprecated
 	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_ACTIVATE }, method = { RequestMethod.POST })
+	@ResponseBody
 	public AmxApiResponse<BoolRespModel, Object> activateDevice(
 			@RequestParam(required = false) String secureKey,
 			@RequestParam Integer deviceRegId,
@@ -141,6 +165,7 @@ public class DeviceController {
 	@Deprecated
 	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_DEACTIVATE }, method = { RequestMethod.POST })
+	@ResponseBody
 	public AmxApiResponse<BoolRespModel, Object> deActivateDevice(
 			@RequestParam(required = false) String secureKey,
 			@RequestParam Integer deviceRegId, @RequestParam ClientType deviceType) {
@@ -151,6 +176,7 @@ public class DeviceController {
 	@ApiDeviceHeaders
 	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_SESSION }, method = { RequestMethod.GET })
+	@ResponseBody
 	public AmxApiResponse<SessionPairingCreds, Object> sendOtpForPairing() {
 
 		deviceRequestValidator.validateDevice();
@@ -162,7 +188,7 @@ public class DeviceController {
 				.createDeviceSession(ArgUtil.parseAsInteger(deviceRegId), deviceRegToken)
 				.getResult();
 		SessionPairingCreds creds = deviceRequestValidator.createSession(resp.getSessionPairToken(), resp.getOtp(),
-				resp.getTermialId(), resp.getEmpId());
+				resp.getTermialId(), resp.getEmpId(), resp.getDeviceType());
 		creds.setOtpTtl(AmxConstants.OFFLINE_OTP_TTL);
 		creds.setRequestTtl(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY);
 		creds.setOtpChars(CryptoUtil.COMPLEX_CHARS);
@@ -180,6 +206,7 @@ public class DeviceController {
 
 	@Deprecated
 	@RequestMapping(value = DeviceConstants.Path.SESSION_PAIR, method = RequestMethod.POST)
+	@ResponseBody
 	public AmxApiResponse<DevicePairOtpResponse, BoolRespModel> validateOtpForPairing(
 			@RequestParam ClientType deviceType,
 			@RequestParam Integer terminalId, @RequestParam(required = false) String mOtp) {
@@ -197,6 +224,7 @@ public class DeviceController {
 	}
 
 	@RequestMapping(value = DeviceConstants.Path.SESSION_PAIR_DEVICE, method = RequestMethod.POST)
+	@ResponseBody
 	public AmxApiResponse<DevicePairOtpResponse, BoolRespModel> validateOtpForPairingDevice(
 			@PathVariable(value = "deviceType") ClientType deviceType, @RequestParam(required = false) String mOtp) {
 
@@ -212,6 +240,7 @@ public class DeviceController {
 	}
 
 	@RequestMapping(value = DeviceConstants.Path.DEVICE_TYPE, method = RequestMethod.GET)
+	@ResponseBody
 	public AmxApiResponse<ClientType, Object> deviceList() {
 
 		List<ClientType> deviceTypeList = new ArrayList<ClientType>(Arrays.asList(ClientType.values()));
@@ -220,6 +249,7 @@ public class DeviceController {
 	}
 
 	@RequestMapping(value = { DeviceConstants.Path.SESSION_TERMINAL }, method = { RequestMethod.GET })
+	@ResponseBody
 	public AmxApiResponse<Object, Object> webAppLogin() {
 
 		DeviceData deviceData = deviceRequestValidator.validateRequest();
@@ -243,9 +273,49 @@ public class DeviceController {
 
 	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_DELETE }, method = { RequestMethod.POST })
+	@ResponseBody
 	public AmxApiResponse<BoolRespModel, Object> deleteDevice(@RequestParam Integer deviceRegId,
 			@RequestParam ClientType deviceType) {
 		deviceRequestValidator.updateStamp(deviceRegId);
 		return rbaacServiceClient.deleteDevice(deviceRegId);
 	}
+
+	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
+	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS }, method = { RequestMethod.POST })
+	@ResponseBody
+	public AmxApiResponse<Object, Object> statusDevice(@RequestParam(required = false) BigDecimal deviceRegId) {
+		BuilderMap wrap = MapBuilder.map();
+
+		String tranxId = ssoUser.ssoTranxId();
+
+		wrap.put("by_terminal.error", Constants.BLANK);
+		wrap.put("by_device.error", Constants.BLANK);
+		
+		// Adapter
+		BigDecimal terminlId = sSOTranx.get().getTerminalId();
+		BigDecimal branchRid = ArgUtil.parseAsBigDecimal(sSOTranx.get().getBranchAdapterId());
+		
+		wrap.put("session.id", tranxId);
+		wrap.put("session.terminal.id", terminlId);
+		wrap.put("session.adapter.id", branchRid);
+		wrap.put("session.device.regid", deviceRegId);
+		
+		try {
+			wrap.put("by_terminal",
+					rbaacServiceClient.getDevicesByTerminal(terminlId, commonHttpRequest.getIPAddress()).getResults());
+		} catch (Exception e) {
+			wrap.put("by_terminal.error", e.getMessage());
+		}
+
+		try {
+			if (ArgUtil.is(deviceRegId)) {
+				wrap.put("by_device", rbaacServiceClient.getDevicesByRegId(deviceRegId,
+						commonHttpRequest.getDeviceId()).getResults());
+			}
+		} catch (Exception e) {
+			wrap.put("by_device.error", e.getMessage());
+		}
+		return AmxApiResponse.buildData(wrap.build());
+	}
+
 }

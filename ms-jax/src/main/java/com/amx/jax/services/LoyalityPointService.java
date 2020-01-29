@@ -8,10 +8,15 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.jax.config.JaxTenantProperties;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.remittance.VwLoyalityEncash;
 import com.amx.jax.manager.remittance.CorporateDiscountManager;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.response.remittance.CorporateDiscountDto;
+import com.amx.jax.model.response.remittance.LoyalityPointState;
 import com.amx.jax.repository.VwLoyalityEncashRepository;
+import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.util.JaxUtil;
 
 @Service
@@ -25,6 +30,12 @@ public class LoyalityPointService {
 	MetaData meta;
 	@Autowired
 	CorporateDiscountManager corporateDiscountManager;
+	
+	@Autowired
+	CustomerDao customerDao;
+	
+	@Autowired
+	JaxTenantProperties jaxTenantProperties;
 
 	public VwLoyalityEncash getVwLoyalityEncash() {
 		Iterable<VwLoyalityEncash> loyalityPointMaster = repo.findAll();
@@ -45,7 +56,11 @@ public class LoyalityPointService {
 	public BigDecimal getloyaltyAmountEncashed(BigDecimal commission) {
 		BigDecimal loyalityPoints = getVwLoyalityEncash().getLoyalityPoint();
 		BigDecimal loyalityPointsEncashed = getVwLoyalityEncash().getEquivalentAmount();
-		BigDecimal corporateDiscount = corporateDiscountManager.corporateDiscount();
+		CorporateDiscountDto corpDiscountDto = corporateDiscountManager.corporateDiscount(commission);
+		BigDecimal  corporateDiscount= BigDecimal.ZERO;
+		if(corpDiscountDto!=null) {
+			corporateDiscount = corpDiscountDto.getCorpDiscount();
+		}
 		if (JaxUtil.isNullZeroBigDecimalCheck(commission) && JaxUtil.isNullZeroBigDecimalCheck(loyalityPoints)
 				&& loyalityPointsEncashed.compareTo(corporateDiscount) > 0) {
 			if (commission.compareTo(loyalityPointsEncashed) >= 0) {
@@ -56,5 +71,32 @@ public class LoyalityPointService {
 		}
 
 		return loyalityPointsEncashed;
+	}
+	
+	public LoyalityPointState getLoyalityState(BigDecimal customerId) {
+		Customer customer = customerDao.getCustById(customerId);
+		BigDecimal loyalityPointsAvailable = null;
+		LoyalityPointState loyalityState = null;
+		if(null != customer.getLoyaltyPoints()) {
+			loyalityPointsAvailable = customer.getLoyaltyPoints();
+		}
+		BigDecimal loyaltyPointCount = jaxTenantProperties.getLoyaltyCount();
+		if (loyalityPointsAvailable == null
+				|| (loyalityPointsAvailable.longValue() < loyaltyPointCount.longValue())) {
+			//responseModel.setLoyalityPointState(LoyalityPointState.LOYALTY_POINT_NOT_AVAILABLE);
+			loyalityState = LoyalityPointState.LOYALTY_POINT_NOT_AVAILABLE;
+		}
+		
+		return loyalityState;
+	}
+	
+	/**
+	 * @param loyalityAmount
+	 * @return returns equivalent loyality points
+	 */
+	public BigDecimal getEquivalentLoyalityPoints(BigDecimal loyalityAmount) {
+		BigDecimal loyalityPoints = getVwLoyalityEncash().getLoyalityPoint();
+		BigDecimal eqAmount = getVwLoyalityEncash().getEquivalentAmount();
+		return loyalityPoints.divide(eqAmount).multiply(loyalityAmount);
 	}
 }

@@ -12,9 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 
 import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
-import com.amx.jax.payg.PayGCodes;
+import com.amx.jax.dict.ResponseCodeOMN;
 import com.amx.jax.payg.PayGParams;
-import com.amx.jax.payg.codes.OmanNetCodes;
 import com.amx.jax.payment.PaymentConstant;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGConfig;
@@ -188,10 +187,23 @@ public class OmannetClient implements PayGClient {
 			}
 
 			LOGGER.info("resultResponse ---> " + resultResponse);
-			OmanNetCodes statusCode = (OmanNetCodes) PayGCodes.getPayGCode(resultResponse, OmanNetCodes.UNKNOWN);
-			gatewayResponse.setErrorCategory(statusCode.getCategory());
-
-			LOGGER.info("Result from response Values ---> " + gatewayResponse.getErrorCategory());
+			/*OmanNetCodes statusCode = (OmanNetCodes) PayGCodes.getPayGCode(resultResponse, OmanNetCodes.UNKNOWN);
+			gatewayResponse.setErrorCategory(statusCode.getCategory().name());*/
+			
+			String trimError = pipe.getResult();
+			if(trimError.contains(" ") && !trimError.contains("NOT CAPTURED") && !trimError.contains("Invalid card number.")){
+				trimError = trimError.substring(0, trimError.indexOf(" "));
+				LOGGER.info("TrimError Value ---> " + trimError);
+			}
+			
+			ResponseCodeOMN responseCodeEnum = ResponseCodeOMN.getResponseCodeEnumByCode(trimError);
+			if(responseCodeEnum != null) {
+				gatewayResponse.setErrorCategory(responseCodeEnum.name());
+				LOGGER.info("Result from response Values IF ---> " + gatewayResponse.getErrorCategory());
+			}else {
+				gatewayResponse.setErrorCategory(ResponseCodeOMN.UNKNOWN.name());
+				LOGGER.info("Result from response Values ELSE ---> " + gatewayResponse.getErrorCategory());
+			}
 			gatewayResponse.setError(resultResponse);
 		}
 

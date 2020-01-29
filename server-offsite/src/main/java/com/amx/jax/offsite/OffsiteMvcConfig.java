@@ -3,6 +3,7 @@ package com.amx.jax.offsite;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -12,6 +13,7 @@ import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 
+import com.amx.jax.AppConfig;
 import com.amx.jax.AppMVConfig;
 
 @Configuration
@@ -22,11 +24,16 @@ public class OffsiteMvcConfig extends WebMvcConfigurerAdapter {
 		// registry.addInterceptor(interceptor);
 	}
 
+	@Autowired
+	AppConfig appConfig;
+
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
 		registry.addViewController("/").setViewName("index");
-		registry.addViewController("/signpad.html").setViewName("signpad");
-		registry.addViewController("/notipy.html").setViewName("notipy");
+		if (appConfig.isSwaggerEnabled()) {
+			registry.addViewController("/signpad.html").setViewName("signpad");
+			registry.addViewController("/notipy.html").setViewName("notipy");
+		}
 	}
 
 	@Bean
@@ -45,8 +52,7 @@ public class OffsiteMvcConfig extends WebMvcConfigurerAdapter {
 
 	@Bean
 	public SpringTemplateEngine messageTemplateEngine(
-			final Collection<SpringResourceTemplateResolver> inTemplateResolvers
-	) {
+			final Collection<SpringResourceTemplateResolver> inTemplateResolvers) {
 		final SpringTemplateEngine theTemplateEngine = new SpringTemplateEngine();
 		for (SpringResourceTemplateResolver theTemplateResolver : inTemplateResolvers) {
 			theTemplateEngine.addTemplateResolver(theTemplateResolver);

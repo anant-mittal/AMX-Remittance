@@ -44,29 +44,31 @@ public class ApiAuditEvent extends AuditEvent {
 		}
 	}
 
-	private Map<String, String> details;
-
 	public ApiAuditEvent(Type type, AmxApiException excep) {
 		super(type);
 		this.message = excep.getErrorMessage();
 		this.result = Result.ERROR;
-		this.description = String.format("%s_%s:%s", this.type, this.result,
-				ArgUtil.isEmpty(excep.getErrorKey()) ? ArgUtil.parseAsString(excep.getError())
-						: excep.getErrorKey());
+		this.errorCode = ArgUtil.isEmpty(excep.getErrorKey()) ? ArgUtil.parseAsString(excep.getError())
+				: excep.getErrorKey();
+		this.description = String.format("%s_%s:%s", this.type, this.result, this.errorCode);
 		this.details = ApiAuditEventContext.map(excep.getDetailMap());
-
+		this.setException(excep);
+	}
+	
+	public ApiAuditEvent(Type type, Exception excep) {
+		super(type);
+		this.message = excep.getMessage();
+		this.result = Result.ERROR;
+		this.description = String.format("%s_%s:%s", this.type, this.result, this.errorCode);
+		this.setException(excep);
 	}
 
 	public ApiAuditEvent(AmxApiException excep) {
 		this(Type.API, excep);
 	}
 
-	public Map<String, String> getDetails() {
-		return details;
-	}
-
-	public void setDetails(Map<String, String> details) {
-		this.details = details;
+	public ApiAuditEvent(Exception ex) {
+		this(Type.API, ex);
 	}
 
 }

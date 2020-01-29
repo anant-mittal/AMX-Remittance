@@ -29,7 +29,26 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 	private Map<DISCOUNT_TYPE, ExchangeDiscountInfo> customerDiscountDetails;
 	private Boolean discountAvailed;
 	private Boolean costRateLimitReached;
-
+	private String vatType;
+	private BigDecimal vatPercentage;
+	private BigDecimal vatAmount;
+	/** For Better rate **/ 
+	private boolean isBetterRateAvailable = false;
+	private BigDecimal betterRateAmountSlab;
+	private BigDecimal diffInBetterRateFcAmount;
+	private String discountOnComissionFlag;
+	/** added by Rabil**/
+	private BigDecimal rackExchangeRate; /**Worst rate amount all the branches **/
+	private BigDecimal youSavedAmount;
+	private String customerChoice;
+	private BigDecimal youSavedAmountInFC;
+	private BigDecimal placeOrderId;
+	private BigDecimal costExchangeRate;
+	private BigDecimal corporateMasterId;
+	private String productAvaliable;
+	private String fundAvaliable;
+	
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -126,6 +145,134 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 
 	public void setCostRateLimitReached(Boolean costRateLimitReached) {
 		this.costRateLimitReached = costRateLimitReached;
+	}
+
+	public String getVatType() {
+		return vatType;
+	}
+
+	public void setVatType(String vatType) {
+		this.vatType = vatType;
+	}
+
+	public BigDecimal getVatPercentage() {
+		return vatPercentage;
+	}
+
+	public void setVatPercentage(BigDecimal vatPercentage) {
+		this.vatPercentage = vatPercentage;
+	}
+
+	public BigDecimal getVatAmount() {
+		return vatAmount;
+	}
+
+	public void setVatAmount(BigDecimal vatAmount) {
+		this.vatAmount = vatAmount;
+	}
+
+	public boolean isBetterRateAvailable() {
+		return isBetterRateAvailable;
+	}
+
+	public void setBetterRateAvailable(boolean isBetterRateAvailable) {
+		this.isBetterRateAvailable = isBetterRateAvailable;
+	}
+
+	public BigDecimal getBetterRateAmountSlab() {
+		return betterRateAmountSlab;
+	}
+
+	public void setBetterRateAmountSlab(BigDecimal betterRateAmountSlab) {
+		this.betterRateAmountSlab = betterRateAmountSlab;
+	}
+
+	public BigDecimal getDiffInBetterRateFcAmount() {
+		return diffInBetterRateFcAmount;
+	}
+
+	public void setDiffInBetterRateFcAmount(BigDecimal diffInBetterRateFcAmount) {
+		this.diffInBetterRateFcAmount = diffInBetterRateFcAmount;
+	}
+	
+	public String getDiscountOnComissionFlag() {
+		return discountOnComissionFlag;
+	}
+
+	public void setDiscountOnComissionFlag(String discountOnComissionFlag) {
+		this.discountOnComissionFlag = discountOnComissionFlag;
+	}
+
+	public BigDecimal getRackExchangeRate() {
+		return rackExchangeRate;
+	}
+
+	public void setRackExchangeRate(BigDecimal rackExchangeRate) {
+		this.rackExchangeRate = rackExchangeRate;
+	}
+
+	public BigDecimal getYouSavedAmount() {
+		return youSavedAmount;
+	}
+
+	public void setYouSavedAmount(BigDecimal youSavedAmount) {
+		this.youSavedAmount = youSavedAmount;
+	}
+
+	public String getCustomerChoice() {
+		return customerChoice;
+	}
+
+	public void setCustomerChoice(String customerChoice) {
+		this.customerChoice = customerChoice;
+	}
+
+	public BigDecimal getYouSavedAmountInFC() {
+		return youSavedAmountInFC;
+	}
+
+	public void setYouSavedAmountInFC(BigDecimal youSavedAmountInFC) {
+		this.youSavedAmountInFC = youSavedAmountInFC;
+	}
+
+	public BigDecimal getPlaceOrderId() {
+		return placeOrderId;
+	}
+
+	public void setPlaceOrderId(BigDecimal placeOrderId) {
+		this.placeOrderId = placeOrderId;
+	}
+
+	public BigDecimal getCostExchangeRate() {
+		return costExchangeRate;
+	}
+
+	public void setCostExchangeRate(BigDecimal costExchangeRate) {
+		this.costExchangeRate = costExchangeRate;
+	}
+
+	public BigDecimal getCorporateMasterId() {
+		return corporateMasterId;
+	}
+
+	public void setCorporateMasterId(BigDecimal corporateMasterId) {
+		this.corporateMasterId = corporateMasterId;
+	}
+
+	public String getProductAvaliable() {
+		return productAvaliable;
+	}
+
+	public void setProductAvaliable(String productAvaliable) {
+		this.productAvaliable = productAvaliable;
+	}
+
+	public String getFundAvaliable() {
+		return fundAvaliable;
+	}
+
+	public void setFundAvaliable(String fundAvaliable) {
+		this.fundAvaliable = fundAvaliable;
 	}
 
 }

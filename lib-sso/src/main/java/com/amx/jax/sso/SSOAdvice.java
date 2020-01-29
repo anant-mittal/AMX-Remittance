@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -14,10 +15,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
 import com.amx.jax.api.AmxFieldError;
 import com.amx.jax.exception.AmxAdvice;
 import com.amx.jax.exception.AmxApiError;
+import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.exception.ApiHttpExceptions.ApiHttpArgException;
 import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
 import com.amx.jax.exception.ExceptionMessageKey;
@@ -25,6 +28,9 @@ import com.amx.utils.HttpUtils;
 
 @ControllerAdvice
 public class SSOAdvice extends AmxAdvice {
+
+	@Autowired
+	AppConfig appConfig;
 
 	@ExceptionHandler(AccessDeniedException.class)
 	@ResponseBody
@@ -50,6 +56,14 @@ public class SSOAdvice extends AmxAdvice {
 		ExceptionMessageKey.resolveLocalMessage(apiError);
 		response.setHeader(AppConstants.EXCEPTION_HEADER_KEY, apiError.getException());
 		return new ResponseEntity<AmxApiError>(apiError, HttpStatus.FORBIDDEN);
+	}
+
+	@Override
+	public HttpStatus getHttpStatus(AmxApiException exp) {
+		if (appConfig.isAppResponseOK()) {
+			return HttpStatus.OK;
+		}
+		return super.getHttpStatus(exp);
 	}
 
 }

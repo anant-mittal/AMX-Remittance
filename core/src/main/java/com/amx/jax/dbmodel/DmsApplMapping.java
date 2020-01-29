@@ -25,6 +25,16 @@ public class DmsApplMapping {
 	private String docFormat;
 	private Date createdOn;
 	private String createdBy;
+	private String uploadType;
+	
+	@Column(name = "UPLOAD_TYPE")
+	public String getUploadType() {
+		return uploadType;
+	}
+
+	public void setUploadType(String uploadType) {
+		this.uploadType = uploadType;
+	}
 
 	@Id	
 	@GeneratedValue(generator="ex_dms_appl_map_seq",strategy=GenerationType.SEQUENCE)

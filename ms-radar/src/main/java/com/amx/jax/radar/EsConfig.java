@@ -23,6 +23,7 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.AppParam;
 import com.amx.utils.ArgUtil;
 
+@SuppressWarnings("rawtypes")
 @Configuration
 public class EsConfig extends AbstractFactoryBean {
 
@@ -51,6 +52,9 @@ public class EsConfig extends AbstractFactoryBean {
 
 	@Value("${elasticsearch.password}")
 	private String clusterPass;
+
+	@Value("${elasticsearch.enabled}")
+	private boolean enabled;
 
 	private HttpHeaders basicAuthHeader;
 
@@ -147,6 +151,10 @@ public class EsConfig extends AbstractFactoryBean {
 			};
 		}
 		return basicAuthHeader;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
 	}
 
 }

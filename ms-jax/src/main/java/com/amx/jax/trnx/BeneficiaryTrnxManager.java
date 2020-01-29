@@ -14,32 +14,56 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 
 import com.amx.amxlib.constant.AuthType;
-import com.amx.amxlib.model.BeneAccountModel;
-import com.amx.amxlib.model.BenePersonalDetailModel;
+import com.amx.amxlib.constant.NotificationConstants;
+import com.amx.amxlib.model.BeneCreateDetailsDTO;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.JaxAuthContext;
+import com.amx.jax.branchbene.BeneAccountManager;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dao.BeneficiaryDao;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
+import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.dbmodel.bene.BeneficaryStatus;
+import com.amx.jax.dict.ContactType;
+import com.amx.jax.model.request.benebranch.BeneAccountModel;
+import com.amx.jax.model.request.benebranch.BenePersonalDetailModel;
+import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
+import com.amx.jax.dict.AmxEnums.CommunicationEvents;
+import com.amx.jax.model.response.customer.PersonInfo;
+import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.client.PushNotifyClient;
+import com.amx.jax.postman.client.WhatsAppClient;
 import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.PushMessage;
+import com.amx.jax.postman.model.SMS;
+import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.repository.BeneficaryStatusRepository;
 import com.amx.jax.repository.IBeneficaryContactDao;
 import com.amx.jax.repository.IBeneficiaryAccountDao;
 import com.amx.jax.repository.IBeneficiaryMasterDao;
+import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IBeneficiaryRelationshipDao;
-import com.amx.jax.service.JaxEmailNotificationService;
 import com.amx.jax.service.MetaService;
 import com.amx.jax.service.ParameterService;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryValidationService;
+import com.amx.jax.services.JaxEmailNotificationService;
+import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.manager.CustomerDBAuthManager;
 import com.amx.jax.userservice.service.UserService;
+import com.amx.jax.util.CommunicationPrefsUtil;
+import com.amx.jax.util.CommunicationPrefsUtil.CommunicationPrefsResult;
 import com.amx.jax.validation.BenePersonalDetailValidator;
+import com.amx.utils.ArgUtil;
+import com.amx.utils.JsonUtil;
 
 /**
  * @author Prashant
@@ -86,17 +110,38 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 
 	@Autowired
 	BeneficiaryDao beneficiaryDao;
-	
+
 	@Autowired
 	JaxEmailNotificationService jaxEmailNotificationService;
 
+	@Autowired
+	PostManService postManService;
+
+	@Autowired
+	private PushNotifyClient pushNotifyClient;
+
+	@Autowired
+	IBeneficiaryOnlineDao beneficiaryOnlineDao;
+	@Autowired
+	BeneAccountManager beneAccountManager;
+	@Autowired	
+	CustomerDao custDao;
+	
+	@Autowired
+	CommunicationPrefsUtil communicationPrefsUtil;
+	
+	@Autowired
+	WhatsAppClient whatsAppClient;
+
+	@Autowired
+	CustomerDBAuthManager customerDBAuthManager;
 	@Override
 	public BeneficiaryTrnxModel init() {
 		BeneficiaryTrnxModel model = new BeneficiaryTrnxModel();
 		save(model);
 		return model;
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -106,6 +151,12 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	@Transactional
 	public BeneficiaryTrnxModel commit() {
 		BeneficiaryTrnxModel beneficiaryTrnxModel = get();
+		return commit(beneficiaryTrnxModel);
+	}
+
+
+	public BeneficiaryTrnxModel commit(BeneficiaryTrnxModel beneficiaryTrnxModel) {
+		
 		logger.info("commiting beneficary: " + beneficiaryTrnxModel.toString());
 		BeneficaryMaster beneMaster = commitBeneMaster(beneficiaryTrnxModel);
 		commitBeneContact(beneficiaryTrnxModel, beneMaster.getBeneficaryMasterSeqId());
@@ -114,6 +165,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 				beneMaster.getBeneficaryMasterSeqId(), beneAccount.getBeneficaryAccountSeqId());
 		logger.info("commit done");
 		logger.info("Beneficiary Relationship Sequence Id : " +beneRelationship.getBeneficaryRelationshipId());
+		beneficiaryTrnxModel.setBeneficaryRelationSeqId(beneRelationship.getBeneficaryRelationshipId());
 		populateOldEmosData(beneficiaryTrnxModel, beneMaster.getBeneficaryMasterSeqId(),
 				beneAccount);
 		beneRelationship = beneficiaryRelationshipDao.findOne(beneRelationship.getBeneficaryRelationshipId());
@@ -127,6 +179,24 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		}else {
 			logger.info("Map Sequence Id generated: {}", beneRelationship.getMapSequenceId());
 		}
+		BenificiaryListView beneListView = beneficiaryOnlineDao
+				.findBybeneficiaryRelationShipSeqId(beneRelationship.getBeneficaryRelationshipId());
+
+		BigDecimal custId = beneListView.getCustomerId();
+		PersonInfo personInfo = userService.getPersonInfo(custId);
+
+		BeneCreateDetailsDTO beneDetails = new BeneCreateDetailsDTO();
+		beneDetails.setBeneBankName(beneListView.getBankShortNames());
+		beneDetails.setBeneCountry(beneListView.getBenificaryBankCountryName());
+		beneDetails.setBeneName(beneListView.getBenificaryName());
+		if(!ArgUtil.isEmpty(personInfo.getLastName())) {
+			beneDetails.setCustomerName(personInfo.getFirstName() +" "+personInfo.getLastName());
+		}
+		else {
+			beneDetails.setCustomerName(personInfo.getFirstName());
+		}
+
+		sendNotificationTemplate(beneDetails, personInfo, custId);
 		return beneficiaryTrnxModel;
 	}
 
@@ -196,7 +266,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 			beneficaryAccount.setCurrencyId(accountDetails.getCurrencyId());
 			beneficaryAccount.setIsActive(ConstantDocument.Yes);
 			beneficaryAccount.setServiceGroupId(accountDetails.getServiceGroupId());
-			beneficaryAccount.setServiceProviderBranchId(accountDetails.getServiceProviderBranchId());
+			beneficaryAccount.setServiceProviderBranchId(beneAccountManager.getRoutingBankBranchId(accountDetails));
 			beneficaryAccount.setServiceProviderId(accountDetails.getServiceProviderId());
 			beneficaryAccount.setSwiftCode(accountDetails.getSwiftCode());
 
@@ -228,7 +298,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	 * @return bankbranch code
 	 * 
 	 */
-	private BigDecimal getBankBranchCode(BigDecimal bankId, BigDecimal bankBranchId) {
+	public BigDecimal getBankBranchCode(BigDecimal bankId, BigDecimal bankBranchId) {
 		return bankService.getBankBranchView(bankId, bankBranchId).getBranchCode();
 	}
 
@@ -330,7 +400,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 			logger.info("creating new bene maseter");
 			beneMaster = new BeneficaryMaster();
 			beneMaster.setApplicationCountryId(metaData.getCountryId());
-			BeneficaryStatus beneStatus = getbeneStatus();
+			BeneficaryStatus beneStatus = getbeneStatus(benePersonalDetails.getBeneficaryTypeId());
 			beneMaster.setBeneficaryStatus(beneStatus.getBeneficaryStatusId());
 			beneMaster.setBeneficaryStatusName(beneStatus.getBeneficaryStatusName());
 			beneMaster.setCreatedBy(getCreatedBy());
@@ -377,15 +447,15 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	}
 
 	/**
+	 * @param bigDecimal 
 	 * @return status of bene
 	 * 
 	 */
-	private BeneficaryStatus getbeneStatus() {
-		if (JaxChannel.ONLINE.equals(metaData.getChannel())) {
+	private BeneficaryStatus getbeneStatus(BigDecimal beneStatusId) {
+		if (beneStatusId == null) {
 			return beneficaryStatusRepository.findByBeneficaryStatusName(ConstantDocument.INDIVIDUAL_STRING);
-		} else {
-			return beneficaryStatusRepository.findByBeneficaryStatusName(ConstantDocument.NON_INDIVIDUAL_STRING);
 		}
+		return beneficaryStatusRepository.findOne(beneStatusId);
 	}
 
 	/**
@@ -397,7 +467,19 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	 * 
 	 */
 	public ApiResponse commitTransaction(String mOtp, String eOtp) {
-		userService.validateOtp(null, mOtp, eOtp);
+		BigDecimal custId = metaData.getCustomerId();
+		JaxAuthContext.contactType(ContactType.SMS_EMAIL);
+		if(eOtp != null) {
+			JaxAuthContext.eOtp(eOtp);
+		}
+		if(mOtp != null) {
+			JaxAuthContext.mOtp(mOtp);
+		}
+		logger.info("Flow is "+AppContextUtil.getFlow());
+		if(custId != null) {
+			customerDBAuthManager.validateAndSendOtp(custId);
+		}
+		//userService.validateOtp(null, mOtp, eOtp);
 		commit();
 		ApiResponse apiResponse = getBlankApiResponse();
 		apiResponse.getData().setType("bene-trnx-model");
@@ -457,5 +539,57 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		// TODO Auto-generated method stub
 		return null;
 	}
+	public void sendNotificationTemplate(BeneCreateDetailsDTO wrapper, PersonInfo personInfo, BigDecimal custId) {
+		try {
+			Customer c = custDao.getActiveCustomerDetailsByCustomerId(custId);
+			CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(CommunicationEvents.BENE_CREAT_SUCC, c);
+			logger.debug("Sending beneCreationEmail  to customer : ");
+			// Send Email
+			if(communicationPrefsResult.isEmail()) {
+				Email beneCreationEmail = new Email();
+				beneCreationEmail.setSubject("New Beneficiary Addition Success");
+				if (personInfo.getEmail() != null) {
+					beneCreationEmail.addTo(personInfo.getEmail());
+				}
+				beneCreationEmail.setITemplate(TemplatesMX.BENE_SUCC);
+				beneCreationEmail.setHtml(true);
+
+				beneCreationEmail.getModel().put(NotificationConstants.RESP_DATA_KEY, wrapper);
+				postManService.sendEmailAsync(beneCreationEmail);
+			}
+			
+			if(communicationPrefsResult.isSms()) {
+				SMS sms = new SMS();
+				sms.addTo(personInfo.getPrefixCodeMobile()+personInfo.getMobile());
+				sms.setITemplate(TemplatesMX.BENE_SUCC);
+				sms.getModel().put(NotificationConstants.RESP_DATA_KEY, wrapper);
+				postManService.sendSMSAsync(sms);
+			}
+			
+			if(communicationPrefsResult.isWhatsApp()) {
+				WAMessage waMessage = new WAMessage();
+				waMessage.addTo(personInfo.getWhatsappPrefixCode()+personInfo.getWhatsAppNumber());
+				waMessage.setITemplate(TemplatesMX.BENE_SUCC);
+				waMessage.getModel().put(NotificationConstants.RESP_DATA_KEY, wrapper);
+				logger.info("Wa for bene succ "+JsonUtil.toJson(waMessage));
+				whatsAppClient.send(waMessage);
+			}
+			
+			if(communicationPrefsResult.isPushNotify()) {
+				// Send Push Message
+				PushMessage pushMessage = new PushMessage();
+
+				pushMessage.setITemplate(TemplatesMX.BENE_SUCC);
+				pushMessage.getModel().put(NotificationConstants.RESP_DATA_KEY, wrapper);
+				pushMessage.addToUser(custId);
+				pushNotifyClient.send(pushMessage);
+			}
+			
+
+		} catch (Exception e) {
+			logger.error("Error while sending mail beneCreationEmail : " , e);
+		}
+	}
+
 
 }

@@ -19,6 +19,9 @@ public interface CountryRepository extends JpaRepository<CountryMasterView, BigD
 	@Query("Select c from CountryMasterView c where  languageId=?1 ORDER BY countryName asc")
 	List<CountryMasterView> findByLanguageId(BigDecimal languageId);
 	
+	@Query("Select c from CountryMasterView c where  languageId=?1 ORDER BY countryName asc")
+	List<CountryMasterView> findByArabicLanguageId(BigDecimal languageId);
+	
 	@Query("Select c from CountryMasterView c where  languageId=?1 and countryId=?2 ORDER BY countryName asc")
 	List<CountryMasterView> findByLanguageIdAndCountryId(BigDecimal languageId,BigDecimal countryId);
 	
@@ -30,5 +33,8 @@ public interface CountryRepository extends JpaRepository<CountryMasterView, BigD
 	
 	@Query("Select c from CountryMasterView c where  languageId=?1 and (beneCountryRisk != 1 or countryId = ?2 ) ORDER BY countryName asc")
 	List<CountryMasterView> findByLanguageIdAndNonBeneRisk(BigDecimal languageId, BigDecimal homeCountryId);
+	
+	@Query("Select c from CountryMasterView c where  languageId=?2 and (beneCountryRisk != 1 or countryId = ?2 ) ORDER BY countryName asc")
+	List<CountryMasterView> findByArabicLanguageIdAndNonBeneRisk(BigDecimal languageId, BigDecimal homeCountryId);
 
 }

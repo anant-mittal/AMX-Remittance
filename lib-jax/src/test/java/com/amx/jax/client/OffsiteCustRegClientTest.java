@@ -13,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.jax.api.AmxApiResponse;
-
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.dto.SendOtpModel;

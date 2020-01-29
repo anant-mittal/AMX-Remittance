@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerEmploymentInfo;
 import com.amx.jax.dbmodel.IncomeModel;
@@ -23,7 +24,7 @@ public class IncomeDao {
 	
 	
 	public List<IncomeModel> getAnnualIncome(BigDecimal customerId) {
-		List<IncomeModel> incomeList = incomeRepository.getAnnualIncome();
+		List<IncomeModel> incomeList = incomeRepository.getAnnualTransactionLimitRange(ConstantDocument.ANNUAL_INCOME_RANGE);
 		return incomeList;
 
 	}
@@ -41,9 +42,15 @@ public class IncomeDao {
 	public void saveCustomerEmploymentInfo(CustomerEmploymentInfo c) {
 		customerEmploymentInfoRepository.save(c);
 	}
-	public IncomeModel getAnnualIncomeRangeId(BigDecimal incomeRangeFrom, BigDecimal incomeRangeTo) {
-		IncomeModel incomeModel  = incomeRepository.getAnnualIncomeRangeId(incomeRangeFrom, incomeRangeTo);
+	public List<IncomeModel> getAnnualIncomeRangeId(BigDecimal incomeRangeFrom, BigDecimal incomeRangeTo) {
+		List<IncomeModel> incomeModel  = incomeRepository.getAnnualIncomeRangeId(incomeRangeFrom, incomeRangeTo);
 		return incomeModel;
+	}
+	
+	public List<IncomeModel> getAnnualTransactionLimitRange() {
+		List<IncomeModel> incomeList = incomeRepository.getAnnualTransactionLimitRange(ConstantDocument.ANNUAL_TRANSACTION_LIMIT);
+		return incomeList;
+
 	}
 	
 }

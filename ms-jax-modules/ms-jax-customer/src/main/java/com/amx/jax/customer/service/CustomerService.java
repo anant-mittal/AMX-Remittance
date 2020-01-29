@@ -1,35 +1,51 @@
 package com.amx.jax.customer.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dbmodel.ContactDetail;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
+import com.amx.jax.dbmodel.IdentityTypeMaster;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.customer.DuplicateCustomerDto;
+import com.amx.jax.model.customer.IdentityTypeDto;
 import com.amx.jax.model.customer.SecurityQuestionModel;
+import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.response.customer.CustomerContactDto;
 import com.amx.jax.model.response.customer.CustomerDto;
 import com.amx.jax.model.response.customer.CustomerIdProofDto;
 import com.amx.jax.model.response.customer.CustomerIncomeRangeDto;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.repository.IContactDetailDao;
 import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.services.AbstractService;
+import com.amx.jax.services.JaxNotificationService;
+import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
+import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.jax.userservice.manager.OnlineCustomerManager;
 import com.amx.jax.userservice.service.UserService;
 
@@ -54,6 +70,12 @@ public class CustomerService extends AbstractService {
 	MetaData metaData;
 	@Autowired
 	OnlineCustomerManager onlineCustomerManager;
+	@Autowired
+	CustomerDao customerDao;
+	@Autowired
+	CustomerIdProofManager customerIdProofManager;
+	@Autowired
+	JaxNotificationService jaxNotificationService ; 
 	
 	static final Logger LOGGER = LoggerFactory.getLogger(CustomerService.class);
 
@@ -114,14 +136,21 @@ public class CustomerService extends AbstractService {
 		ContactDetail customerContact = customerContacts.get(0);
 		customerContactDto.setBlock(customerContact.getBlock());
 		customerContactDto.setBuildingNo(customerContact.getBuildingNo());
-		customerContactDto.setCityName(customerContact.getFsCityMaster().getFsCityMasterDescs().get(0).getCityName());
+		if (customerContact.getFsCityMaster() != null) {
+			customerContactDto
+					.setCityName(customerContact.getFsCityMaster().getFsCityMasterDescs().get(0).getCityName());
+		}
 		customerContactDto
 				.setCountryName(customerContact.getFsCountryMaster().getFsCountryMasterDescs().get(0).getCountryName());
-		customerContactDto
-				.setDistrict(customerContact.getFsDistrictMaster().getFsDistrictMasterDescs().get(0).getDistrict());
+		if (customerContact.getFsDistrictMaster() != null) {
+			customerContactDto
+					.setDistrict(customerContact.getFsDistrictMaster().getFsDistrictMasterDescs().get(0).getDistrict());
+		}
 		customerContactDto.setFlat(customerContact.getFlat());
-		customerContactDto
-				.setStateName(customerContact.getFsStateMaster().getFsStateMasterDescs().get(0).getStateName());
+		if (customerContact.getFsStateMaster() != null) {
+			customerContactDto
+					.setStateName(customerContact.getFsStateMaster().getFsStateMasterDescs().get(0).getStateName());
+		}
 		customerContactDto.setStreet(customerContact.getStreet());
 		return customerContactDto;
 	}
@@ -138,6 +167,7 @@ public class CustomerService extends AbstractService {
 		} catch (Exception e) {
 		}
 		customerDto.setTitle(getTitleDescription(customer.getTitle()));
+		customerDto.setMedicalInsuranceInd(ConstantDocument.Yes.equalsIgnoreCase(customer.getMedicalInsuranceInd()));
 		return customerDto;
 	}
 
@@ -179,8 +209,53 @@ public class CustomerService extends AbstractService {
 	
 	public AmxApiResponse<BoolRespModel, Object> saveCustomerSecQuestions(List<SecurityQuestionModel> securityQuestions) {
 		onlineCustomerManager.saveCustomerSecQuestions(securityQuestions);
+		PersonInfo personInfo = userService.getPersonInfo(metaData.getCustomerId());
+		CustomerModel model = new CustomerModel();
+		model.setSecurityquestions(securityQuestions);
+		model.setCustomerId(metaData.getCustomerId());
+		jaxNotificationService.sendProfileChangeNotificationEmail(model, personInfo);
 		BoolRespModel boolRespModel = new BoolRespModel();
 		boolRespModel.setSuccess(Boolean.TRUE);
 		return AmxApiResponse.build(boolRespModel);
+	}
+
+	public AmxApiResponse<BoolRespModel, Object> updatePasswordCustomer(String identityInt, String resetPwd) {
+		onlineCustomerManager.updatePassword(identityInt, resetPwd);
+		
+		BoolRespModel boolRespModel = new BoolRespModel();
+		boolRespModel.setSuccess(Boolean.TRUE);
+		return AmxApiResponse.build(boolRespModel);
+	}	
+
+	public List<DuplicateCustomerDto> checkForDuplicateCustomer(CustomerPersonalDetail customerPersonalDetail) {
+		Set<DuplicateCustomerDto> duplicateCustomerDtoSet = new HashSet<>();
+		List<Customer> duplicateRecords = customerDao.findDuplicateCustomerRecords(customerPersonalDetail.getNationalityId(),
+				customerPersonalDetail.getMobile(), customerPersonalDetail.getEmail(), customerPersonalDetail.getFirstName());
+
+		if (CollectionUtils.isNotEmpty(duplicateRecords)) {
+			ListIterator<Customer> itr = duplicateRecords.listIterator();
+			while (itr.hasNext()) {
+				Customer customer = itr.next();
+				duplicateCustomerDtoSet.add(convert(customer));
+			}
+		}
+		return new ArrayList<>(duplicateCustomerDtoSet);
+	}
+
+	DuplicateCustomerDto convert(Customer customer) {
+		DuplicateCustomerDto dto = new DuplicateCustomerDto();
+		dto.setDateOfBirth(customer.getDateOfBirth());
+		dto.setFirstName(customer.getFirstName());
+		dto.setIdentityInt(customer.getIdentityInt());
+		dto.setIdentityTypeId(customer.getIdentityTypeId());
+		dto.setLastName(customer.getLastName());
+		dto.setNationalityId(customer.getNationalityId());
+		dto.setCustomerId(customer.getCustomerId());
+		return dto;
+	}
+
+	public List<IdentityTypeDto> getIdentityTypes() {
+		List<IdentityTypeMaster> identityTypes = customerIdProofManager.getActiveIdentityTypes();
+		return identityTypes.stream().map(i -> new IdentityTypeDto(i.getBusinessComponentId(), i.getIdentityType())).collect(Collectors.toList());
 	}
 }

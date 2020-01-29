@@ -68,8 +68,10 @@ public class BrokerService {
 
 		for (EventNotificationView current_event_record : event_list) {
 			AppContextUtil.setTenant(tenant);
+			AppContextUtil.setFlowfix(current_event_record.getEvent_code());
 			AppContextUtil.setSessionId(sessionId);
 			AppContextUtil.getTraceId(true, true);
+			AppContextUtil.resetTraceTime();
 			AppContextUtil.init();
 			try {
 				logger.debug("------------------ current_event_record DB Data --------------------");
@@ -86,6 +88,8 @@ public class BrokerService {
 				event.setData(event_data_map);
 				// event.setDescription(current_event_record.getEvent_desc());
 				event.setText(current_event_record.getEvent_desc());
+				//Additional Details to be synced
+				event.getDetails().put("msg1", current_event_record.getEvent_desc());
 
 				logger.debug("------------------ Event Data to push to Message Queue --------------------");
 				logger.debug(event.toString());

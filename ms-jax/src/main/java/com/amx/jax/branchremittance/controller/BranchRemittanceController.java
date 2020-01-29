@@ -22,23 +22,50 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.branchremittance.service.BranchRemittanceExchangeRateService;
 import com.amx.jax.branchremittance.service.BranchRemittanceService;
+import com.amx.jax.branchremittance.service.DirectPaymentLinkService;
 import com.amx.jax.client.remittance.IRemittanceService;
+import com.amx.jax.manager.remittance.ServiceApplicabilityManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.ResourceDTO;
+import com.amx.jax.model.request.remittance.BenePackageRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
+
+import com.amx.jax.model.request.remittance.PlaceOrderRequestModel;
+import com.amx.jax.model.request.remittance.PlaceOrderResponseModel;
+import com.amx.jax.model.request.remittance.PlaceOrderUpdateStatusDto;
+
+import com.amx.jax.model.request.remittance.GetServiceApplicabilityRequest;
+
+import com.amx.jax.model.request.remittance.RoutingPricingRequest;
+import com.amx.jax.model.response.customer.BenePackageResponse;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
+import com.amx.jax.model.response.remittance.CardTypeDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
+import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
+import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
+
+import com.amx.jax.model.response.remittance.GsmPlaceOrderListDto;
+import com.amx.jax.model.response.remittance.GsmSearchRequestParameter;
+
+import com.amx.jax.model.response.remittance.GetServiceApplicabilityResponse;
+
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
+import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
+import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
+import com.amx.jax.model.response.remittance.RatePlaceOrderInquiryDto;
+import com.amx.jax.model.response.remittance.RatePlaceOrderResponseModel;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
+import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse;
+import com.amx.utils.JsonUtil;
 
 @RestController
 public class BranchRemittanceController implements IRemittanceService {
@@ -50,6 +77,11 @@ public class BranchRemittanceController implements IRemittanceService {
 	BranchRemittanceService branchRemitService;
 	@Autowired
 	BranchRemittanceExchangeRateService branchRemittanceExchangeRateService;
+	@Autowired
+	ServiceApplicabilityManager serviceApplicabilityManager;
+	
+	@Autowired
+	DirectPaymentLinkService directPaymentLinkService;
 
 	@RequestMapping(value = Path.BR_REMITTANCE_SAVE_APPL, method = RequestMethod.POST)
 	@Override
@@ -155,7 +187,7 @@ public class BranchRemittanceController implements IRemittanceService {
 	@RequestMapping(value = Path.BR_REMITTANCE_SAVE_CUSTOMER_BANKS, method = RequestMethod.POST)
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> saveCustomerBankDetails(
-			@RequestBody List<CustomerBankRequest> customerBank) {
+			@RequestBody CustomerBankRequest customerBank) {
 		logger.debug("saveCustomerBankDetails" + customerBank);
 		BoolRespModel result = branchRemitService.saveCustomerBankDetails(customerBank);
 		return AmxApiResponse.build(result);
@@ -194,9 +226,9 @@ public class BranchRemittanceController implements IRemittanceService {
 	@RequestMapping(value = Path.BR_REMITTANCE_PURPOSE_OF_TRNX, method = RequestMethod.GET)
 	@Override
 	public AmxApiResponse<AdditionalExchAmiecDto, Object> getPurposeOfTrnx(
-			@RequestParam(value = Params.BENE_RELATION_SHIP_ID) BigDecimal beneRelaId) {
+			@RequestParam(value = Params.BENE_RELATION_SHIP_ID,required=true) BigDecimal beneRelaId,@RequestParam(value = Params.ROUTING_COUNTRY_ID,required=true) BigDecimal routingCountryId) {
 		logger.debug("getPurposeOfTrnx :" + beneRelaId);
-		return branchRemitService.getPurposeOfTrnx(beneRelaId);
+		return branchRemitService.getPurposeOfTrnx(beneRelaId,routingCountryId);
 	}
 
 	@RequestMapping(value = Path.BR_REMITTANCE_GET_EXCHANGE_RATE, method = RequestMethod.POST)
@@ -235,7 +267,102 @@ public class BranchRemittanceController implements IRemittanceService {
 		return AmxApiResponse.build(result);
 	}
 
+	@RequestMapping(value=Path.BR_REMITTANCE_GET_ROUTING_PRICING_RATE,method=RequestMethod.POST)
+	@Override
+	public AmxApiResponse<DynamicRoutingPricingResponse, Object> getDynamicRoutingPricing(@RequestBody @Valid RoutingPricingRequest routingPricingRequest) {
+		// TODO Auto-generated method stub
+		return branchRemittanceExchangeRateService.getDynamicRoutingAndPricingResponse(routingPricingRequest);
+	}
 
+	@RequestMapping(value=Path.BR_REMITTANCE_GET_FLEX_FIELDS,method=RequestMethod.POST)
+	@Override
+	public AmxApiResponse<FlexFieldReponseDto, Object> getFlexField(@Valid @RequestBody BranchRemittanceGetExchangeRateRequest request) {
+	logger.debug("getExchaneRate : " + request);
+	return branchRemittanceExchangeRateService.getFlexField(request);
+	}
 
+	@RequestMapping(value = Path.BR_REMITTANCE_PAYMENT_LINK, method = RequestMethod.GET)
+	@Override
+	public AmxApiResponse<PaymentLinkRespDTO, Object> createAndSendPaymentLink() {
+		logger.info("Payment Link API Call ------ ");
+		return directPaymentLinkService.fetchPaymentLinkDetails();
+	}
+
+	@RequestMapping(value=Path.BR_REMITTANCE_VALIDATE_PAY_LINK,method=RequestMethod.POST)
+	@Override
+	public AmxApiResponse<PaymentLinkRespDTO, Object> validatePayLink(BigDecimal linkId, String verificationCode) {
+		logger.info(" ------ Validate Payment Link API Call ------ ");
+		return directPaymentLinkService.validatePayLink(linkId, verificationCode);
+	}
 	
+
+	@RequestMapping(value=Path.BR_REMITTANCE_GET_GIFT_PACKAGE,method=RequestMethod.POST)
+	@Override
+	public AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(@RequestParam(value = Params.BENE_RELATION_SHIP_ID, required = true) BigDecimal beneRelaId) {		
+		return branchRemitService.getGiftService(beneRelaId);
+	}	
+
+	@RequestMapping(value = Path.GET_SERVICE_APPLICABILITY, method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<GetServiceApplicabilityResponse, Object> getServiceApplicability(@RequestBody @Valid GetServiceApplicabilityRequest request) {
+		List<GetServiceApplicabilityResponse> rules = serviceApplicabilityManager.getServiceApplicability(request);
+		return AmxApiResponse.buildList(rules);
+	}
+
+	@RequestMapping(value = Path.GET_CUSTOMER_CARD_TYPE, method = RequestMethod.GET)
+	@Override
+	public AmxApiResponse<CardTypeDto, Object> getCustomerCardTypeList() {
+		return branchRemitService.getCustomerCardTypeListResp();
+	}
+
+	@RequestMapping(value = Path.UPDATE_CUSTOMER_CARD_TYPE, method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> updateCustomerCardType(@RequestParam("chequeBankId") BigDecimal chequeBankId, 
+			@RequestParam("cardTypeId") BigDecimal cardTypeId, @RequestParam("nameOnCard") String nameOnCard) {
+		AmxApiResponse<BoolRespModel, Object> response = branchRemitService.updateCustomerCardType(chequeBankId, cardTypeId, nameOnCard);
+		return response;
+	}
+
+
+	@RequestMapping(value = Path.BR_REMITTANCE_GET_BENE_PACKAGE, method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BenePackageResponse, Object> getBenePackages(@RequestBody @Valid BenePackageRequest benePackageRequest) {
+		logger.debug("requst json: {}", JsonUtil.toJson(benePackageRequest));
+		return branchRemitService.getBenePackages(benePackageRequest);
+	}
+
+	@RequestMapping(value=Path.BR_REMITTANCE_SAVE_PLACE_ORDER,method=RequestMethod.POST)
+	@Override
+	public AmxApiResponse<RatePlaceOrderResponseModel, Object> savePlaceOrderApplication(@RequestBody @Valid PlaceOrderRequestModel placeOrderRequestModel) {
+		return branchRemitService.createPlaceOrder(placeOrderRequestModel);
+	}
+
+	@RequestMapping(value=Path.BR_REMITTANCE_FETCH_PLACE_ORDER,method=RequestMethod.POST)
+	@Override
+	public AmxApiResponse<RatePlaceOrderInquiryDto, Object> fetchPlaceOrderInquiry(BigDecimal countryBranchId) {
+		return branchRemitService.fetchRatePlaceOrder(countryBranchId);
+	}
+
+
+	@RequestMapping(value=Path.BR_REMITTANCE_UPDATE_PLACE_ORDER,method=RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> updateRatePlaceOrder(@Valid @RequestBody PlaceOrderUpdateStatusDto dto) {
+		// TODO Auto-generated method stub
+		return branchRemitService.updatePlaceOrder(dto);
+	}
+
+	@RequestMapping(value=Path.BR_REMITTANCE_PLACE_ORDER_COUNT,method=RequestMethod.POST)
+	@Override
+	public AmxApiResponse<GsmPlaceOrderListDto, Object> getCountryWisePlaceOrderCount(@RequestBody GsmSearchRequestParameter requestParameter) {
+		// TODO Auto-generated method stub
+		return branchRemitService.getCountryWisePlaceOrderCount(requestParameter);
+	}
+
+	@RequestMapping(value=Path.BR_REMITTANCE_ACCEPT_PLACE_ORDER,method=RequestMethod.POST)
+	@Override
+	public AmxApiResponse<PlaceOrderResponseModel, Object> acceptPlaceOrderByCustomer(BigDecimal ratePlaceOrderId) {
+		// TODO Auto-generated method stub
+		return branchRemitService.acceptPlaceOrder(ratePlaceOrderId);
+	}
+
 }

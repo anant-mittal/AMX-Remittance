@@ -15,7 +15,6 @@ import com.amx.jax.CustomerCredential;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.exception.AmxApiError;
-import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.config.UIServerError;
@@ -188,8 +187,8 @@ public class RegisterController {
 	@Deprecated
 	public ResponseWrapper<UserUpdateData> regLoginIdAndPassword(@RequestParam String loginId,
 			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp,
-			@RequestParam(required = false) String email) {
-		return registrationService.setCredentials(loginId, password, mOtp, eOtp, email, true);
+			@RequestParam(required = false) String email, @RequestParam(required = false) String referralCode) {
+		return registrationService.setCredentials(loginId, password, mOtp, eOtp, email, referralCode, true);
 	}
 
 	/**
@@ -201,7 +200,7 @@ public class RegisterController {
 	@RequestMapping(value = "/pub/register/creds/**", method = { RequestMethod.POST, })
 	public ResponseWrapper<UserUpdateData> regLoginIdAndPasswordJSON(@RequestBody ICustomerModel customerCredential) {
 		return registrationService.setCredentials(customerCredential.getLoginId(), customerCredential.getPassword(),
-				customerCredential.getMotp(), customerCredential.getEotp(), customerCredential.getEmail(), true);
+				customerCredential.getMotp(), customerCredential.getEotp(), customerCredential.getEmail(),customerCredential.getReferralCode(), true);
 	}
 
 	/** The partial reg service. */

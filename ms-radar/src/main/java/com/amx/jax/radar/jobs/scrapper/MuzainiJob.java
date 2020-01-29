@@ -9,7 +9,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -22,11 +22,12 @@ import com.amx.jax.dict.Currency;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.mcq.shedlock.SchedulerLock;
 import com.amx.jax.mcq.shedlock.SchedulerLock.LockContext;
-import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
 import com.amx.jax.radar.ESRepository;
+import com.amx.jax.radar.RadarConfig;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache;
-import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncIndex;
 import com.amx.jax.radar.jobs.customer.OracleViewDocument;
+import com.amx.jax.radar.snap.SnapQueryService.BulkRequestSnapBuilder;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.rates.AmxCurRate;
 import com.amx.jax.rest.RestService;
@@ -38,7 +39,8 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 @Component
 @Service
 //@ConditionalOnExpression(TestSizeApp.ENABLE_JOBS)
-@ConditionalOnProperty("jax.jobs.scrapper.rate")
+//@ConditionalOnProperty({ "jax.jobs.scrapper.rate", "elasticsearch.enabled" })
+@ConditionalOnExpression(RadarConfig.CE_RATE_SCRAPPER_AND_ES_AND_KWT)
 public class MuzainiJob {
 
 	@Autowired
@@ -61,7 +63,7 @@ public class MuzainiJob {
 	}
 
 	public void doTask() {
-		LOGGER.info("Scrapper Task");
+		LOGGER.debug("Scrapper Task");
 		try {
 			Document doc = Jsoup.connect("http://www.muzaini.com/ExchangeRates.aspx")
 					.data("ddlCurrency", "KWD")
@@ -70,7 +72,7 @@ public class MuzainiJob {
 					.post();
 
 			Elements trs = doc.select("#UpdatePanel1 table.ex-table tbody tr");
-			BulkRequestBuilder builder = new BulkRequestBuilder();
+			BulkRequestSnapBuilder builder = new BulkRequestSnapBuilder();
 			for (Element tr : trs) {
 				Elements tds = tr.select("td");
 				Currency cur = (Currency) ArgUtil.parseAsEnum(tds.get(0).text(),
@@ -85,7 +87,7 @@ public class MuzainiJob {
 					if (!ArgUtil.isEmpty(rate)) {
 						sellTrnsfrRate.setrType(RateType.SELL_TRNSFR);
 						sellTrnsfrRate.setrRate(rate);
-						builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
+						builder.update(DBSyncIndex.XRATE_JOB.getIndexName(),
 								new OracleViewDocument(sellTrnsfrRate));
 					}
 					AmxCurRate sellCash = sellTrnsfrRate.clone();
@@ -93,7 +95,7 @@ public class MuzainiJob {
 					if (!ArgUtil.isEmpty(sellCashRate)) {
 						sellCash.setrType(RateType.SELL_CASH);
 						sellTrnsfrRate.setrRate(sellCashRate);
-						builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
+						builder.update(DBSyncIndex.XRATE_JOB.getIndexName(),
 								new OracleViewDocument(sellCash));
 					}
 
@@ -102,7 +104,7 @@ public class MuzainiJob {
 					if (!ArgUtil.isEmpty(buyCashRate)) {
 						buyCash.setrType(RateType.BUY_CASH);
 						sellTrnsfrRate.setrRate(buyCashRate);
-						builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
+						builder.update(DBSyncIndex.XRATE_JOB.getIndexName(),
 								new OracleViewDocument(buyCash));
 					}
 				}

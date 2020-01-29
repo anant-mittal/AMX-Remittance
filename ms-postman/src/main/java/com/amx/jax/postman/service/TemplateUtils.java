@@ -6,10 +6,13 @@ import java.text.Bidi;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -17,12 +20,17 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.logger.LoggerService;
+import com.amx.jax.postman.PostManException;
 import com.amx.jax.scope.TenantProperties;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.IoUtils;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.SimpleJasperReportsContext;
@@ -33,12 +41,20 @@ import net.sf.jasperreports.engine.SimpleJasperReportsContext;
 @Component
 public class TemplateUtils {
 
+	private static final String CHECKED = "_NOT_FOUND_TEMPLATE_";
+
 	/** The log. */
-	private static Logger log = Logger.getLogger(TemplateUtils.class);
+	private static Logger log = LoggerService.getLogger(TemplateUtils.class);
 
 	/** The Constant base64. */
 	private static final Map<String, String> base64 = new ConcurrentHashMap<String, String>();
 	private static final Map<String, String> templateFiles = new ConcurrentHashMap<String, String>();
+
+	private static final Cache<String, String> templateFilesExternal = CacheBuilder.newBuilder()
+			.maximumSize(10000)
+			.expireAfterWrite(5, TimeUnit.MINUTES)
+			.build();
+
 	private static boolean IS_TEMPLATE_SCANNED = false;
 
 	/** The tenant properties. */
@@ -53,57 +69,208 @@ public class TemplateUtils {
 	@Autowired
 	private ApplicationContext applicationContext;
 
-	@Value("classpath*:*/templates/html/*.html")
+	@Value("classpath*:*templates/html/**/*.html")
 	private Resource[] htmlFiles;
 
-	@Value("classpath*:*/templates/json/*.json")
+	@Value("classpath*:*/templates/html/**/*.html")
+	private Resource[] htmlFiles2;
+
+	@Value("classpath*:*templates/json/*.json")
 	private Resource[] jsonFiles;
 
-	@Value("classpath*:*/templates/jasper/*.jrxml")
+	@Value("classpath*:*/templates/json/*.json")
+	private Resource[] jsonFiles2;
+
+	@Value("classpath*:*templates/jasper/*.jrxml")
 	private Resource[] jasperFiles;
 
-	public String getTemplateFile(String file, Tenant tnt, Locale locale) {
+	@Value("classpath*:*/templates/jasper/*.jrxml")
+	private Resource[] jasperFiles2;
+
+	@Value("${jax.static.url}")
+	String jaxStaticUrl;
+
+	@Value("${jax.static.context}")
+	String jaxStaticContext;
+
+	@Value("${jax.static.path}")
+	String jaxStaticPath;
+
+	public String getTemplateFile(String file, Tenant tnt, Locale locale, ContactType contactType) {
 		if (!IS_TEMPLATE_SCANNED) {
-			for (Resource resource : htmlFiles) {
-				String[] fileName = resource.getFilename().split("\\.(?=[^\\.]+$)");
-				String filePath = "html/" + fileName[0];
-				templateFiles.put(filePath, filePath);
+			try {
+				for (Resource resource : htmlFiles) {
+					String absPath = resource.getURI().toString().split("\\/templates\\/html\\/")[1];
+					String[] fileName = absPath.split("\\.(?=[^\\.]+$)");
+					String filePath = "html/" + fileName[0];
+					templateFiles.put(filePath, filePath);
+				}
+				for (Resource resource : htmlFiles2) {
+					String absPath = resource.getURI().toString().split("\\/templates\\/html\\/")[1];
+					String[] fileName = absPath.split("\\.(?=[^\\.]+$)");
+					String filePath = "html/" + fileName[0];
+					templateFiles.put(filePath, filePath);
+				}
+				for (Resource resource : jsonFiles) {
+					String absPath = resource.getURI().toString().split("\\/templates\\/json\\/")[1];
+					String[] fileName = absPath.split("\\.(?=[^\\.]+$)");
+					String filePath = "json/" + fileName[0];
+					templateFiles.put(filePath, filePath);
+				}
+				for (Resource resource : jsonFiles2) {
+					String absPath = resource.getURI().toString().split("\\/templates\\/json\\/")[1];
+					String[] fileName = absPath.split("\\.(?=[^\\.]+$)");
+					String filePath = "json/" + fileName[0];
+					templateFiles.put(filePath, filePath);
+				}
+				for (Resource resource : jasperFiles) {
+					String[] fileName = resource.getFilename().split("\\.(?=[^\\.]+$)");
+					String filePath = "jasper/" + fileName[0];
+					templateFiles.put(filePath, filePath);
+				}
+				for (Resource resource : jasperFiles2) {
+					String[] fileName = resource.getFilename().split("\\.(?=[^\\.]+$)");
+					String filePath = "jasper/" + fileName[0];
+					templateFiles.put(filePath, filePath);
+				}
+				IS_TEMPLATE_SCANNED = true;
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-			for (Resource resource : jsonFiles) {
-				String[] fileName = resource.getFilename().split("\\.(?=[^\\.]+$)");
-				String filePath = "json/" + fileName[0];
-				templateFiles.put(filePath, filePath);
-			}
-			for (Resource resource : jasperFiles) {
-				String[] fileName = resource.getFilename().split("\\.(?=[^\\.]+$)");
-				String filePath = "jasper/" + fileName[0];
-				templateFiles.put(filePath, filePath);
-			}
-			IS_TEMPLATE_SCANNED = true;
 		}
-		String specficFile = String.format("%s_%s.%s", file, locale.getLanguage(),
+
+		String fileCacheKey = String.format("%s:%s:%s:%s", file, locale, tnt, contactType);
+		String specficFile = null;
+		if (templateFiles.containsKey(fileCacheKey)) { // File is Scanned Already
+			if (!CHECKED.equals(templateFiles.get(fileCacheKey))) { // File is already Scanned and Found
+				return templateFiles.get(fileCacheKey);
+			}
+			// Template will be searched in External Folder
+		} else { // File is Not scanned yet, this is first time
+			specficFile = getValidTemplateFile(file, tnt, locale, contactType, false);
+			if (ArgUtil.is(specficFile)) {
+				templateFiles.put(fileCacheKey, specficFile);
+				return specficFile;
+			} else {
+				templateFiles.put(fileCacheKey, CHECKED);
+			}
+		}
+
+		specficFile = templateFilesExternal.getIfPresent(fileCacheKey);
+		if (ArgUtil.is(specficFile)) {
+			return specficFile;
+		}
+
+		specficFile = getValidTemplateFile(file, tnt, locale, contactType, true);
+		if (ArgUtil.is(specficFile)) {
+			templateFilesExternal.put(fileCacheKey, jaxStaticContext + "/templates/" + specficFile);
+			return jaxStaticContext + "/templates/" + specficFile;
+		} else {
+			log.error("Template Not Found {}", fileCacheKey);
+			throw new PostManException("Template Not Found");
+		}
+	}
+
+	private String getValidTemplateFile(String file, Tenant tnt, Locale locale, ContactType contactType,
+			boolean external) {
+		String relativeFile = file;
+		String folder = Constants.BLANK;
+
+		String specficFile = null;
+		String ext = ".html";
+		String subfolder = "html/";
+		if (!ArgUtil.isEmpty(contactType)) {
+			if (file.startsWith("html/")) {
+				relativeFile = file.replace("html/", Constants.BLANK);
+			} else if (file.startsWith("json/")) {
+				relativeFile = file.replace("json/", Constants.BLANK);
+				subfolder = "json/";
+				ext = ".json";
+			} else if (file.startsWith("jasper/")) {
+				relativeFile = file.replace("jasper/", Constants.BLANK);
+				subfolder = "jasper/";
+				ext = ".jrxml";
+			}
+			folder = subfolder + contactType.getShortCode() + "/";
+
+			if (external) {
+				specficFile = getValidTemplateFileExternal(folder, relativeFile, ext, tnt, locale);
+				if (ArgUtil.isEmpty(specficFile)) {
+					return getValidTemplateFileExternal(Constants.BLANK, file, ext, tnt, locale);
+				}
+				return specficFile;
+			}
+
+			specficFile = getValidTemplateFileInternal(folder, relativeFile, tnt, locale);
+			if (!ArgUtil.isEmpty(specficFile)) {
+				return specficFile;
+			}
+		}
+		specficFile = getValidTemplateFileInternal(Constants.BLANK, file, tnt, locale);
+			return specficFile;
+	}
+
+	private String getValidTemplateFileInternal(String folder, String relativeFile, Tenant tnt, Locale locale) {
+		String specficFile = String.format(folder + "%s_%s.%s", relativeFile, locale.getLanguage(),
 				ArgUtil.parseAsString(tnt, Constants.BLANK).toLowerCase());
+
 		if (templateFiles.containsKey(specficFile)) {
 			return templateFiles.get(specficFile);
 		}
 
-		String tenantFile = String.format("%s.%s", file,
+		String tenantFile = String.format(folder + "%s.%s", relativeFile,
 				ArgUtil.parseAsString(tnt, Constants.BLANK).toLowerCase());
 		if (templateFiles.containsKey(tenantFile)) {
 			templateFiles.put(specficFile, tenantFile);
 			return tenantFile;
 		}
 
-		String localeFile = String.format("%s_%s", file,
+		String localeFile = String.format(folder + "%s_%s", relativeFile,
 				locale.getLanguage());
 		if (templateFiles.containsKey(localeFile)) {
 			templateFiles.put(specficFile, localeFile);
 			return tenantFile;
 		}
 
-		templateFiles.put(specficFile, file);
+		String exactFile = folder + relativeFile;
+		if (templateFiles.containsKey(exactFile)) {
+			templateFiles.put(specficFile, exactFile);
+			return exactFile;
+		}
 
-		return file;
+		return null;
+	}
+
+	private String getValidTemplateFileExternal(String folder, String relativeFile, String ext, Tenant tnt,
+			Locale locale) {
+		String specficFile = String.format(folder + "%s_%s.%s", relativeFile, locale.getLanguage(),
+				ArgUtil.parseAsString(tnt, Constants.BLANK).toLowerCase());
+
+		Resource r = applicationContext.getResource("file:" + jaxStaticPath + "/templates/" + specficFile + ext);
+		if (r != null && r.exists()) {
+			return specficFile;
+		}
+		specficFile = String.format(folder + "%s.%s", relativeFile,
+				ArgUtil.parseAsString(tnt, Constants.BLANK).toLowerCase());
+		r = applicationContext.getResource("file:" + jaxStaticPath + "/templates/" + specficFile + ext);
+		if (r != null && r.exists()) {
+			return specficFile;
+		}
+
+		specficFile = String.format(folder + "%s_%s", relativeFile,
+				locale.getLanguage());
+		r = applicationContext.getResource("file:" + jaxStaticPath + "/templates/" + specficFile + ext);
+		if (r != null && r.exists()) {
+			return specficFile;
+		}
+
+		specficFile = folder + relativeFile;
+		r = applicationContext.getResource("file:" + jaxStaticPath + "/templates/" + specficFile + ext);
+		if (r != null && r.exists()) {
+			return specficFile;
+		}
+
+		return null;
 	}
 
 	/**
@@ -272,14 +439,21 @@ public class TemplateUtils {
 		StringBuilder sb = new StringBuilder();
 		sb.append("data:image/png;base64,");
 		String base64String = null;
+
 		if (base64.containsKey(contentId)) {
 			base64String = base64.get(contentId);
+		} else if (contentId.startsWith(jaxStaticContext)) {
+			byte[] imageByteArray = IoUtils
+					.toByteArray(
+							applicationContext.getResource("file:" + jaxStaticUrl + "/" + contentId).getInputStream());
+			base64String = StringUtils.newStringUtf8(Base64.encodeBase64(imageByteArray, false));
 		} else {
 			byte[] imageByteArray = IoUtils
 					.toByteArray(applicationContext.getResource("classpath:" + contentId).getInputStream());
 			base64String = StringUtils.newStringUtf8(Base64.encodeBase64(imageByteArray, false));
 			base64.put(contentId, base64String);
 		}
+
 		sb.append(base64String);
 		return sb.toString();
 	}
@@ -292,7 +466,11 @@ public class TemplateUtils {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public Resource readAsResource(String contentId) throws IOException {
+		if (contentId.startsWith(jaxStaticContext)) {
+			return applicationContext.getResource("file:" + jaxStaticUrl + "/" + contentId);
+		} else {
 		return applicationContext.getResource("classpath:" + contentId);
+	}
 	}
 
 	/**
@@ -307,5 +485,7 @@ public class TemplateUtils {
 		}
 		return parseAsString;
 	}
+
+	public static final Pattern PATTERN_CID = Pattern.compile("src=\"cid:(.*?)\"");
 
 }

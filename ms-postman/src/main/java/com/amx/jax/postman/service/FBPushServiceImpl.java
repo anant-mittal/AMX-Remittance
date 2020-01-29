@@ -1,8 +1,14 @@
 package com.amx.jax.postman.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +16,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.logger.client.AuditServiceClient;
@@ -43,6 +50,22 @@ public class FBPushServiceImpl implements IPushNotifyService {
 	@Value("${fcm.server.key}")
 	String serverKey;
 
+	/** The server key. */
+	@Value("${fcm.api.key}")
+	String apiKey;
+
+	@Value("${android.app.domain}")
+	String androidPackageName;
+
+	@Value("${ios.app.domain}")
+	String iosPackageName;
+
+	@Value("${domain.uri.prefix}")
+	String domainUriPrefix;
+
+	@Value("${company.app.url}")
+	String companyAppUrl;
+
 	/** The rest service. */
 	@Autowired
 	RestService restService;
@@ -66,6 +89,7 @@ public class FBPushServiceImpl implements IPushNotifyService {
 
 	/** The Constant DATA_TITLE. */
 	private static final JsonPath DATA_TITLE = new JsonPath("/data/data/title");
+	private static final JsonPath DATA_TAG = new JsonPath("/data/data/tag");
 
 	/** The Constant DATA_IS_BG. */
 	private static final JsonPath DATA_IS_BG = new JsonPath("/data/data/is_background");
@@ -84,6 +108,7 @@ public class FBPushServiceImpl implements IPushNotifyService {
 
 	/** The Constant NOTFY_TITLE. */
 	private static final JsonPath NOTFY_TITLE = new JsonPath("/notification/title");
+	private static final JsonPath NOTFY_TAG = new JsonPath("/notification/tag");
 
 	/** The Constant NOTFY_SOUND. */
 	private static final JsonPath NOTFY_SOUND = new JsonPath("/notification/sound");
@@ -114,7 +139,7 @@ public class FBPushServiceImpl implements IPushNotifyService {
 				file.setType(File.Type.JSON);
 
 				@SuppressWarnings("unchecked")
-				Map<String, Object> map = JsonUtil.fromJson(fileService.create(file).getContent(), Map.class);
+				Map<String, Object> map = JsonUtil.fromJson(fileService.create(file, ContactType.FBPUSH).getContent(), Map.class);
 				msg.setModel(map);
 
 				String message = ArgUtil.parseAsString(map.get("_message"));
@@ -150,6 +175,8 @@ public class FBPushServiceImpl implements IPushNotifyService {
 			userMessageEvent.setImage(msg.getImage());
 			userMessageEvent.setLink(msg.getLink());
 			userMessageEvent.setTemplate(msg.getTemplate());
+			userMessageEvent.setContactType(msg.getContactType());
+			userMessageEvent.setTimestamp(msg.getTimestamp());
 
 			String topic = msg.getTo().get(0);
 			StringBuilder androidTopic = new StringBuilder();
@@ -174,6 +201,7 @@ public class FBPushServiceImpl implements IPushNotifyService {
 				webTopic.append(topicLower + "_web");
 			}
 
+			boolean isMessageSent = false;
 			if (!ArgUtil.isEmptyString(topic)) {
 				if (msg.getMessage() != null) {
 					this.send(PMGaugeEvent.Type.NOTIFCATION_ANDROID, androidTopic.toString(), msg, msg.getMessage());
@@ -181,6 +209,7 @@ public class FBPushServiceImpl implements IPushNotifyService {
 					this.send(PMGaugeEvent.Type.NOTIFCATION_WEB, webTopic.toString(), msg, msg.getMessage());
 					userMessageEvent.setMessage(msg.getMessage());
 					tunnelService.task(userMessageEvent);
+					isMessageSent = true;
 				}
 				if (msg.getLines() != null) {
 					for (String message : msg.getLines()) {
@@ -188,10 +217,16 @@ public class FBPushServiceImpl implements IPushNotifyService {
 						this.send(PMGaugeEvent.Type.NOTIFCATION_IOS, iosTopic.toString(), msg, message);
 						this.send(PMGaugeEvent.Type.NOTIFCATION_WEB, webTopic.toString(), msg, message);
 						userMessageEvent.setMessage(message);
+						isMessageSent = true;
 						tunnelService.task(userMessageEvent);
 					}
 				}
 			}
+
+			if (!isMessageSent) {
+				throw new PostManException(PostManException.ErrorCode.NO_MESSAGE_DEFINED);
+			}
+
 			// tunnelService.task(userMessageEvent);
 			if (!ArgUtil.isEmpty(msg.getITemplate())
 					&& !ArgUtil.isEmpty(msg.getITemplate().getChannel())) {
@@ -199,7 +234,7 @@ public class FBPushServiceImpl implements IPushNotifyService {
 				noti.setSubject(msg.getSubject());
 				noti.setAuthor(String.format("Topic = %s", msg.getTo().get(0)));
 				noti.setMessage(msg.getMessage());
-				noti.setLines(msg.getLines()); 
+				noti.setLines(msg.getLines());
 				noti.setChannel(msg.getITemplate().getChannel());
 				noti.addField("TEMPLATE", msg.getITemplate().toString());
 				noti.setColor("#" + CryptoUtil.toHex(6, msg.getITemplate().toString()));
@@ -208,7 +243,8 @@ public class FBPushServiceImpl implements IPushNotifyService {
 
 		} catch (PostManException e) {
 			auditServiceClient.log(
-					new PMGaugeEvent(PMGaugeEvent.Type.NOTIFCATION).set(Result.FAIL).set(msg, msg.getMessage(), null));
+					new PMGaugeEvent(PMGaugeEvent.Type.NOTIFCATION).result(Result.FAIL, e).set(msg, msg.getMessage(),
+							null));
 		} catch (Exception e) {
 			auditServiceClient.excep(new PMGaugeEvent(PMGaugeEvent.Type.NOTIFCATION).set(msg, msg.getMessage(), null),
 					LOGGER, e);
@@ -261,7 +297,8 @@ public class FBPushServiceImpl implements IPushNotifyService {
 
 				.put(DATA_IS_BG, true).put(DATA_TITLE, msg.getSubject()).put(DATA_MESSAGE, message)
 				.put(DATA_IMAGE, msg.getImage()).put(DATA_PAYLOAD, msg.getModel())
-				.put(DATA_TIMESTAMP, System.currentTimeMillis());
+				.put(DATA_TIMESTAMP, System.currentTimeMillis())
+				.put(DATA_TAG, msg.getId());
 
 		fields.put(msg.isCondition() ? MAIN_CONDITION : MAIN_TOPIC, topic);
 
@@ -283,8 +320,10 @@ public class FBPushServiceImpl implements IPushNotifyService {
 				.put(DATA_IS_BG, true).put(DATA_TITLE, msg.getSubject()).put(DATA_MESSAGE, message)
 				.put(DATA_IMAGE, msg.getImage()).put(DATA_PAYLOAD, msg.getModel())
 				.put(DATA_TIMESTAMP, System.currentTimeMillis())
+				.put(DATA_TAG, msg.getId())
 
-				.put(NOTFY_TITLE, msg.getSubject()).put(NOTFY_MESSAGE, message).put(NOTFY_SOUND, "default");
+				.put(NOTFY_TITLE, msg.getSubject()).put(NOTFY_MESSAGE, message).put(NOTFY_SOUND, "default")
+				.put(NOTFY_TAG, msg.getId());
 
 		fields.put(msg.isCondition() ? MAIN_CONDITION : MAIN_TOPIC, topic);
 
@@ -334,9 +373,102 @@ public class FBPushServiceImpl implements IPushNotifyService {
 			auditServiceClient.gauge(pMGaugeEvent);
 		} catch (Exception e) {
 			auditServiceClient.excep(pMGaugeEvent, LOGGER, e);
-			slackService.sendException(topic, e);
+			// Slack Exception Handling should be for specific cases
+			// slackService.sendException(topic, e);
 		}
 		return AmxApiResponse.build(token);
+	}
+
+	@Override
+	public String shortLink(String relativeUrl) {
+		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent();
+		pMGaugeEvent.setType(PMGaugeEvent.Type.NOTIFCATION_SUBSCRIPTION);
+		String response = "";
+		try {
+			Map<String, Object> androidInfo = new HashMap<String, Object>();
+			androidInfo.put("androidPackageName", androidPackageName);
+			Map<String, Object> iosInfo = new HashMap<String, Object>();
+			iosInfo.put("iosBundleId", iosPackageName);
+
+			Map<String, Object> dynamicLinkInfo = new HashMap<String, Object>();
+			dynamicLinkInfo.put("domainUriPrefix", domainUriPrefix);
+			dynamicLinkInfo.put("link", companyAppUrl + relativeUrl);
+			dynamicLinkInfo.put("androidInfo", androidInfo);
+			dynamicLinkInfo.put("iosInfo", iosInfo);
+
+			Map<String, Object> suffix = new HashMap<String, Object>();
+
+			suffix.put("option", "SHORT");
+
+			Map<String, Object> fields = new HashMap<String, Object>();
+
+			fields.put("dynamicLinkInfo", dynamicLinkInfo);
+			fields.put("suffix", suffix);
+			response = restService.ajax("https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=" + apiKey)
+					.header("Content-Type", "application/json").post(fields)
+					.asString();
+			pMGaugeEvent.setResponseText(response);
+			auditServiceClient.gauge(pMGaugeEvent);
+		} catch (Exception e) {
+			auditServiceClient.excep(pMGaugeEvent, LOGGER, e);
+		}
+		Map<String, Object> responseMap;
+		try {
+			responseMap = jsonToMap(new JSONObject(response));
+			if (responseMap.containsKey("shortLink")) {
+				return responseMap.get("shortLink").toString();
+			}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return "";
+	}
+
+	public Map<String, Object> jsonToMap(JSONObject json) throws JSONException {
+		Map<String, Object> retMap = new HashMap<String, Object>();
+
+		if (json != JSONObject.NULL) {
+			retMap = toMap(json);
+		}
+		return retMap;
+	}
+
+	public Map<String, Object> toMap(JSONObject object) throws JSONException {
+		Map<String, Object> map = new HashMap<String, Object>();
+
+		Iterator<String> keysItr = object.keys();
+		while (keysItr.hasNext()) {
+			String key = keysItr.next();
+			Object value = object.get(key);
+
+			if (value instanceof JSONArray) {
+				value = toList((JSONArray) value);
+			}
+
+			else if (value instanceof JSONObject) {
+				value = toMap((JSONObject) value);
+			}
+			map.put(key, value);
+		}
+		return map;
+	}
+
+	public List<Object> toList(JSONArray array) throws JSONException {
+		List<Object> list = new ArrayList<Object>();
+		for (int i = 0; i < array.length(); i++) {
+			Object value = array.get(i);
+			if (value instanceof JSONArray) {
+				value = toList((JSONArray) value);
+			}
+
+			else if (value instanceof JSONObject) {
+				value = toMap((JSONObject) value);
+			}
+			list.add(value);
+		}
+		return list;
 	}
 
 	@Override

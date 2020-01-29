@@ -9,7 +9,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.cache.TransactionModel;
 import com.amx.jax.model.OtpData;
-import com.amx.jax.rbaac.dbmodel.Employee;
+import com.amx.jax.rbaac.dbmodel.FSEmployee;
 import com.amx.jax.rbaac.dbmodel.RoleDefinition;
 import com.amx.jax.rbaac.dbmodel.UserRoleMaster;
 import com.amx.jax.rbaac.trnx.AuthLoginTrnxModel;
@@ -46,7 +46,7 @@ public class AuthLoginManager extends TransactionModel<AuthLoginTrnxModel> {
 	/**
 	 * Init method
 	 */
-	public AuthLoginTrnxModel init(Employee empDetails) {
+	public AuthLoginTrnxModel init(FSEmployee empDetails) {
 		AuthLoginTrnxModel model = get();
 		if (model == null) {
 			model = new AuthLoginTrnxModel();
@@ -60,7 +60,7 @@ public class AuthLoginManager extends TransactionModel<AuthLoginTrnxModel> {
 	/**
 	 * set emp,user,role method
 	 */
-	public AuthLoginTrnxModel fetchEmployeeDetails(Employee empDetails,UserRoleMaster userMaster,List<RoleDefinition> roleDef) {
+	public AuthLoginTrnxModel fetchEmployeeDetails(FSEmployee empDetails,UserRoleMaster userMaster,List<RoleDefinition> roleDef) {
 		AuthLoginTrnxModel model = get();
 		if (model == null) {
 			model = new AuthLoginTrnxModel();

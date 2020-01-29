@@ -1,15 +1,13 @@
 package com.amx.jax.model.request;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-
-import org.springframework.format.annotation.DateTimeFormat;
 
 import com.amx.jax.swagger.ApiMockModelProperty;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
-import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatTypes;
 
 public class ImageSubmissionRequest implements Serializable {
 
@@ -26,6 +24,28 @@ public class ImageSubmissionRequest implements Serializable {
 	
 	@JsonFormat(shape = Shape.STRING, pattern = "dd/MM/yyyy")
 	private Date identityExpiredDate;
+	
+	private BigDecimal documentUploadReferenceId;
+	
+	private String uploadType;
+
+	public String getUploadType() {
+		return uploadType;
+	}
+
+	public void setUploadType(String uploadType) {
+		this.uploadType = uploadType;
+	}
+
+	
+
+	public BigDecimal getDocumentUploadReferenceId() {
+		return documentUploadReferenceId;
+	}
+
+	public void setDocumentUploadReferenceId(BigDecimal documentUploadReferenceId) {
+		this.documentUploadReferenceId = documentUploadReferenceId;
+	}
 
 	public List<String> getImage() {
 		return image;
