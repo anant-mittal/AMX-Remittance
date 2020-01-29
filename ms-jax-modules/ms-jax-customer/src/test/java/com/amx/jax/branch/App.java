@@ -12,12 +12,12 @@ public class App { // Noncompliant
 	 */
 
 	public static void main(String[] args) {
-		
+
 		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DATE, -1 * CustomerContactVerification.EXPIRY_DAY_WHATS_APP);
+		System.out.println(new java.util.Date(cal.getTimeInMillis()));
+		cal.add(Calendar.HOUR_OF_DAY, -1 * 48);
 		java.util.Date oneDay = new java.util.Date(cal.getTimeInMillis());
 		System.out.println(oneDay);
 	}
-	
 
 }

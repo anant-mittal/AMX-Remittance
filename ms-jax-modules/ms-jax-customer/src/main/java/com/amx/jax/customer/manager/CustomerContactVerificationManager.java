@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.CustomerVerificationType;
 import com.amx.jax.dbmodel.Customer;
@@ -36,6 +37,7 @@ import com.amx.jax.userservice.service.CustomerVerificationService;
 import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.CollectionUtil;
+import com.amx.utils.Constants;
 import com.amx.utils.EntityDtoUtil;
 import com.amx.utils.Random;
 
@@ -65,6 +67,9 @@ public class CustomerContactVerificationManager {
 	@Autowired
 	AuditService auditService;
 
+	@Autowired
+	JaxTenantProperties jaxTenantProperties;
+
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	public CustomerContactVerification getCustomerContactVerification(BigDecimal id) {
@@ -72,9 +77,9 @@ public class CustomerContactVerificationManager {
 	}
 
 	public List<CustomerContactVerification> getValidCustomerContactVerificationsByCustomerId(BigDecimal customerId,
-			ContactType contactType, String contact, int validDays) {
+			ContactType contactType, String contact, int validHours) {
 		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DATE, -1 * validDays);
+		cal.add(Calendar.HOUR_OF_DAY, -1 * validHours);
 		java.util.Date oneDay = new java.util.Date(cal.getTimeInMillis());
 		List<CustomerContactVerification> links = null;
 
@@ -90,15 +95,13 @@ public class CustomerContactVerificationManager {
 
 	public List<CustomerContactVerification> getValidCustomerContactVerificationsByCustomerId(BigDecimal customerId,
 			ContactType contactType, String contact) {
-		Calendar cal = Calendar.getInstance();
 		if (ContactType.WHATSAPP.equals(contactType)) {
-			cal.add(Calendar.DATE, -1 * CustomerContactVerification.EXPIRY_DAY_WHATS_APP);
 			return this.getValidCustomerContactVerificationsByCustomerId(customerId, contactType, contact,
-					CustomerContactVerification.EXPIRY_DAY_WHATS_APP);
+					jaxTenantProperties.getVerificationValidHours()
+							* CustomerContactVerification.EXPIRY_WHATS_APP_FACTOR);
 		} else {
 			return this.getValidCustomerContactVerificationsByCustomerId(customerId, contactType, contact,
-					CustomerContactVerification.EXPIRY_DAY);
-
+					jaxTenantProperties.getVerificationValidHours());
 		}
 	}
 
@@ -180,11 +183,32 @@ public class CustomerContactVerificationManager {
 			}
 
 			List<CustomerContactVerification> oldlinks = getValidCustomerContactVerificationsByCustomerId(
-					c.getCustomerId(), contactType, link.getContactValue(), CustomerContactVerification.EXPIRY_DAY);
+					c.getCustomerId(), contactType, link.getContactValue(),
+					jaxTenantProperties.getVerificationValidHours());
 
-			if (!ArgUtil.isEmpty(oldlinks) && oldlinks.size() > 3) {
-				throw new GlobalException(JaxError.SEND_OTP_LIMIT_EXCEEDED,
-						"Sending Verification Limit has exceeded try again after 24 hours");
+			if (ArgUtil.is(oldlinks)) {
+				if (oldlinks.size() > jaxTenantProperties.getVerificationAttemptLimit()) {
+					throw new GlobalException(JaxError.SEND_OTP_LIMIT_EXCEEDED,
+							"Please verify " + contactType.getLabel()
+									+ " to continue. Resend link after " +
+									jaxTenantProperties.getVerificationValidHours()
+									+ " hours");
+				}
+				for (CustomerContactVerification oldLink : oldlinks) {
+
+					Calendar cal = Calendar.getInstance();
+					cal.add(Calendar.MINUTE, -1 * jaxTenantProperties.getVerificationResendAfterMinutes());
+					java.util.Date lastAttempt = new java.util.Date(cal.getTimeInMillis());
+					if (lastAttempt.before(oldLink.getCreatedDate())
+							&& oldLink.hasExpired(Constants.TimeInterval.MIN,
+									jaxTenantProperties.getVerificationResendAfterMinutes())) {
+						throw new GlobalException(JaxError.SEND_OTP_LIMIT_EXCEEDED,
+								"Please verify " + contactType.getLabel()
+										+ " to continue. Sending Verification Limit has exceeded try again after " +
+										jaxTenantProperties.getVerificationResendAfterMinutes()
+										+ " minutes");
+					}
+				}
 			}
 
 			link2 = customerContactVerificationRepository.save(link);
@@ -227,7 +251,8 @@ public class CustomerContactVerificationManager {
 				throw new GlobalException(JaxError.INVALID_CIVIL_ID, "Civil id does not belong to the link");
 			}
 
-			if (oldLink.hasValidStatus() && !oldLink.hasExpired()) {
+			if (oldLink.hasValidStatus() && !oldLink.hasExpired(Constants.TimeInterval.HRS,
+					jaxTenantProperties.getVerificationValidHours())) {
 				throw new GlobalException(JaxError.SEND_OTP_LIMIT_EXCEEDED,
 						"Link is Valid for a day and cannot resend it again");
 			}
@@ -261,7 +286,8 @@ public class CustomerContactVerificationManager {
 			throw new GlobalException(JaxError.ENTITY_INVALID, "Verification link is Invalid");
 		} else if (!link.hasValidStatus()) {
 			throw new GlobalException(JaxError.ENTITY_INVALID, "Verification link is Invalid : " + link.getIsActive());
-		} else if (link.hasExpired()) {
+		} else if (link.hasExpired(Constants.TimeInterval.HRS,
+				jaxTenantProperties.getVerificationValidHours())) {
 			throw new GlobalException(JaxError.ENTITY_EXPIRED,
 					"Verification link is expired, Created on " + link.getCreatedDate());
 		}

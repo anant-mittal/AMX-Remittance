@@ -19,7 +19,6 @@ import com.amx.jax.logger.AuditActor.ActorType;
 import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.Constants;
 import com.amx.utils.TimeUtils;
 
 @Entity
@@ -27,9 +26,7 @@ import com.amx.utils.TimeUtils;
 public class CustomerContactVerification implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
-	public static final int EXPIRY_DAY = 1;
-	public static final int EXPIRY_DAYS_REVERIFY = 60;
-	public static final int EXPIRY_DAY_WHATS_APP = 30;
+	public static final int EXPIRY_WHATS_APP_FACTOR = 30;
 
 	public CustomerContactVerification() {
 	}
@@ -216,12 +213,11 @@ public class CustomerContactVerification implements java.io.Serializable {
 		return AmxDBConstants.Status.Y.equals(this.getIsActive());
 	}
 
-	public boolean hasExpired() {
-		long intrval = Constants.TimeInterval.DAY;
+	public boolean hasExpired(long unit, Integer interval) {
+		long intrval = unit * interval;
 		if (ContactType.WHATSAPP.equals(contactType)) {
-			intrval = intrval * EXPIRY_DAY_WHATS_APP;
+			intrval = intrval * EXPIRY_WHATS_APP_FACTOR;
 		}
-
 		if (ArgUtil.isEmpty(this.getSendDate())) {
 			return TimeUtils.isExpired(this.getCreatedDate(), intrval);
 		}
