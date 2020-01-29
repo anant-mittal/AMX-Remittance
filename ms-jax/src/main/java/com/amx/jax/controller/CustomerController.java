@@ -272,7 +272,6 @@ public class CustomerController implements ICustomerService {
 			@RequestParam(required = false) ContactType contactType) {
 		logger.info("initRegistrationSendOtp Request:civilId" + civilId);
 		JaxContextUtil.setJaxEvent(JaxEvent.ONLINE_SIGNUP);
-		authFailureLogManager.validateAuthFailure();
 		List<ContactType> contactTypes = new ArrayList<ContactType>();
 		if (contactType != null) {
 			contactTypes.add(contactType);

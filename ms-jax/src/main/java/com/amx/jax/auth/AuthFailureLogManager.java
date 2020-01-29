@@ -24,6 +24,7 @@ import com.amx.jax.dbmodel.auth.AuthFailureLog;
 import com.amx.jax.dbmodel.auth.BlockedIPAdress;
 import com.amx.jax.dbmodel.auth.IPBlockedReasoncode;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.repository.auth.AuthFailureLogRepository;
@@ -42,7 +43,7 @@ public class AuthFailureLogManager {
 	@Autowired
 	BlockedIPAdressRepository blockedIPAdressRepository;
 	@Autowired
-	PostManClient postManClient;
+	PostManService postManService;
 
 	private static final Logger log = LoggerFactory.getLogger(AuthFailureLogManager.class);
 
@@ -100,7 +101,7 @@ public class AuthFailureLogManager {
 			sBuf.append("IP address: ").append(blockedIp.getIpAddress());
 			sBuf.append(" is blocked from JAX application, due to multiple failed attempts");
 			email.setMessage(sBuf.toString());
-			postManClient.sendEmail(email);
+			postManService.sendEmail(email);
 		}
 	}
 
