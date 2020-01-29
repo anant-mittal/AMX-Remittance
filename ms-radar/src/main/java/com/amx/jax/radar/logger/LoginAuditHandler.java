@@ -14,11 +14,11 @@ import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.client.snap.SnapModels.SnapQueryParams;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dict.AmxEnums.CommunicationEvents;
+import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditHandler;
 import com.amx.jax.logger.AuditMapModel;
+import com.amx.jax.logger.AuditService;
 import com.amx.jax.postman.client.PostManClient;
-import com.amx.jax.postman.model.Email;
-import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.radar.snap.SnapQueryService;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.util.CommunicationPrefsUtil;
@@ -44,6 +44,9 @@ public class LoginAuditHandler implements AuditHandler {
 	@Autowired
 	PostManClient postManClient;
 
+	@Autowired
+	AuditService auditServiceClient;
+
 	@Override
 	public void doHandle(AuditMapModel event) {
 		SnapQueryParams params = new SnapQueryParams();
@@ -63,12 +66,15 @@ public class LoginAuditHandler implements AuditHandler {
 			if (prefs.isEmail()) {
 				params.toMap().put("name", customer.getFirstName() + " " + customer.getLastName());
 
-				Email email = new Email();
-				email.addTo(customer.getEmail());
-				email.setHtml(true);
-				email.setModel(params.toMap());
-				email.setITemplate(TemplatesMX.NEW_DEVICE_LOGIN);
-				postManClient.sendEmailAsync(email);
+				auditServiceClient.log(new RadarAuditEvents(
+						RadarAuditEvents.Type.NEW_LOGIN_DEVICE).set(Result.ALERT).loginDeviceDetails(params.toMap()));
+
+				// Email email = new Email();
+				// email.addTo(customer.getEmail());
+				// email.setHtml(true);
+				// email.setModel(params.toMap());
+				// email.setITemplate(TemplatesMX.NEW_DEVICE_LOGIN);
+				// postManClient.sendEmailAsync(email);
 			}
 		}
 
