@@ -1023,7 +1023,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("instruction")]]>
+                                    <![CDATA[$F{tranx}.get("futherInstructions")]]>
                                 </textFieldExpression>
                             </textField>
                             <textField isStretchWithOverflow="true">
@@ -1050,7 +1050,7 @@
                             </staticText>
                             
                             <rectangle radius="15">
-                                <reportElement  x="337" y="0" width="170" height="57" forecolor="#333333" backcolor="#333333">
+                                <reportElement  x="337" y="0" width="170" height="57" forecolor="#ffffff" backcolor="#ffffff">
                                         <printWhenExpression><![CDATA[$F{tranx}.get("amountSaved") != "" || $F{tranx}.get("totalAmountSavedStr") != ""]]></printWhenExpression>
                                 </reportElement>
                                 <graphicElement>
@@ -1060,7 +1060,7 @@
                           
                                <textField isStretchWithOverflow="true">
                                 <reportElement x="323" y="2" width="200" height="45"
-                                                forecolor="#ffffff"
+                                                forecolor="#000000"
                                                 isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Center" markup="styled">
                                     <font fontName="Arial" size="11" isItalic="true"
