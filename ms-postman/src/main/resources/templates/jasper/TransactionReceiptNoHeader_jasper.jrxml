@@ -1050,7 +1050,7 @@
                             </staticText>
                             
                             <rectangle radius="15">
-                                <reportElement mode="Transparent" x="337" y="0" width="170" height="57" >
+                                <reportElement mode="Transparent" x="337" y="0" width="170" height="57" backcolor="#ffffff">
                                         <printWhenExpression><![CDATA[$F{tranx}.get("amountSaved") != "" || $F{tranx}.get("totalAmountSavedStr") != ""]]></printWhenExpression>
                                 </reportElement>
                                 <graphicElement>
