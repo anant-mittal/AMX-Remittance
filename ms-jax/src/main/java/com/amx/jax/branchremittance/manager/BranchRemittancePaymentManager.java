@@ -650,7 +650,6 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			for (CustomerBankDto customerBankRequest : custmerBankList) {
 				CustomerBank customerBankDt = new CustomerBank();
 				customerBankDt.setBankCode(customerBankRequest.getBankCode());
-				
 				if(JaxUtil.isNullZeroBigDecimalCheck(customerBankRequest.getBankId())) {
 	 				customerBankDt.setBankId(customerBankRequest.getBankId());
 				}else {
