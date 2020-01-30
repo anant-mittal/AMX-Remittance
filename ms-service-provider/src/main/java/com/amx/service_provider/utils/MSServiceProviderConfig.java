@@ -16,10 +16,10 @@ public class MSServiceProviderConfig {
 	@Value("${home.key.store.password}")
 	String homeSendkeyStorePassword;
 	
-	@Value("${vintja.key.store.location}")
+	@Value("${vintja.key.store.location:#{null}}")
 	String vintjaKeyStoreLocation;
 
-	@Value("${vintja.key.store.password}")
+	@Value("${vintja.key.store.password:#{null}}")
 	String vintjakeyStorePassword;
 	
 	@Value("${trust.store.location}")
