@@ -152,6 +152,8 @@ public enum PricerServiceError implements IExceptionEnum {
 	SELL_RATE_MIN_MAX_RANGE_VIOLATED,
 
 	BUY_RATE_MIN_MAX_RANGE_VIOLATED,
+	
+	SERVICE_PROVIDER_CHANNEL_BLOCKED,
 
 	/** The unknown exception. */
 	// MISC

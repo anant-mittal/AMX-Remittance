@@ -194,5 +194,7 @@ public final class PricerServiceConstants {
 
 	public static final String Business = "B";
 	public static final String Personal = "P";
+	
+	public static final String PARAM_SP_CHANNEL_BLOCK = "HSEX";
 
 }

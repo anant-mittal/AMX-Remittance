@@ -412,7 +412,20 @@ public class PartnerTransactionManager extends AbstractModel {
 		boolean status = checkBeneCountryParam(destinationCountryAlpha3);
 		if(!status){
 			beneficiaryDto.setState(removeSpaces(beneficiaryDetailsDTO.getStateName())); 
-			beneficiaryDto.setStreet(removeSpaces(beneficiaryDetailsDTO.getStreetNo()));
+			//beneficiaryDto.setStreet(removeSpaces(beneficiaryDetailsDTO.getStreetNo()));
+			
+			StringBuffer streetDetails = new StringBuffer();
+			if(beneficiaryDetailsDTO.getBuildingNo() != null){
+				streetDetails.append("House No "+ beneficiaryDetailsDTO.getBuildingNo());
+			}
+			if(beneficiaryDetailsDTO.getFlatNo() != null){
+				streetDetails.append(" Flat No "+ beneficiaryDetailsDTO.getFlatNo());
+			}
+			if(beneficiaryDetailsDTO.getStreetNo() != null){
+				streetDetails.append(" Street "+ beneficiaryDetailsDTO.getStreetNo());
+			}
+			
+			beneficiaryDto.setStreet(removeSpaces(streetDetails.toString()));
 
 			StringBuffer strAdd = new StringBuffer();
 			if (beneficiaryDetailsDTO.getStateName() != null) {
