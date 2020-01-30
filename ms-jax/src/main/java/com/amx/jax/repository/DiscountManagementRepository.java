@@ -13,4 +13,8 @@ public interface DiscountManagementRepository extends CrudRepository<CountryBran
 	@Query(value = "SELECT * FROM EX_COUNTRY_BRANCH WHERE COUNTRY_ID=?1 AND "
 			+ " ISACTIVE='Y' AND CORPORATE_STATUS='N' AND branch_name != 'ONLINE' AND HEAD_OFFICE_INDICATOR=0", nativeQuery = true)
 	List<CountryBranchMdlv1> getCountryBranch(BigDecimal countryId);
+	
+	@Query(value = "SELECT * FROM EX_COUNTRY_BRANCH WHERE COUNTRY_ID=?1 AND "
+			+ " CORPORATE_STATUS='N' AND branch_name != 'ONLINE' AND HEAD_OFFICE_INDICATOR=0", nativeQuery = true)
+	List<CountryBranchMdlv1> getCountryBranchAll(BigDecimal countryId);
 }

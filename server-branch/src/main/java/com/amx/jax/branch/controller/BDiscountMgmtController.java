@@ -67,9 +67,9 @@ public class BDiscountMgmtController {
 	}
 
 	@RequestMapping(value = "/api/discount/countrybranch/list", method = { RequestMethod.GET })
-	public AmxApiResponse<CountryBranchDTO, Object> getCountryBranchList() {
+	public AmxApiResponse<CountryBranchDTO, Object> getCountryBranchList(@RequestParam(value = "isActive", required = false, defaultValue = "false") Boolean isActive) {
 
-		return discountMgmtClient.getCountryBranchList();
+		return discountMgmtClient.getCountryBranchList(isActive);
 	}
 
 	@RequestMapping(value = "/api/discount/RbanksAndServices/list", method = { RequestMethod.POST })

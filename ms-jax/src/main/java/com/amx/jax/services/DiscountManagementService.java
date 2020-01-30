@@ -24,6 +24,7 @@ import com.amx.jax.pricer.dto.PricingAndCostResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.repository.DiscountManagementRepository;
+import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.RoundUtil;
 
 @Service
@@ -41,9 +42,17 @@ public class DiscountManagementService {
 	@Autowired
 	AmxConfig amxConfig;
 
-	public AmxApiResponse<CountryBranchDTO, Object> getCountryBranch(BigDecimal countryId) {
+	public AmxApiResponse<CountryBranchDTO, Object> getCountryBranch(BigDecimal countryId,Boolean isActive) {
+		
+		List<CountryBranchMdlv1> countryBranchList;
+		
+		if(isActive!=true || isActive==null) {
+			countryBranchList = discountManagementRepository.getCountryBranchAll(countryId);
+			
+		}else {
 
-		List<CountryBranchMdlv1> countryBranchList = discountManagementRepository.getCountryBranch(countryId);
+	   countryBranchList = discountManagementRepository.getCountryBranch(countryId);
+		}
 		
 		LOGGER.info("COUNT OF BRANCHES : - " +countryBranchList.size());
 		
