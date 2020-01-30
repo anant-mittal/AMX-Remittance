@@ -4,6 +4,7 @@ package com.amx.jax.services;
  * @author rabil
  */
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -676,6 +677,9 @@ public class ReportManagerService extends AbstractService {
 							obj.setAmountSaved(currencyQuoteName + "     " + KdSaved.toString());
 						}
 						/** end **/
+						
+						
+						
 
 					} catch (Exception e) {
 						logger.info("Exception Occured While Report2 " + e.getMessage());
@@ -758,10 +762,16 @@ public class ReportManagerService extends AbstractService {
 	// ----------------- SPECIAL RATE RECEIPT DATA -------------------
 	private void getSpecialRateData(RemittanceTransactionView view, RemittanceReportBean obj, String currencyQuoteName,
 			int decimalPerCurrency) {
+		
+		//setSpecialRateData
+		
+		/** adeed by Rabil **/
+		int fcDecimalValue = currencyDao.getCurrencyList(view.getForeignCurrencyId()).get(0).getDecinalNumber().intValue();
+		BigDecimal KdFcRate = getLocalFCRate(view.getExchangeRateApplied(), fcDecimalValue);
+		
 		// Special Exchange Rate
 		if (view.getCurrencyQuoteName() != null && currencyQuoteName != null && view.getExchangeRateApplied() != null) {
-			obj.setSpecialExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "
-					+ view.getExchangeRateApplied().toString());
+			obj.setSpecialExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "  "+ view.getExchangeRateApplied().toString() +"   "+currencyQuoteName+" / "+view.getCurrencyQuoteName()+" "+KdFcRate);
 		}
 
 		// Equivalent kwd Amount
@@ -813,8 +823,7 @@ public class ReportManagerService extends AbstractService {
 						+ view.getExchangeRateApplied().toString());
 			}
 			if (view.getLocalTransactionAmount() != null && view.getLocalTransactionCurrencyId() != null) {
-				BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),
-						decimalPerCurrency);
+				BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),decimalPerCurrency);
 				obj.setKwdAmount(currencyQuoteName + "     " + transationAmount.toString());
 			}
 		}
@@ -887,5 +896,21 @@ public class ReportManagerService extends AbstractService {
 		this.remittanceReceiptSubreportList = remittanceReceiptSubreportList;
 	}
 
+	public BigDecimal getLocalFCRate(BigDecimal exchangeRate,int decimalValue) {
+		BigDecimal kdRate=BigDecimal.ZERO;
+	
+		if(JaxUtil.isNullZeroBigDecimalCheck(exchangeRate) && decimalValue>0) {
+			kdRate =  new BigDecimal(1).divide(exchangeRate, 10, RoundingMode.HALF_UP);
+			if(JaxUtil.isNullZeroBigDecimalCheck(kdRate)) {
+				kdRate = RoundUtil.roundBigDecimal(kdRate,decimalValue);
+			}
+		}
+		
+		
+		return kdRate;
+		
+	}
+	
+	
 }
 
