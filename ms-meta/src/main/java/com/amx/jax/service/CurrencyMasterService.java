@@ -29,6 +29,7 @@ import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ViewBeneficiaryCurrencyRepository;
 import com.amx.jax.repository.ViewOnlineCurrencyRepository;
 import com.amx.jax.services.AbstractService;
+import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.ConverterUtil;
 
 @Service
@@ -111,8 +112,17 @@ public class CurrencyMasterService extends AbstractService {
 	}
 	
 	// added by chetan 30/04/2018 list the country for currency.
-	public AmxApiResponse<CurrencyMasterDTO, Object> getAllExchangeRateCurrencyList() {
-		List<ViewOnlineCurrency> currencyList = (List<ViewOnlineCurrency>) viewOnlineCurrencyRepo.findAll(new Sort("quoteName"));
+	public AmxApiResponse<CurrencyMasterDTO, Object> getAllExchangeRateCurrencyList(Boolean isActive) {
+		
+		List<ViewOnlineCurrency> currencyList ;
+		if(isActive!=true || isActive==null) {
+		 currencyList = (List<ViewOnlineCurrency>) viewOnlineCurrencyRepo.findAll(new Sort("quoteName"));
+		}
+		else {
+			
+	      currencyList = (List<ViewOnlineCurrency>) viewOnlineCurrencyRepo.findByIsActive(new Sort("quoteName"),AmxDBConstants.Yes);
+		}	
+		
 		List<BigDecimal> uniqueCurrency = (List<BigDecimal>) exchangeRateProcedureDao.getDistinctCurrencyList();
 		Iterator<ViewOnlineCurrency> itr = currencyList.iterator();
 		if (!currencyList.isEmpty() && !uniqueCurrency.isEmpty()) {

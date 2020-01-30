@@ -99,9 +99,9 @@ public class BDiscountMgmtController {
 	}
 	
 	@RequestMapping(value = "/api/discount/exchange_rate_currency/list", method = { RequestMethod.GET })
-	public AmxApiResponse<CurrencyMasterDTO, Object> getAllExchangeRateCurrencyList() {
+	public AmxApiResponse<CurrencyMasterDTO, Object> getAllExchangeRateCurrencyList(Boolean isActive) {
 
-		return metaClient.getAllExchangeRateCurrencyList();
+		return metaClient.getAllExchangeRateCurrencyList(isActive);
 	}
 
 

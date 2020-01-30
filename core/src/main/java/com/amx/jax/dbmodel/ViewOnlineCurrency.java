@@ -23,6 +23,7 @@ public class ViewOnlineCurrency {
 
 	private BigDecimal fundMinRate;
 	private BigDecimal fundMaxRate;
+	private String isActive;
 
 	@Id
 	@Column(name = "CURRENCY_ID")
@@ -96,5 +97,14 @@ public class ViewOnlineCurrency {
 	public void setFundMaxRate(BigDecimal fundMaxRate) {
 		this.fundMaxRate = fundMaxRate;
 	}
+	@Column(name = "ISACTIVE")
+	public String getIsActive() {
+		return isActive;
+	}
 
+	public void setIsActive(String isActive) {
+		this.isActive = isActive;
+	}
+
+	
 }
