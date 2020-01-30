@@ -133,21 +133,34 @@ public class CommunicationPreferencesManager {
 	}
 
 	// TODO:- @Anant to implement these methods
-	public void sendNotification(BigDecimal customerId, Object model, CommunicationEvents communicationEvent,
-			TemplatesMX templateMX, ContactType... contactTypes) {
 
+	/**
+	 * 
+	 * 
+	 * 
+	 * @param customerId
+	 * @param model
+	 * @param communicationEvent
+	 * @param templateMX
+	 * @param contactTypes       - channels to try for notifications, if null/empty
+	 *                           attempt will be made on all channels
+	 * @return - if notification has been sent to specified contact or not
+	 */
+	public boolean sendMessage(BigDecimal customerId, Object model, CommunicationEvents communicationEvent,
+			TemplatesMX templateMX, ContactType... contactTypes) {
+		return false;
 	}
 
 	// TODO:- @Anant to implement these methods
-	public void sendNotification(String indetnityInt, Object model, CommunicationEvents communicationEvent,
+	public boolean sendMessage(String indetnityInt, Object model, CommunicationEvents communicationEvent,
 			TemplatesMX templateMX, ContactType... contactTypes) {
-
+		return false;
 	}
 
 	// TODO:- @Anant to implement these methods
-	public void sendNotification(Communicatable commCustomer, Object model, CommunicationEvents communicationEvent,
+	public boolean sendMessage(Communicatable commCustomer, Object model, CommunicationEvents communicationEvent,
 			TemplatesMX templateMX, ContactType... contactTypes) {
-
+		return false;
 	}
 
 }
