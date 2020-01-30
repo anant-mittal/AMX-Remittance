@@ -1054,7 +1054,7 @@
                                         <printWhenExpression><![CDATA[$F{tranx}.get("amountSaved") != "" || $F{tranx}.get("totalAmountSavedStr") != ""]]></printWhenExpression>
                                 </reportElement>
                                 <graphicElement>
-                                <pen lineWidth="2"/>
+                                <pen lineWidth="1"/>
                                 </graphicElement>
                             </rectangle>
                           
