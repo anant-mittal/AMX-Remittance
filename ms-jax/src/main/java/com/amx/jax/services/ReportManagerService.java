@@ -898,14 +898,16 @@ public class ReportManagerService extends AbstractService {
 
 	public BigDecimal getLocalFCRate(BigDecimal exchangeRate,int decimalValue) {
 		BigDecimal kdRate=BigDecimal.ZERO;
-	
+		try {
 		if(JaxUtil.isNullZeroBigDecimalCheck(exchangeRate) && decimalValue>0) {
 			kdRate =  new BigDecimal(1).divide(exchangeRate, 10, RoundingMode.HALF_UP);
 			if(JaxUtil.isNullZeroBigDecimalCheck(kdRate)) {
 				kdRate = RoundUtil.roundBigDecimal(kdRate,decimalValue);
 			}
 		}
-		
+		}catch(Exception e) {
+			logger.error(e);
+		}
 		
 		return kdRate;
 		
