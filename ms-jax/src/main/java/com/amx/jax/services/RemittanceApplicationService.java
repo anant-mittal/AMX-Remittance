@@ -85,7 +85,7 @@ public class RemittanceApplicationService {
 				remittanceApplicationRepository.save(remittanceApplication);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("error occured", e);
 			throw new GlobalException("updatePaymentId faliled for custoemr:"+paymentResponse.getPaymentId()+"\t Status :"+paymentResponse.getResultCode());
 		}
 		
@@ -132,7 +132,7 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 			}*/
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("error occured", e);
 			throw new GlobalException("De-Activate Application failed for customer:"+customerId);
 		}
 	}
@@ -146,7 +146,7 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 			remittanceApplicationRepository.deActivateLatestPbApplication(remittanceApplicationList.get(0).getRemittanceApplicationId());
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("error occured", e);
 			throw new GlobalException("De-Activate Application failed for customer:"+customerId);
 		}
 	}
@@ -212,7 +212,7 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("error occured", e);
 		}
 		return resultMap;
 	}

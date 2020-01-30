@@ -732,7 +732,7 @@ public class ReportManagerService extends AbstractService {
 			response = reportManagerServiceExtn.generatePersonalRemittanceReceiptReportDetails(transactionHistroyDTO, promotion, response,
 					remittanceApplicationList);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("error occured", e);
 			response.getData().getValues().addAll(remittanceReceiptSubreportList);
 			response.setResponseStatus(ResponseStatus.NOT_FOUND);
 			response.getData().setType("remitReport");
