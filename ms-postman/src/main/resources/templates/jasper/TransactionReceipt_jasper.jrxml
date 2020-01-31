@@ -1078,7 +1078,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("instruction")]]>
+                                    <![CDATA[$F{tranx}.get("futherInstructions")]]>
                                 </textFieldExpression>
                             </textField>
                             <textField isStretchWithOverflow="true">
