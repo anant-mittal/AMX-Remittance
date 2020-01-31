@@ -9,62 +9,54 @@ import org.springframework.stereotype.Component;
 @Configuration
 @PropertySource("classpath:application.properties")
 public class MSServiceProviderConfig {
-	
-	@Value("${home.key.store.location}")
+
+	@Value("${home.key.store.location:#{null}}")
 	String homeSendKeyStoreLocation;
 
 	@Value("${home.key.store.password}")
 	String homeSendkeyStorePassword;
-	
+
 	@Value("${vintja.key.store.location:#{null}}")
 	String vintjaKeyStoreLocation;
 
-	@Value("${vintja.key.store.password:#{null}}")
+	@Value("${vintja.key.store.password}")
 	String vintjakeyStorePassword;
-	
-	@Value("${trust.store.location}")
+
+	@Value("${trust.store.location:#{null}}")
 	String trustStoreLocation;
 
 	@Value("${trust.store.password}")
 	String trustStorePassword;
 
-	public String getHomeSendKeyStoreLocation()
-	{
+	public String getHomeSendKeyStoreLocation() {
 		return homeSendKeyStoreLocation;
 	}
 
-	public void setHomeSendKeyStoreLocation(String homeSendKeyStoreLocation)
-	{
+	public void setHomeSendKeyStoreLocation(String homeSendKeyStoreLocation) {
 		this.homeSendKeyStoreLocation = homeSendKeyStoreLocation;
 	}
 
-	public String getHomeSendkeyStorePassword()
-	{
+	public String getHomeSendkeyStorePassword() {
 		return homeSendkeyStorePassword;
 	}
 
-	public void setHomeSendkeyStorePassword(String homeSendkeyStorePassword)
-	{
+	public void setHomeSendkeyStorePassword(String homeSendkeyStorePassword) {
 		this.homeSendkeyStorePassword = homeSendkeyStorePassword;
 	}
 
-	public String getVintjaKeyStoreLocation()
-	{
+	public String getVintjaKeyStoreLocation() {
 		return vintjaKeyStoreLocation;
 	}
 
-	public void setVintjaKeyStoreLocation(String vintjaKeyStoreLocation)
-	{
+	public void setVintjaKeyStoreLocation(String vintjaKeyStoreLocation) {
 		this.vintjaKeyStoreLocation = vintjaKeyStoreLocation;
 	}
 
-	public String getVintjakeyStorePassword()
-	{
+	public String getVintjakeyStorePassword() {
 		return vintjakeyStorePassword;
 	}
 
-	public void setVintjakeyStorePassword(String vintjakeyStorePassword)
-	{
+	public void setVintjakeyStorePassword(String vintjakeyStorePassword) {
 		this.vintjakeyStorePassword = vintjakeyStorePassword;
 	}
 
