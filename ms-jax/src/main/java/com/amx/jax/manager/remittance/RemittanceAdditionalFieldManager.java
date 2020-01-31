@@ -236,7 +236,8 @@ public class RemittanceAdditionalFieldManager {
 					}
 					if (JaxFieldType.DATE.equals(jaxFieldType)) {
 						if (addlDataDisplay.getFieldFormat() == null) {
-							jaxConditionalField.getField().getAdditionalValidations().put("format", ConstantDocument.MM_DD_YYYY_DATE_FORMAT);
+							jaxConditionalField.getField().getAdditionalValidations().put("format",
+									ConstantDocument.MM_DD_YYYY_DATE_FORMAT.toUpperCase());
 						} else {
 							jaxConditionalField.getField().getAdditionalValidations().put("format", addlDataDisplay.getFieldFormat());
 						}
