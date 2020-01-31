@@ -1,6 +1,6 @@
 {
   "aggs": {
-    "custId": {
+    "verId": {
       "terms": {
         "field": "logmap.cust.id",
         "size": 5000000,
@@ -33,7 +33,23 @@
                     "field": "logmap.cust.id"
                   }
                 },
-                "branchName": {
+                "custId": {
+                  "top_hits": {
+                    "docvalue_fields": [
+                      "logmap.cust.id"
+                    ],
+                    "_source": "logmap.cust.id",
+                    "size": 1,
+                    "sort": [
+                      {
+                        "@timestamp": {
+                          "order": "desc"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "branchName" : {
                   "top_hits": {
                     "docvalue_fields": [
                       "logmap.actor.branchName.keyword"

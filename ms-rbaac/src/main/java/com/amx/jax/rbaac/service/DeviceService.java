@@ -367,6 +367,22 @@ public class DeviceService extends AbstractService {
 
 		return deviceDtos;
 	}
-	
+
+	/**
+	 * validates employee device mapping, for offline otp app
+	 * 
+	 * @param employeeId
+	 *            - employee id
+	 * @return offline otp device mapped with employeeId
+	 */
+	public Device validateEmployeeDeviceMappingForOtpApp(BigDecimal employeeId) {
+		Device otpDevice = getDeviceByEmployeeAndDeviceType(ClientType.NOTP_APP, employeeId);
+
+		if (otpDevice == null || employeeId.longValue() != otpDevice.getEmployeeId().longValue()) {
+			throw new AuthServiceException(RbaacServiceError.DEVICE_CLIENT_INVALID,
+					"Invalid Device Client : Not Paired or Not Mapped");
+		}
+		return otpDevice;
+	}
 	
 }

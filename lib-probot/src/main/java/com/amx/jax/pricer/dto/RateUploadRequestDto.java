@@ -23,6 +23,8 @@ public class RateUploadRequestDto implements Serializable {
 	@NotNull(message = "Updated By Can not be Null or Empty")
 	private String updatedBy;
 
+	private String comment;
+
 	public BigDecimal getApplicationCountryId() {
 		return applicationCountryId;
 	}
@@ -53,6 +55,14 @@ public class RateUploadRequestDto implements Serializable {
 
 	public void setUpdatedBy(String updatedBy) {
 		this.updatedBy = updatedBy;
+	}
+
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 
 }

@@ -93,7 +93,7 @@ public class ServiceProviderApiManager {
 	}
 
 	protected void parseValidateResponseForError(ServiceProviderResponse result) {
-		
+
 		if (result.getAction_ind() == null) {
 			throw new GlobalException(JaxError.TRANSACTION_VALIDATION_FAIL, "No action Indic returned by service provider api");
 		}
@@ -102,8 +102,7 @@ public class ServiceProviderApiManager {
 		case "C":
 		case "R":
 		case "U":
-			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE,
-					String.format("Api Validation failed. Action Ind %s Message: %s", result.getAction_ind(), result.getResponse_description()));
+			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, result.getResponse_description());
 		}
 	}
 	

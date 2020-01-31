@@ -78,6 +78,7 @@ public class AmxDBConstants {
 	public static final String JOAMX_USER = "JOAMX_USER";
 
 	public static final String BANGLADESH_ALPHA3_CODE = "BGD";
+	public static final String EGYPT_ALPHA3_CODE = "EGY";
 	public static final String SERVICE_GROUP_CODE_CASH = "C";
 	public static final String SERVICE_GROUP_CODE_BANK = "B";
 
@@ -288,6 +289,7 @@ public class AmxDBConstants {
 	public static final String BENEFICIARY_DISABLE_FLOW = "/api/user/bnfcry/disable";
 	public static final String BENEFICIARY_ADDITION_FLOW = "/api/user/bnfcry/commit";
 	public static final String FORGOT_PASSWORD_FLOW= "RESET_PASS";
+	public static final String REMIT_CART_ADD = "/api/remitt/cart/add";
 	//public static final String BENEFICIARY_ADDITION = ""
    /** end Here **/
 

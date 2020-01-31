@@ -17,7 +17,7 @@ public class AddBeneBankRequest extends AbstractBeneDetailDto {
 	// account detail
 	@NotNull(message = "Beneficary Country Id may not be null")
 	@ApiMockModelProperty(example = "91")
-	private BigDecimal beneficaryCountryId;
+	private BigDecimal benificaryCountry;
 
 	@NotNull(message = "Bank Id may not be null")
 	@ApiMockModelProperty(example = "2258")
@@ -25,7 +25,7 @@ public class AddBeneBankRequest extends AbstractBeneDetailDto {
 
 	@NotNull(message = "Bank branch may not be null")
 	@ApiMockModelProperty(example = "247822")
-	private BigDecimal bankBranchId;
+	private BigDecimal branchId;
 
 	@Pattern(regexp = "^[A-Za-z0-9]+$", message = "Invalid Account Number, only alphanumeric allowed")
 	@NotNull
@@ -44,28 +44,12 @@ public class AddBeneBankRequest extends AbstractBeneDetailDto {
 	@ApiMockModelProperty(example = "4")
 	private BigDecimal bankAccountTypeId;
 	
-	public BigDecimal getBeneficaryCountryId() {
-		return beneficaryCountryId;
-	}
-
-	public void setBeneficaryCountryId(BigDecimal beneficaryCountryId) {
-		this.beneficaryCountryId = beneficaryCountryId;
-	}
-
 	public BigDecimal getBankId() {
 		return bankId;
 	}
 
 	public void setBankId(BigDecimal bankId) {
 		this.bankId = bankId;
-	}
-
-	public BigDecimal getBankBranchId() {
-		return bankBranchId;
-	}
-
-	public void setBankBranchId(BigDecimal bankBranchId) {
-		this.bankBranchId = bankBranchId;
 	}
 
 	public String getBankAccountNumber() {
@@ -105,10 +89,28 @@ public class AddBeneBankRequest extends AbstractBeneDetailDto {
 		BeneAccountModel model = new BeneAccountModel();
 		try {
 			BeanUtils.copyProperties(model, this);
+			model.setBankBranchId(this.getBranchId());
+			model.setBeneficaryCountryId(this.getBenificaryCountry());
+			model.setSwiftCode(this.getSwiftBic());
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
 		return model;
 	}
 
+	public BigDecimal getBranchId() {
+		return branchId;
+	}
+
+	public void setBranchId(BigDecimal branchId) {
+		this.branchId = branchId;
+	}
+
+	public BigDecimal getBenificaryCountry() {
+		return benificaryCountry;
+	}
+
+	public void setBenificaryCountry(BigDecimal benificaryCountry) {
+		this.benificaryCountry = benificaryCountry;
+	}
 }

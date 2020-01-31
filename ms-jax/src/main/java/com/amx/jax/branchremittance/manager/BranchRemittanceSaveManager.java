@@ -349,7 +349,7 @@ public class BranchRemittanceSaveManager {
 		}
 		
 		}catch(Exception e) {
-			e.printStackTrace();
+			logger.error("error occured", e);
 			logger.info("MRU saveRemittanceTrnx catch block -->"+e.getMessage());
 		}
 		
@@ -386,7 +386,7 @@ public class BranchRemittanceSaveManager {
 			responseDto = brRemittanceDao.saveRemittanceTransaction(mapAllDetailRemitSave);
 			auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_SUCCESS).result(Result.DONE));
 	}catch (GlobalException e) {
-			e.printStackTrace();
+		logger.error("error occured", e);
 			logger.error("routing  procedure", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		}finally {
@@ -509,7 +509,6 @@ public class BranchRemittanceSaveManager {
 			
 		}catch(GlobalException e){
 			logger.info("Exception : CREATE COLLECTION ");
-			e.printStackTrace();
 			logger.error("create collection", e.getErrorMessage() + "" +e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}
@@ -1328,8 +1327,7 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 	 try {
 		  signatureStr  = clob.getSubString(1, (int) clob.length());
 	 }catch(Exception e){
-		 e.printStackTrace();
-		logger.debug("convertClobToStringVs "+e.getMessage());
+		 logger.error("error occured", e);
 		 throw new GlobalException(JaxError.CUSTOMER_SIGNATURE_UNAVAILABLE, e.getMessage());
 	 }
 	 return signatureStr;

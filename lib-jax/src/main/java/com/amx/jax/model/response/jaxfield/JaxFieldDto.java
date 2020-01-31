@@ -46,6 +46,9 @@ public class JaxFieldDto {
 	BigDecimal maxValue;
 	
 	String valueUnit;
+	
+	@ApiMockModelProperty(value = "Editable or non editable field", example = "true")
+	boolean editable = true;
 
 	public String getName() {
 		return name;
@@ -165,5 +168,14 @@ public class JaxFieldDto {
 	public void setValueUnit(String valueUnit) {
 		this.valueUnit = valueUnit;
 	}
+
+	public boolean isEditable() {
+		return editable;
+	}
+
+	public void setEditable(boolean editable) {
+		this.editable = editable;
+	}
+
 
 }

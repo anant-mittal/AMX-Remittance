@@ -117,6 +117,8 @@ public class CustomerDBAuthManager {
 			communicationPreferencesManager.validateCommunicationPreferences(contactList,CommunicationEvents.FORGOT_PASSWORD,identityInt);
 		}else if(AppContextUtil.getFlow().equalsIgnoreCase(AmxDBConstants.BENEFICIARY_ADDITION_FLOW)) {
 			communicationPreferencesManager.validateCommunicationPreferences(contactList,CommunicationEvents.ADD_BENEFICIARY,identityInt);
+		}else if(AppContextUtil.getFlow().equalsIgnoreCase(AmxDBConstants.REMIT_CART_ADD)) {
+			communicationPreferencesManager.validateCommunicationPreferences(contactList, CommunicationEvents.REMITTANCE, identityInt);
 		}
 		if (contactType == null) {
 

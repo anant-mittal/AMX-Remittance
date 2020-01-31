@@ -23,6 +23,7 @@ import com.amx.jax.model.request.benebranch.UpdateBeneBankRequest;
 import com.amx.jax.model.request.benebranch.UpdateBeneCashRequest;
 import com.amx.jax.model.request.benebranch.UpdateBeneStatusRequest;
 import com.amx.jax.model.response.BankMasterDTO;
+import com.amx.jax.model.response.benebranch.AddBeneResponse;
 import com.amx.jax.model.response.benebranch.BankBranchDto;
 import com.amx.jax.model.response.benebranch.BeneStatusDto;
 import com.amx.jax.rest.RestService;
@@ -78,11 +79,11 @@ public class BeneBranchClient implements IBranchBeneService {
 	}
 
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> addBeneBank(AddBeneBankRequest request) {
+	public AmxApiResponse<AddBeneResponse, Object> addBeneBank(AddBeneBankRequest request) {
 		try {
 			LOGGER.debug("in addBeneBank :");
 			return restService.ajax(appConfig.getJaxURL() + Path.ADD_BENE_BANK).meta(new JaxMetaInfo()).post(request)
-					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					.as(new ParameterizedTypeReference<AmxApiResponse<AddBeneResponse, Object>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in addBeneBank : ", e);
@@ -91,11 +92,11 @@ public class BeneBranchClient implements IBranchBeneService {
 	}
 
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> addBenecash(AddBeneCashRequest request) {
+	public AmxApiResponse<AddBeneResponse, Object> addBenecash(AddBeneCashRequest request) {
 		try {
 			LOGGER.debug("in addBenecash :");
 			return restService.ajax(appConfig.getJaxURL() + Path.ADD_BENE_CASH).meta(new JaxMetaInfo()).post(request)
-					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					.as(new ParameterizedTypeReference<AmxApiResponse<AddBeneResponse, Object>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in addBenecash : ", e);

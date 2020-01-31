@@ -43,11 +43,13 @@ public class BeneficaryRelationship implements Serializable {
 	private String localSecondName;
 	private String localThirdName;
 	private String localFourthName;
+
 	private String localFifthName;
 	private String deviceIp;
 	private String deviceType;
-	
-	
+	private BigDecimal reasonCodeId;		
+
+
 	@Id
 	@GeneratedValue(generator="ex_beneficary_relationship_seq",strategy=GenerationType.SEQUENCE)
 	@SequenceGenerator(name="ex_beneficary_relationship_seq",sequenceName="EX_BENEFICARY_RELATIONSHIP_SEQ",allocationSize=1)
@@ -336,5 +338,14 @@ public class BeneficaryRelationship implements Serializable {
 
 		public void setDeviceType(String deviceType) {
 			this.deviceType = deviceType;
+		}
+		
+		@Column(name="REASON_CODE_ID")
+		public BigDecimal getReasonCodeId() {
+			return reasonCodeId;
+		}
+
+		public void setReasonCodeId(BigDecimal reasonCodeId) {
+			this.reasonCodeId = reasonCodeId;
 		}
 }

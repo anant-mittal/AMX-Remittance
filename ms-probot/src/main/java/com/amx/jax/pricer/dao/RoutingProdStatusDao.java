@@ -23,9 +23,23 @@ public class RoutingProdStatusDao {
 		return repo.findByCurrencyIdAndCountryId(currencyId, countryId);
 	}
 
-	public List<VwExRoutingProduct> getByCurrencyIdAndCountryIdAndBankIdIn(BigDecimal currencyId,
-			BigDecimal countryId, Iterable<BigDecimal> bankIds) {
-		return repo.findByCurrencyIdAndCountryIdAndBankIdIn(currencyId, countryId, bankIds);
+	public List<VwExRoutingProduct> getByCurrencyIdAndDestinationCountryId(BigDecimal currencyId,
+			BigDecimal dCountryId) {
+		return repo.findByCurrencyIdAndDestinationCountryId(currencyId, dCountryId);
+	}
+
+	public List<VwExRoutingProduct> getByCountryIdAndCurrencyIdAndBankIdAndServiceIdAndRemitModeId(
+			BigDecimal countryId, BigDecimal currencyId, BigDecimal bankId, BigDecimal ServiceModeId,
+			BigDecimal remitModeId) {
+		return repo.findByCountryIdAndCurrencyIdAndBankIdAndServiceIdAndRemitModeId(countryId, currencyId, bankId,
+				ServiceModeId, remitModeId);
+	}
+
+	public List<VwExRoutingProduct> getByCountryIdAndCurrencyIdAndBankIdAndServiceIdAndRemitModeIdAndDeliveryModeId(
+			BigDecimal countryId, BigDecimal currencyId, BigDecimal bankId, BigDecimal ServiceModeId,
+			BigDecimal remitModeId, BigDecimal deliveryModeId) {
+		return repo.findByCountryIdAndCurrencyIdAndBankIdAndServiceIdAndRemitModeIdAndDeliveryModeId(countryId,
+				currencyId, bankId, ServiceModeId, remitModeId, deliveryModeId);
 	}
 
 }

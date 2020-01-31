@@ -308,7 +308,8 @@ public enum JaxError implements IExceptionEnum {
 	
 	MOTP_REQUIRED,
 	DOTP_REQUIRED,
-	EOTP_REQUIRED, 
+	EOTP_REQUIRED,
+	NOTP_REQUIRED,
 	CAPTCHA_REQUIRED,
 	CUSTOMER_MOBILE_EMPTY, 
 	CUSTOMER_EMAIL_EMPTY,
@@ -366,9 +367,12 @@ public enum JaxError implements IExceptionEnum {
 	//Communication Preferences
 	
 	SMS_NOT_VERIFIED,
-	WHATSAPP_NOT_VERIFIED;
+	WHATSAPP_NOT_VERIFIED,
 	
 	
+	//KWFIU
+	DUPLICATE_TRNX_DETAILS,
+	INVALID_TRNX_DETAILS;
 	
 	@Deprecated
 	public String getCode() {

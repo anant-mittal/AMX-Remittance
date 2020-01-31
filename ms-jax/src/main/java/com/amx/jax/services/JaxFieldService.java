@@ -1,5 +1,6 @@
 package com.amx.jax.services;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.model.GetJaxFieldRequest;
+import com.amx.amxlib.model.JaxCondition;
 import com.amx.amxlib.model.request.AddJaxFieldRequest;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
@@ -22,6 +24,7 @@ import com.amx.jax.model.response.jaxfield.JaxFieldDto;
 import com.amx.jax.model.response.jaxfield.ValidationRegexDto;
 import com.amx.jax.repository.JaxConditionalFieldRuleRepository;
 import com.amx.jax.repository.JaxFieldRepository;
+import com.amx.jax.service.CountryService;
 import com.amx.jax.util.JaxUtil;
 
 /**
@@ -39,6 +42,10 @@ public class JaxFieldService extends AbstractService {
 	JaxFieldRepository jaxFieldRepository;
 	@Autowired
 	JaxFieldManager jaxFieldManager;
+	@Autowired
+	CountryService countryService;
+	@Autowired
+	BeneficiaryService beneficiaryService;
 
 	@Override
 	public String getModelType() {
@@ -47,12 +54,16 @@ public class JaxFieldService extends AbstractService {
 
 	public ApiResponse<JaxConditionalFieldDto> getJaxFieldsForEntity(GetJaxFieldRequest request) {
 		ApiResponse<JaxConditionalFieldDto> apiResponse = getBlackApiResponse();
-		List<JaxConditionalFieldRule> fieldList = null;
+		List<JaxConditionalFieldRule> fieldList = new ArrayList<>();
 		if (request.getCondition() != null && request.getCondition().getConditionKey() != null
 				&& request.getCondition().getConditionValue() != null) {
-			fieldList = jaxConditionalFieldRuleRepository.findByEntityNameAndConditionKeyAndConditionValue(
-					request.getEntity(), request.getCondition().getConditionKey(),
-					request.getCondition().getConditionValue());
+			// special handling for key
+			if ("country-institution".equals(request.getCondition().getConditionKey())) {
+				fieldList = getCountrytInstitutionFields(request);
+			} else {
+				fieldList = jaxConditionalFieldRuleRepository.findByEntityNameAndConditionKeyAndConditionValue(request.getEntity(),
+						request.getCondition().getConditionKey(), request.getCondition().getConditionValue());
+			}
 		} else {
 			fieldList = jaxConditionalFieldRuleRepository.findByEntityName(request.getEntity());
 		}
@@ -60,6 +71,22 @@ public class JaxFieldService extends AbstractService {
 		apiResponse.getData().setType("jax-field-rules");
 
 		return apiResponse;
+	}
+
+	private List<JaxConditionalFieldRule> getCountrytInstitutionFields(GetJaxFieldRequest request) {
+		List<JaxConditionalFieldRule> output = new ArrayList<>();
+		String value = request.getCondition().getConditionValue();
+		BigDecimal countryId = new BigDecimal(value.split(",")[0]);
+		BigDecimal beneficaryTypeId = new BigDecimal(value.split(",")[1]);
+		if (countryService.isEgyptCountry(countryId) && beneficiaryService.isNonIndividualBene(beneficaryTypeId)) {
+			output = jaxConditionalFieldRuleRepository.findByEntityNameAndConditionKeyAndConditionValue(request.getEntity(), "country-institution",
+					"ALL");
+		}
+		if (countryService.isEgyptCountry(countryId) && !beneficiaryService.isNonIndividualBene(beneficaryTypeId)) {
+			output = jaxConditionalFieldRuleRepository.findByEntityNameAndConditionKeyAndConditionValue(request.getEntity(), "bene-country-id",
+					countryId.toString());
+		}
+		return output;
 	}
 
 	public ApiResponse addJaxField(AddJaxFieldRequest request) {
@@ -116,6 +143,7 @@ public class JaxFieldService extends AbstractService {
 			});
 		}
 		dto.setValidationRegex(validationdtos);
+		dto.setDtoPath(field.getDefaultDtoPath());
 		return dto;
 	}
 
@@ -129,8 +157,7 @@ public class JaxFieldService extends AbstractService {
 	public void updateDtoFromDb(List<JaxFieldDto> jaxFieldDtos) {
 		List<String> names = jaxFieldDtos.stream().map(i -> i.getLabel()).collect(Collectors.toList());
 		List<JaxField> jaxFields = jaxFieldRepository.findByNameIn(names);
-		final Map<String, JaxField> jaxFieldDbMap = jaxFields.stream()
-				.collect(Collectors.toMap(JaxField::getName, x -> x));
+		final Map<String, JaxField> jaxFieldDbMap = jaxFields.stream().collect(Collectors.toMap(JaxField::getName, x -> x));
 		jaxFieldDtos.forEach(i -> {
 			JaxField valueFromDB = jaxFieldDbMap.get(i.getLabel());
 			if (valueFromDB != null) {

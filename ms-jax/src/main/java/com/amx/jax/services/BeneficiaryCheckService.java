@@ -106,7 +106,7 @@ public class BeneficiaryCheckService extends AbstractService {
 
 	public BeneficiaryListDTO beneCheck(BeneficiaryListDTO beneDto) {
 		boolean isUpdateNeeded = false;
-		logger.debug("bene Check " + beneDto.getCustomerId() + "\n beneMa :" + beneDto.getBeneficaryMasterSeqId()
+		logger.trace("bene Check " + beneDto.getCustomerId() + "\n beneMa :" + beneDto.getBeneficaryMasterSeqId()
 				+ "\n Account Id:" + beneDto.getBeneficiaryAccountSeqId() + "\n Rel Seq Id :"
 				+ beneDto.getBeneficiaryRelationShipSeqId() + "\n Bank Id " + beneDto.getBankId() + "\n Acc No :"
 				+ beneDto.getBankAccountNumber() + "\n Service Id :" + beneDto.getServiceGroupId() + "\n Name :"
@@ -117,7 +117,7 @@ public class BeneficiaryCheckService extends AbstractService {
 		BeneficiaryErrorStatusDto errorStatusDto = null;
 		String errorDesc = null;
 
-		logger.debug("beneDto :" + beneDto.isUpdateNeeded());
+		logger.trace("beneDto :" + beneDto.isUpdateNeeded());
 		if (!JaxUtil.isNullZeroBigDecimalCheck(beneDto.getLanguageId())) {
 			beneDto.setLanguageId(new BigDecimal(1));
 		}
@@ -200,7 +200,7 @@ public class BeneficiaryCheckService extends AbstractService {
 					} else if (JaxUtil.isNullZeroBigDecimalCheck(beneContactList.get(0).getMobileNumber())) {
 						benePhoneLength = beneContactList.get(0).getMobileNumber().toString().length();
 					}
-					logger.debug("benePhoneLength :" + benePhoneLength);
+					logger.trace("benePhoneLength :" + benePhoneLength);
 				}
 			}
 

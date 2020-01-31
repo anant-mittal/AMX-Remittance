@@ -13,10 +13,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.branch.IBranchBeneService;
 import com.amx.jax.client.serviceprovider.RoutingBankMasterDTO;
+import com.amx.jax.dict.ContactType;
+import com.amx.jax.manager.EmployeeAuthManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.request.benebranch.AddBeneBankRequest;
@@ -29,6 +32,7 @@ import com.amx.jax.model.request.benebranch.UpdateBeneBankRequest;
 import com.amx.jax.model.request.benebranch.UpdateBeneCashRequest;
 import com.amx.jax.model.request.benebranch.UpdateBeneStatusRequest;
 import com.amx.jax.model.response.BankMasterDTO;
+import com.amx.jax.model.response.benebranch.AddBeneResponse;
 import com.amx.jax.model.response.benebranch.BankBranchDto;
 import com.amx.jax.model.response.benebranch.BeneStatusDto;
 import com.amx.utils.JsonUtil;
@@ -77,21 +81,23 @@ public class BeneBranchController implements IBranchBeneService {
 	@RequestMapping(value = Path.ADD_BENE_BANK, method = RequestMethod.POST)
 	@Override
 	@ApiOperation("add bene bank")
-	public AmxApiResponse<BoolRespModel, Object> addBeneBank(@RequestBody @Valid AddBeneBankRequest request) {
+	public AmxApiResponse<AddBeneResponse, Object> addBeneBank(@RequestBody @Valid AddBeneBankRequest request) {
 		logger.debug("request addBeneBank: {} ", JsonUtil.toJson(request));
+		JaxAuthContext.contactType(ContactType.NOTP_APP);
 		beneBranchValidation.validateaddBeneBank(request);
-		beneBranchService.addBeneBankorCash(request);
-		return AmxApiResponse.build(new BoolRespModel(true));
+		AddBeneResponse result = beneBranchService.addBeneBankorCash(request);
+		return AmxApiResponse.build(result);
 	}
 
 	@RequestMapping(value = Path.ADD_BENE_CASH, method = RequestMethod.POST)
 	@Override
 	@ApiOperation("add bene cash")
-	public AmxApiResponse<BoolRespModel, Object> addBenecash(@RequestBody @Valid AddBeneCashRequest request) {
+	public AmxApiResponse<AddBeneResponse, Object> addBenecash(@RequestBody @Valid AddBeneCashRequest request) {
 		logger.debug("request addBenecash: {} ", JsonUtil.toJson(request));
+		JaxAuthContext.contactType(ContactType.NOTP_APP);
 		beneBranchValidation.validateaddBenecash(request);
-		beneBranchService.addBeneBankorCash(request);
-		return AmxApiResponse.build(new BoolRespModel(true));
+		AddBeneResponse result = beneBranchService.addBeneBankorCash(request);
+		return AmxApiResponse.build(result);
 	}
 
 	@RequestMapping(value = Path.ADD_NEW_BRANCH_REQUEST, method = RequestMethod.POST)
@@ -121,10 +127,10 @@ public class BeneBranchController implements IBranchBeneService {
 	}
 
 	@RequestMapping(value = Path.UPDATE_BENE_STATUS, method = RequestMethod.POST)
-	@Override
 	@ApiOperation("update bene status")
 	public AmxApiResponse<BoolRespModel, Object> updateBeneStatus(@RequestBody @Valid UpdateBeneStatusRequest request) {
-		logger.debug("updateBeneStatus request: {}", JsonUtil.toJson(request));
+		logger.info("updateBeneStatus request: {}", JsonUtil.toJson(request));
+		JaxAuthContext.contactType(ContactType.NOTP_APP);
 		beneBranchService.updateBeneStatus(request);
 		return AmxApiResponse.build(new BoolRespModel(true));
 	}
@@ -133,7 +139,7 @@ public class BeneBranchController implements IBranchBeneService {
 	@Override
 	@ApiOperation("add bene bank")
 	public AmxApiResponse<BoolRespModel, Object> updateBeneBank(@RequestBody @Valid UpdateBeneBankRequest request) {
-		logger.debug("request updateBeneBank: {} ", JsonUtil.toJson(request));
+		JaxAuthContext.contactType(ContactType.NOTP_APP);
 		beneBranchValidation.validateUpdateBeneBank(request);
 		beneBranchService.updateBeneBankorCash(request);
 		return AmxApiResponse.build(new BoolRespModel(true));
@@ -143,7 +149,7 @@ public class BeneBranchController implements IBranchBeneService {
 	@Override
 	@ApiOperation("update bene bank")
 	public AmxApiResponse<BoolRespModel, Object> updateBeneCash(@RequestBody @Valid UpdateBeneCashRequest request) {
-		logger.debug("request updateBeneBank: {} ", JsonUtil.toJson(request));
+		JaxAuthContext.contactType(ContactType.NOTP_APP);
 		beneBranchValidation.validateUpdateBeneCash(request);
 		beneBranchService.updateBeneBankorCash(request);
 		return AmxApiResponse.build(new BoolRespModel(true));

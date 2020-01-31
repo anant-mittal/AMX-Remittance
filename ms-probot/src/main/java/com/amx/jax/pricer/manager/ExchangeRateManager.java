@@ -566,7 +566,7 @@ public class ExchangeRateManager {
 
 			totalRowsUpdated += exchRateUploadDao.updateStatusForRuleIdIn(
 					ruleStatusUpdateMap.get(RATE_UPLOAD_STATUS.REJECTED), RATE_UPLOAD_STATUS.REJECTED,
-					rateUploadRequestDto.getUpdatedBy(), today);
+					rateUploadRequestDto.getUpdatedBy(), today, rateUploadRequestDto.getComment());
 		}
 
 		return new Long(totalRowsUpdated);
@@ -812,6 +812,7 @@ public class ExchangeRateManager {
 					rateDto.setModifiedDate(exchRateUpload.getModifiedDate());
 					rateDto.setApprovedBy(exchRateUpload.getApprovedBy());
 					rateDto.setApprovedDate(exchRateUpload.getApprovedDate());
+					rateDto.setComment(exchRateUpload.getComment());
 
 					if (exchRateUpload.getCountryId() != null) {
 						rateDto.setCountryId(exchRateUpload.getCountryId());

@@ -16,11 +16,13 @@ import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
+import com.amx.jax.dbmodel.bene.BeneficaryStatus;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.request.AbtractUpdateBeneDetailDto;
 import com.amx.jax.model.request.benebranch.BeneAccountModel;
 import com.amx.jax.model.request.benebranch.BenePersonalDetailModel;
 import com.amx.jax.model.request.benebranch.UpdateBeneStatusRequest;
+import com.amx.jax.repository.BeneficaryStatusRepository;
 import com.amx.jax.repository.IBeneficaryContactDao;
 import com.amx.jax.repository.IBeneficiaryRelationshipDao;
 import com.amx.jax.service.MetaService;
@@ -52,13 +54,17 @@ public class BeneBranchManager {
 	BeneficiaryTrnxManager beneficiaryTrnxManager;
 	@Autowired
 	BeneAccountManager beneAccountManager;
+	@Autowired
+	BeneficaryStatusRepository beneficaryStatusRepository;
 
 	public void updateBeneStatus(UpdateBeneStatusRequest request) {
 		BeneficaryRelationship beneRel = iBeneficiaryRelationshipDao.findOne(BigDecimal.valueOf(request.getBeneRelationshipSeqId()));
 		if (beneRel == null) {
 			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Bene not found");
 		}
+		//
 		beneRel.setIsActive(request.getStatusCode().getDbFlag());
+		beneRel.setReasonCodeId(request.getReasonCodeId());
 		iBeneficiaryRelationshipDao.save(beneRel);
 	}
 
@@ -89,7 +95,9 @@ public class BeneBranchManager {
 			beneMaster.setAge(BigDecimal.valueOf(request.getAge()));
 		}
 		if (request.getBeneficaryTypeId() != null) {
-			beneMaster.setBeneficaryStatus(request.getBeneficaryTypeId());
+			BeneficaryStatus beneStatus = beneficaryStatusRepository.findOne(request.getBeneficaryTypeId());
+			beneMaster.setBeneficaryStatus(beneStatus.getBeneficaryStatusId());
+			beneMaster.setBeneficaryStatusName(beneStatus.getBeneficaryStatusName());
 		}
 		try {
 			boolean isModified = !JaxUtil.checkNull(benePersonalDetail);
@@ -148,11 +156,19 @@ public class BeneBranchManager {
 			beneRelationship.setThirdName(benePersonalDetail.getThirdName());
 			isModified = true;
 		}
-		if (isModified) {
-			beneRelationship.setModifiedBy(jaxDBService.getCreatedOrUpdatedBy());
-			beneRelationship.setModifiedDate(new Date());
-			iBeneficiaryRelationshipDao.save(beneRelationship);
+
+		// update institute names
+		if (benePersonalDetail.getInstitutionName() != null) {
+			beneRelationship.setFirstName(beneficiaryTrnxManager.getInstitutionFirstName(benePersonalDetail));
+			beneRelationship.setSecondName(beneficiaryTrnxManager.getInstitutionSecondName(benePersonalDetail));
 		}
+		if (benePersonalDetail.getInstitutionNameLocal() != null) {
+			beneRelationship.setLocalFirstName(beneficiaryTrnxManager.getInstitutionFirstNameLocal(benePersonalDetail));
+			beneRelationship.setLocalSecondName(beneficiaryTrnxManager.getInstitutionSecondNameLocal(benePersonalDetail));
+		}
+		beneRelationship.setModifiedBy(jaxDBService.getCreatedOrUpdatedBy());
+		beneRelationship.setModifiedDate(new Date());
+		iBeneficiaryRelationshipDao.save(beneRelationship);
 	}
 
 	public void updateBeneContact(BeneficaryRelationship beneRelationship, BenePersonalDetailModel beneDetails) {
@@ -163,7 +179,7 @@ public class BeneBranchManager {
 			isModified = true;
 		}
 		if (beneDetails.getMobileNumber() != null) {
-			beneficaryContact.setMobileNumber(new BigDecimal(beneDetails.getMobileNumber()));
+			beneficaryContact.setTelephoneNumber(beneDetails.getMobileNumber());
 			isModified = true;
 		}
 		log.info("in updateBeneContact isModified: {}", isModified);

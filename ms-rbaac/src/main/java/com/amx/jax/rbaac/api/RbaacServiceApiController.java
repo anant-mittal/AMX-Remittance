@@ -35,6 +35,7 @@ import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.request.UserRoleMappingsRequestDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
+import com.amx.jax.rbaac.dto.response.OfflineOtpData;
 import com.amx.jax.rbaac.dto.response.PermissionResposeDTO;
 import com.amx.jax.rbaac.dto.response.RoleMappingForEmployee;
 import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
@@ -444,4 +445,18 @@ public class RbaacServiceApiController implements IRbaacService {
 		return AmxApiResponse.buildList(deviceService.getDevicesByDeviceRegId( deviceRegId, deviceId));
 	}
 
+	@Override
+	@RequestMapping(value = ApiEndPoints.GENERATE_OFFLINE_OTP_PREFIX, method = RequestMethod.GET)
+	public AmxApiResponse<OfflineOtpData, Object> generateOfflineOtpPrefix(@RequestParam(name = Params.EMPLOYEE_ID) BigDecimal employeeId) {
+		OfflineOtpData response = userAuthService.generateOfflineOtpPrefix(employeeId);
+		return AmxApiResponse.build(response);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.VALIDATE_OFFLINE_OTP, method = RequestMethod.GET)
+	public AmxApiResponse<BoolRespModel, Object> validateOfflineOtp(@RequestParam(name = Params.EMPLOYEE_ID) BigDecimal employeeId,
+			@RequestParam(name = Params.OTP) String otp) {
+		boolean response = userAuthService.validateOfflineOtp(employeeId, otp);
+		return AmxApiResponse.build(new BoolRespModel(response));
+	}
 }

@@ -19,7 +19,10 @@ import com.amx.amxlib.model.CountryBranchDTO;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.OffsiteCustRegClient;
+import com.amx.jax.client.bene.InstitutionCategoryDto;
+import com.amx.jax.client.bene.ReasoncodeCategory;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.model.meta.ReasonsDTO;
 import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.remittance.ServiceMasterDTO;
@@ -97,10 +100,20 @@ public class MetaController {
 		return metaClient.getServiceGroupList();
 	}
 
+	@RequestMapping(value = "/pub/meta/institution_category/list", method = RequestMethod.GET)
+	public AmxApiResponse<InstitutionCategoryDto, Object> listInstitutionCategoryMaster() {
+		return metaClient.listInstitutionCategoryMaster();
+	}
+
+	@RequestMapping(value = "/pub/meta/reason_category/list", method = RequestMethod.POST)
+	public AmxApiResponse<ReasonsDTO, Object> getReason(@RequestParam ReasoncodeCategory reasonCategory) {
+		return metaClient.getReason(reasonCategory);
+	} 
+
 
 	@RequestMapping(value = "/pub/meta/currency/list", method = RequestMethod.GET)
-	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyList() {
-		return metaClient.getAllExchangeRateCurrencyList();
+	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyList(Boolean isActive) {
+		return metaClient.getAllExchangeRateCurrencyList(isActive);
 	}
 
 	@RequestMapping(value = "/pub/meta/currency/list", method = RequestMethod.POST)

@@ -3,10 +3,12 @@ package com.amx.jax.trnx;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.validation.BeanPropertyBindingResult;
 
 import com.amx.amxlib.constant.AuthType;
 import com.amx.amxlib.constant.NotificationConstants;
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.BeneCreateDetailsDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.AppContextUtil;
@@ -31,7 +34,9 @@ import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.dbmodel.bene.BeneficaryStatus;
+import com.amx.jax.dbmodel.bene.RelationsDescription;
 import com.amx.jax.dict.ContactType;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.model.request.benebranch.BeneAccountModel;
 import com.amx.jax.model.request.benebranch.BenePersonalDetailModel;
 import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
@@ -54,10 +59,12 @@ import com.amx.jax.repository.IBeneficiaryRelationshipDao;
 import com.amx.jax.service.MetaService;
 import com.amx.jax.service.ParameterService;
 import com.amx.jax.services.BankService;
+import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.services.JaxEmailNotificationService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.CustomerDBAuthManager;
+import com.amx.jax.userservice.repository.RelationsRepository;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.CommunicationPrefsUtil;
 import com.amx.jax.util.CommunicationPrefsUtil.CommunicationPrefsResult;
@@ -124,17 +131,20 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	IBeneficiaryOnlineDao beneficiaryOnlineDao;
 	@Autowired
 	BeneAccountManager beneAccountManager;
+	@Autowired
+	BeneficiaryService beneficiaryService ; 
+	@Autowired
+	RelationsRepository relationsRepository;
+	@Autowired
+	CustomerDBAuthManager customerDBAuthManager;
 	@Autowired	
 	CustomerDao custDao;
-	
 	@Autowired
 	CommunicationPrefsUtil communicationPrefsUtil;
-	
 	@Autowired
 	WhatsAppClient whatsAppClient;
 
-	@Autowired
-	CustomerDBAuthManager customerDBAuthManager;
+
 	@Override
 	public BeneficiaryTrnxModel init() {
 		BeneficiaryTrnxModel model = new BeneficiaryTrnxModel();
@@ -157,7 +167,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 
 	public BeneficiaryTrnxModel commit(BeneficiaryTrnxModel beneficiaryTrnxModel) {
 		
-		logger.info("commiting beneficary: " + beneficiaryTrnxModel.toString());
+		logger.info("commiting beneficary: {}", JsonUtil.toJson(beneficiaryTrnxModel));
 		BeneficaryMaster beneMaster = commitBeneMaster(beneficiaryTrnxModel);
 		commitBeneContact(beneficiaryTrnxModel, beneMaster.getBeneficaryMasterSeqId());
 		BeneficaryAccount beneAccount = commitBeneAccount(beneficiaryTrnxModel, beneMaster.getBeneficaryMasterSeqId());
@@ -324,7 +334,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		beneficaryRelationship.setCustomerId(metaData.getCustomerId());
 		beneficaryRelationship.setIsActive(ConstantDocument.Yes);
 		beneficaryRelationship.setOrsSatus(BigDecimal.ONE); // for online
-		beneficaryRelationship.setRelationsId(beneDetaisl.getRelationsId());
+		beneficaryRelationship.setRelationsId(getRelationsId(beneficiaryTrnxModel, beneDetaisl.getRelationsId()));
 
 		beneficaryRelationship.setFirstName(beneDetaisl.getFirstName());
 		beneficaryRelationship.setSecondName(beneDetaisl.getSecondName());
@@ -336,12 +346,55 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		beneficaryRelationship.setLocalThirdName(beneDetaisl.getLocalThirdName());
 		beneficaryRelationship.setLocalFourthName(beneDetaisl.getLocalFourthName());
 		beneficaryRelationship.setLocalFifthName(beneDetaisl.getLocalFifthName());
+		if (beneDetaisl.getInstitutionName() != null) {
+			beneficaryRelationship.setFirstName(getInstitutionFirstName(beneDetaisl));
+			beneficaryRelationship.setSecondName(getInstitutionSecondName(beneDetaisl));
+		}
+		if (beneDetaisl.getInstitutionNameLocal() != null) {
+			beneficaryRelationship.setLocalFirstName(getInstitutionFirstNameLocal(beneDetaisl));
+			beneficaryRelationship.setLocalSecondName(getInstitutionSecondNameLocal(beneDetaisl));
+		}
+		
 		
 		beneficaryRelationship.setDeviceIp(metaData.getDeviceIp());
 		beneficaryRelationship.setDeviceType(metaData.getDeviceType());
 		
 		beneficiaryRelationshipDao.save(beneficaryRelationship);
 		return beneficaryRelationship;
+	}
+
+	public String getInstitutionSecondName(BenePersonalDetailModel beneDetaisl) {
+		String institutionName = beneDetaisl.getInstitutionName().trim();
+		int splitIndex = institutionName.indexOf(" ");
+		return institutionName.substring(splitIndex+1);
+	}
+
+	public String getInstitutionFirstName(BenePersonalDetailModel beneDetaisl) {
+		return beneDetaisl.getInstitutionName().trim().split(" ")[0];
+	}
+	
+	public String getInstitutionSecondNameLocal(BenePersonalDetailModel beneDetaisl) {
+		String institutionNameLocal = beneDetaisl.getInstitutionNameLocal().trim();
+		int splitIndex = institutionNameLocal.indexOf(" ");
+		return institutionNameLocal.substring(splitIndex + 1);
+	}
+
+	public String getInstitutionFirstNameLocal(BenePersonalDetailModel beneDetaisl) {
+		return beneDetaisl.getInstitutionNameLocal().trim().split(" ")[0];
+	}
+
+	private BigDecimal getRelationsId(BeneficiaryTrnxModel beneficiaryTrnxModel, BigDecimal relationsId) {
+		if (relationsId == null) {
+			BigDecimal beneficaryTypeId = beneficiaryTrnxModel.getBenePersonalDetailModel().getBeneficaryTypeId();
+			if (beneficiaryService.isNonIndividualBene(beneficaryTypeId)) {
+				List<RelationsDescription> othersRelationship = relationsRepository.getOthersRelations();
+				if (CollectionUtils.isEmpty(othersRelationship)) {
+					throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "other relationship not defined in relation master");
+				}
+				relationsId = othersRelationship.get(0).getRelationsId();
+			}
+		}
+		return relationsId;
 	}
 
 	/**
@@ -418,7 +471,13 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 			beneMaster.setStateName(stateName);
 			beneMaster.setIsActive(ConstantDocument.Yes);
 			beneMaster.setNationality(benePersonalDetails.getNationality());
-
+			BigDecimal beneficaryTypeId = beneficiaryTrnxModel.getBenePersonalDetailModel().getBeneficaryTypeId();
+			if (beneficiaryService.isNonIndividualBene(beneficaryTypeId)) {
+				// in case of non individiual bene set country id as nationallity as per
+				// Jabarullah
+				beneMaster.setNationality(benePersonalDetails.getCountryId().toString());
+			}
+			beneMaster.setInstitutionCategoryId(benePersonalDetails.getInstitutionCategoryId());
 			beneficaryMasterRepository.save(beneMaster);
 			logger.info("created new bene master id: " + beneMaster.getBeneficaryMasterSeqId());
 		} else {
@@ -444,6 +503,14 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		beneMaster.setLocalFourthName(benePersonalDetails.getLocalFourthName());
 		beneMaster.setLocalSecondName(benePersonalDetails.getLocalSecondName());
 		beneMaster.setLocalThirdName(benePersonalDetails.getLocalThirdName());
+		if (benePersonalDetails.getInstitutionName() != null) {
+			beneMaster.setFirstName(getInstitutionFirstName(benePersonalDetails));
+			beneMaster.setSecondName(getInstitutionSecondName(benePersonalDetails));
+		}
+		if (benePersonalDetails.getInstitutionNameLocal() != null) {
+			beneMaster.setLocalFirstName(getInstitutionFirstNameLocal(benePersonalDetails));
+			beneMaster.setLocalSecondName(getInstitutionSecondNameLocal(benePersonalDetails));
+		}
 	}
 
 	/**
@@ -590,6 +657,5 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 			logger.error("Error while sending mail beneCreationEmail : " , e);
 		}
 	}
-
 
 }

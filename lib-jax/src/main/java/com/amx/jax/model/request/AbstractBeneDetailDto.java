@@ -18,15 +18,13 @@ public abstract class AbstractBeneDetailDto {
 	// bene details
 	@NotNull
 	@ApiMockModelProperty(example = "1")
-	BigDecimal beneficaryTypeId;
+	BigDecimal benificaryStatusId;
 
-	@NotNull(message = "First Name may not be null")
 	@Size(min = 1, max = 50, message = "firstName should be between 1 and 50 characters")
 	@ApiMockModelProperty(example = "testbene")
 	private String firstName;
 
-	@NotNull
-	@Size(min = 1, max = 50, message = "secondName should be between 1 and 50 characters")
+	@Size(min = 0, max = 50, message = "secondName should be between 0 and 50 characters")
 	@ApiMockModelProperty(example = "testbene")
 	private String secondName;
 
@@ -37,30 +35,28 @@ public abstract class AbstractBeneDetailDto {
 	private String fourthName;
 
 	@Size(min = 0, max = 50, message = "fifthName should be between 0 and 50 characters")
-	private String fifthName;
+	private String fiftheName;
 
 	@Size(min = 1, max = 50, message = "localFirstName should be between 1 and 50 characters")
-	private String localFirstName;
+	private String firstNameLocal;
 
 	@Size(min = 1, max = 50, message = "localSecondName should be between 1 and 50 characters")
-	private String localSecondName;
+	private String secondNameLocal;
 
 	@Size(min = 1, max = 50, message = "localThirdName should be between 1 and 50 characters")
-	private String localThirdName;
+	private String thirdNameLocal;
 
 	@Size(min = 1, max = 50, message = "localFourthName should be between 1 and 50 characters")
-	private String localFourthName;
+	private String fourthNameLocal;
 
 	@Size(min = 0, max = 50, message = "localFifthName should be between 0 and 50 characters")
-	private String localFifthName;
+	private String fifthNameLocal;
 
-	@NotNull(message = "nationality may not be null")
 	@ApiMockModelProperty(example = "94")
 	private BigDecimal nationality;
 
-	@NotNull
 	@ApiMockModelProperty(example = "5")
-	private BigDecimal relationsId;
+	private BigDecimal relationShipId;
 	// TODO: add dob fields
 
 	// bene contact
@@ -91,7 +87,15 @@ public abstract class AbstractBeneDetailDto {
 	private BigDecimal serviceGroupId;
 
 	@ApiMockModelProperty(example = "HDFCINBBAHM")
-	String swiftCode;
+	String swiftBic;
+	
+	@Size(min=1, max=50, message="institutionName should be between 1 and 50 characters")
+	private String institutionName;
+	
+	@Size(min=1, max=50, message="institutionName local should be between 1 and 50 characters")
+	private String institutionNameLocal;
+	
+	private BigDecimal institutionCategoryId;
 
 	public String getFirstName() {
 		return firstName;
@@ -124,69 +128,13 @@ public abstract class AbstractBeneDetailDto {
 	public void setFourthName(String fourthName) {
 		this.fourthName = fourthName;
 	}
-
-	public String getFifthName() {
-		return fifthName;
-	}
-
-	public void setFifthName(String fifthName) {
-		this.fifthName = fifthName;
-	}
-
-	public String getLocalFirstName() {
-		return localFirstName;
-	}
-
-	public void setLocalFirstName(String localFirstName) {
-		this.localFirstName = localFirstName;
-	}
-
-	public String getLocalSecondName() {
-		return localSecondName;
-	}
-
-	public void setLocalSecondName(String localSecondName) {
-		this.localSecondName = localSecondName;
-	}
-
-	public String getLocalThirdName() {
-		return localThirdName;
-	}
-
-	public void setLocalThirdName(String localThirdName) {
-		this.localThirdName = localThirdName;
-	}
-
-	public String getLocalFourthName() {
-		return localFourthName;
-	}
-
-	public void setLocalFourthName(String localFourthName) {
-		this.localFourthName = localFourthName;
-	}
-
-	public String getLocalFifthName() {
-		return localFifthName;
-	}
-
-	public void setLocalFifthName(String localFifthName) {
-		this.localFifthName = localFifthName;
-	}
-
+	
 	public BigDecimal getNationality() {
 		return nationality;
 	}
 
 	public void setNationality(BigDecimal nationality) {
 		this.nationality = nationality;
-	}
-
-	public BigDecimal getRelationsId() {
-		return relationsId;
-	}
-
-	public void setRelationsId(BigDecimal relationsId) {
-		this.relationsId = relationsId;
 	}
 
 	public BigDecimal getStateId() {
@@ -233,6 +181,14 @@ public abstract class AbstractBeneDetailDto {
 		BenePersonalDetailModel model = new BenePersonalDetailModel();
 		try {
 			BeanUtils.copyProperties(model, this);
+			model.setFifthName(this.getFiftheName());
+			model.setLocalFifthName(this.getFifthNameLocal());
+			model.setLocalFirstName(this.getFirstNameLocal());
+			model.setLocalFourthName(this.getFourthNameLocal());
+			model.setLocalSecondName(this.getSecondNameLocal());
+			model.setLocalThirdName(this.getThirdNameLocal());
+			model.setRelationsId(this.getRelationShipId());
+			model.setBeneficaryTypeId(this.getBenificaryStatusId());
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
@@ -256,19 +212,100 @@ public abstract class AbstractBeneDetailDto {
 		this.serviceGroupId = serviceGroupId;
 	}
 
-	public String getSwiftCode() {
-		return swiftCode;
+	public BigDecimal getBenificaryStatusId() {
+		return benificaryStatusId;
 	}
 
-	public void setSwiftCode(String swiftCode) {
-		this.swiftCode = swiftCode;
+	public void setBenificaryStatusId(BigDecimal benificaryStatusId) {
+		this.benificaryStatusId = benificaryStatusId;
 	}
 
-	public BigDecimal getBeneficaryTypeId() {
-		return beneficaryTypeId;
+	public String getFiftheName() {
+		return fiftheName;
 	}
 
-	public void setBeneficaryTypeId(BigDecimal beneficaryTypeId) {
-		this.beneficaryTypeId = beneficaryTypeId;
+	public void setFiftheName(String fiftheName) {
+		this.fiftheName = fiftheName;
 	}
+
+	public String getFirstNameLocal() {
+		return firstNameLocal;
+	}
+
+	public void setFirstNameLocal(String firstNameLocal) {
+		this.firstNameLocal = firstNameLocal;
+	}
+
+	public String getSecondNameLocal() {
+		return secondNameLocal;
+	}
+
+	public void setSecondNameLocal(String secondNameLocal) {
+		this.secondNameLocal = secondNameLocal;
+	}
+
+	public String getThirdNameLocal() {
+		return thirdNameLocal;
+	}
+
+	public void setThirdNameLocal(String thirdNameLocal) {
+		this.thirdNameLocal = thirdNameLocal;
+	}
+
+	public String getFourthNameLocal() {
+		return fourthNameLocal;
+	}
+
+	public void setFourthNameLocal(String fourthNameLocal) {
+		this.fourthNameLocal = fourthNameLocal;
+	}
+
+	public String getFifthNameLocal() {
+		return fifthNameLocal;
+	}
+
+	public void setFifthNameLocal(String fifthNameLocal) {
+		this.fifthNameLocal = fifthNameLocal;
+	}
+
+	public BigDecimal getRelationShipId() {
+		return relationShipId;
+	}
+
+	public void setRelationShipId(BigDecimal relationShipId) {
+		this.relationShipId = relationShipId;
+	}
+
+	public String getSwiftBic() {
+		return swiftBic;
+	}
+
+	public void setSwiftBic(String swiftBic) {
+		this.swiftBic = swiftBic;
+	}
+
+	public String getInstitutionName() {
+		return institutionName;
+	}
+
+	public void setInstitutionName(String institutionName) {
+		this.institutionName = institutionName;
+	}
+
+	public String getInstitutionNameLocal() {
+		return institutionNameLocal;
+	}
+
+	public void setInstitutionNameLocal(String institutionNameLocal) {
+		this.institutionNameLocal = institutionNameLocal;
+	}
+
+	public BigDecimal getInstitutionCategoryId() {
+		return institutionCategoryId;
+	}
+
+	public void setInstitutionCategoryId(BigDecimal institutionCategoryId) {
+		this.institutionCategoryId = institutionCategoryId;
+	}
+
 }

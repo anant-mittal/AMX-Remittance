@@ -8,4 +8,9 @@ public final class AppRequestInterfaces {
 		public boolean isAuthVendorRequest(ApiRequestDetail apiRequest, CommonHttpRequest req, String traceId,
 				String authToken);
 	}
+
+	public interface ClientAuthFilter {
+		public boolean isAuthClientRequest(ApiRequestDetail apiRequest, CommonHttpRequest req, String traceId,
+				String authToken);
+	}
 }

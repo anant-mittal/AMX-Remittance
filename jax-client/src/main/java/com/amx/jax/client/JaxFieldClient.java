@@ -67,4 +67,29 @@ public class JaxFieldClient extends AbstractJaxServiceClient {
 					});
 
 	}
+	
+	/**
+	 * @return
+	 *         <p>
+	 *         Returns the dynamic fields of beneficiary based upon beneficiary
+	 *         country Id passed
+	 *         </p>
+	 * @param beneCountryId
+	 *            - country id returned from list country api
+	 * 
+	 */
+	public ApiResponse<JaxConditionalFieldDto> getDynamicFieldsForBeneficiary(BigDecimal beneCountryId, BigDecimal beneficaryTypeId) {
+			LOGGER.debug("Get getJaxFieldsForEntity beneCountryId= " + beneCountryId);
+			if(beneficaryTypeId == null) {
+				return getDynamicFieldsForBeneficiary(beneCountryId);
+			}
+			JaxCondition condition = new JaxCondition("country-institution", beneCountryId.toString() + "," + beneficaryTypeId.toString());
+			GetJaxFieldRequest request = new GetJaxFieldRequest(condition, JaxFieldEntity.BENEFICIARY);
+			String url = this.getBaseUrl() + JAX_FIELD_ENDPOINT + "/get";
+			HttpEntity<GetJaxFieldRequest> requestEntity = new HttpEntity<GetJaxFieldRequest>(request, getHeader());
+			return restService.ajax(url).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<JaxConditionalFieldDto>>() {
+					});
+
+	}
 }

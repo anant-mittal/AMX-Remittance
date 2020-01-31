@@ -96,21 +96,9 @@ public class UserController {
 	@Autowired
 	private JaxService jaxService;
 
-	/** The tenant context. */
-	@Autowired
-	private TenantService tenantContext;
-
 	/** The http service. */
 	@Autowired
 	private CommonHttpRequest httpService;
-
-	/** The app config. */
-	@Autowired
-	private AppConfig appConfig;
-
-	/** The web app config. */
-	@Autowired
-	private WebAppConfig webAppConfig;
 
 	/** The fb push client. */
 	@Autowired
@@ -122,9 +110,6 @@ public class UserController {
 
 	@Autowired
 	AuthLibContext authLibContext;
-
-	@Autowired
-	private CustomerProfileClient customerProfileClient;
 
 	@Autowired
 	AuditService auditService;
@@ -188,89 +173,7 @@ public class UserController {
 			}
 		}
 
-		lang = httpService.getLanguage();
-		Language sessionLang = sessionService.getGuestSession().getLanguage();
-		boolean isLangChange = ArgUtil.is(lang) && !lang.equals(sessionLang);
-
-		wrapper.getData().setTenant(AppContextUtil.getTenant());
-		wrapper.getData().setTenantCode(AppContextUtil.getTenant().getCode());
-		wrapper.getData().setCdnUrl(appConfig.getCdnURL());
-
-		wrapper.getData().setDevice(sessionService.getAppDevice().getUserDevice().toSanitized());
-		wrapper.getData().setState(sessionService.getGuestSession().getState());
-		wrapper.getData().setValidSession(sessionService.getUserSession().isValid());
-
-		CustomerModel customer = sessionService.getUserSession().getCustomerModel();
-
-		if (customer != null) {
-			wrapper.getData().setActive(true);
-			wrapper.getData().setCustomerId(sessionService.getUserSession().getCustomerModel().getCustomerId());
-			wrapper.getData().setInfo(sessionService.getUserSession().getCustomerModel().getPersoninfo());
-
-			Language profileLang = customer.getPersoninfo().getLang();
-
-			if (false
-					/**
-					 * This is language Change request after Login
-					 */
-					|| isLangChange
-					/**
-					 * profile language is empty
-					 */
-					|| (ArgUtil.isEmpty(profileLang) && !Language.EN.equals(lang))
-					/**
-					 * Client language is NON-English and different than profile Language
-					 */
-					|| (!Language.EN.equals(lang) && !lang.equals(profileLang))
-
-			) {
-				customerProfileClient.saveLanguage(customer.getCustomerId(), lang.getBDCode());
-				refresh = true;
-			} else {
-				lang = profileLang;
-			}
-
-			if (refresh) {
-				userService.updateCustoemrModel();
-			}
-			CustomerFlags customerFlags = sessionService.getUserSession().getCustomerModel().getFlags();
-
-			if (validate) {
-				customerFlags = authLibContext.get().checkUserMeta(sessionService.getGuestSession().getState(),
-						customerFlags);
-			}
-
-			wrapper.getData().setFlags(customerFlags);
-
-			if (!ArgUtil.isEmpty(customerFlags) && customerFlags.getAnnualIncomeExpired()) {
-				wrapper.setStatusEnum(OWAStatusStatusCodes.INCOME_UPDATE_REQUIRED);
-			}
-
-			wrapper.getData().setDomCurrency(tenantContext.getDomCurrency());
-			wrapper.getData().setConfig(jaxService.setDefaults().getMetaClient().getJaxMetaParameter().getResult());
-			wrapper.getData().getSubscriptions().addAll(userService.getNotifyTopics("/topics/",lang));
-			wrapper.getData().setReturnUrl(sessionService.getGuestSession().getReturnUrl());
-
-			wrapper.getData().setFeatures(
-					authLibContext.get().filterFeatures(sessionService.getGuestSession().getState(), customerFlags,
-							webAppConfig.getFeaturesList()));
-		} else {
-			wrapper.getData().setFeatures(webAppConfig.getFeaturesList());
-		}
-
-		/**
-		 * Language Changed - Change it in session, cookie and meta
-		 */
-		sessionService.getGuestSession().setLanguage(lang);
-		wrapper.getData().setLang(sessionService.getGuestSession().getLanguage());
-		httpService.setCookie("lang", lang.toString(), 30 * 60 * 60 * 2);
-
-		wrapper.getData().setMileStones(MileStone.LIST);
-		wrapper.getData().setNotifyRangeShort(webAppConfig.getNotifyRangeShort());
-		wrapper.getData().setNotifyRangeLong(webAppConfig.getNotifyRangeLong());
-		wrapper.getData().setNotificationGap(webAppConfig.getNotificationGap());
-
-		return wrapper;
+		return userService.getMeta(refresh, validate,lang);
 	}
 
 	/**

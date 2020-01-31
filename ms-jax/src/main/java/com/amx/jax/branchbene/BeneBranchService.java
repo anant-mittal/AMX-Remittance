@@ -33,6 +33,7 @@ import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.dbmodel.bene.BeneficaryStatus;
 import com.amx.jax.dbmodel.meta.ServiceGroupMaster;
+import com.amx.jax.manager.EmployeeAuthManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.request.AbstractBeneDetailDto;
@@ -47,6 +48,7 @@ import com.amx.jax.model.request.benebranch.ListBeneRequest;
 import com.amx.jax.model.request.benebranch.UpdateBeneStatusRequest;
 import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.benebranch.AddBeneBankBranchRequestModel;
+import com.amx.jax.model.response.benebranch.AddBeneResponse;
 import com.amx.jax.model.response.benebranch.BankBranchDto;
 import com.amx.jax.model.response.benebranch.BeneStatusDto;
 import com.amx.jax.model.response.benebranch.UpdateBeneStatus;
@@ -63,7 +65,6 @@ import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.trnx.BeneficiaryTrnxManager;
 import com.amx.jax.userservice.service.UserService;
-import com.amx.utils.JsonUtil;
 
 @Service
 public class BeneBranchService {
@@ -100,6 +101,8 @@ public class BeneBranchService {
 	BeneficaryStatusRepository beneficaryStatusRepository;
 	@Autowired
 	JaxTenantProperties jaxTenantProperties;
+	@Autowired
+	EmployeeAuthManager employeeAuthManager;
 
 	// bank
 	public List<BankMasterDTO> getBankByCountryAndCurrency(ListBeneBankOrCashRequest request) {
@@ -123,17 +126,19 @@ public class BeneBranchService {
 		return bankMetaService.getBankBranches(request);
 	}
 
-	public void addBeneBankorCash(AbstractBeneDetailDto request) {
+	public AddBeneResponse addBeneBankorCash(AbstractBeneDetailDto request) {
 		BeneficiaryTrnxModel beneficiaryTrnxModel = request.createBeneficiaryTrnxModelObject();
 		beneficiaryValidationService.validateBeneficiaryTrnxModel(beneficiaryTrnxModel);
+		employeeAuthManager.validateAndSendOtp(metaData.getEmployeeId());
 		beneficiaryTrnxManager.commit(beneficiaryTrnxModel);
 		setAdditionalBranchFields(beneficiaryTrnxModel.getBeneficaryRelationSeqId(), request);
+		return new AddBeneResponse(beneficiaryTrnxModel.getBeneficaryRelationSeqId());
 	}
 
 	private void setAdditionalBranchFields(BigDecimal beneficaryRelationSeqId, AbstractBeneDetailDto request) {
 		BenificiaryListView beneRelationship = beneService.getBeneByIdNo(beneficaryRelationSeqId);
 		BeneficaryMaster beneficaryMaster = beneService.getBeneficiaryMasterBybeneficaryMasterSeqId(beneRelationship.getBeneficaryMasterSeqId());
-		BeneficaryStatus beneStatus = beneficaryStatusRepository.findOne(request.getBeneficaryTypeId());
+		BeneficaryStatus beneStatus = beneficaryStatusRepository.findOne(request.getBenificaryStatusId());
 		beneficaryMaster.setBeneficaryStatus(beneStatus.getBeneficaryStatusId());
 		beneficaryMaster.setBeneficaryStatusName(beneStatus.getBeneficaryStatusName());
 
@@ -158,7 +163,7 @@ public class BeneBranchService {
 		Customer customer = userService.getCustById(metaData.getCustomerId());
 		String firstname = customer.getFirstName();
 		String lastename = customer.getLastName();
-		model.setCustomerName(firstname +" "+ lastename);
+		model.setCustomerName(firstname + " " + lastename);
 		model.setDistrict(metaService.getDistrictMasterById(request.getDistrictId()).getDistrictDesc());
 		model.setIdentityId(customer.getIdentityInt());
 		model.setIfscCode(request.getIfscCode());
@@ -232,12 +237,13 @@ public class BeneBranchService {
 	}
 
 	public void updateBeneStatus(UpdateBeneStatusRequest request) {
+		employeeAuthManager.validateAndSendOtp(metaData.getEmployeeId());
 		beneBranchManager.updateBeneStatus(request);
 	}
 
 	@Transactional
 	public void updateBeneBankorCash(AbtractUpdateBeneDetailDto request) {
-		logger.info("updateBeneBankorCash request: {} ", JsonUtil.toJson(request));
+		employeeAuthManager.validateAndSendOtp(metaData.getEmployeeId());
 		BeneficiaryTrnxModel beneficiaryTrnxModel = request.createBeneficiaryTrnxModelObject();
 		BeneAccountModel beneAccountDetail = beneficiaryTrnxModel.getBeneAccountModel();
 		BenePersonalDetailModel benePersonalDetail = beneficiaryTrnxModel.getBenePersonalDetailModel();
@@ -258,7 +264,8 @@ public class BeneBranchService {
 			BeneStatusDto dto = new BeneStatusDto(beneStatus.getDescription(), beneStatus.name());
 			i.setBeneStatusDto(dto);
 			if (beneContact != null) {
-				i.setMobileNumber(beneContact.getMobileNumber() != null ? beneContact.getMobileNumber().toString() : null);
+				i.setMobileNumber(
+						beneContact.getMobileNumber() != null ? beneContact.getMobileNumber().toString() : beneContact.getTelephoneNumber());
 				i.setCountryTelCode(beneContact.getCountryTelCode());
 			}
 		});

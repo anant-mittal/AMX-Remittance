@@ -49,9 +49,10 @@ public class FormMetaController {
 	 * @return the list of states for country
 	 */
 	@RequestMapping(value = "/api/form/fields/bnfcry", method = { RequestMethod.GET })
-	public ResponseWrapper<List<JaxConditionalFieldDto>> getListOfStatesForCountry(@RequestParam BigDecimal countryId) {
+	public ResponseWrapper<List<JaxConditionalFieldDto>> getListOfStatesForCountry(@RequestParam BigDecimal countryId,
+			 @RequestParam(required=false) BigDecimal beneficaryTypeId) {
 		return new ResponseWrapper<List<JaxConditionalFieldDto>>(
-				jaxService.setDefaults().getJaxFieldClient().getDynamicFieldsForBeneficiary(countryId).getResults());
+				jaxService.setDefaults().getJaxFieldClient().getDynamicFieldsForBeneficiary(countryId, beneficaryTypeId).getResults());
 	}
 
 }
