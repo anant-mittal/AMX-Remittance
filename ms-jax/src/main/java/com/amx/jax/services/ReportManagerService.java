@@ -4,6 +4,7 @@ package com.amx.jax.services;
  * @author rabil
  */
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -676,6 +677,9 @@ public class ReportManagerService extends AbstractService {
 							obj.setAmountSaved(currencyQuoteName + "     " + KdSaved.toString());
 						}
 						/** end **/
+						
+						
+						
 
 					} catch (Exception e) {
 						logger.info("Exception Occured While Report2 " + e.getMessage());
@@ -758,17 +762,23 @@ public class ReportManagerService extends AbstractService {
 	// ----------------- SPECIAL RATE RECEIPT DATA -------------------
 	private void getSpecialRateData(RemittanceTransactionView view, RemittanceReportBean obj, String currencyQuoteName,
 			int decimalPerCurrency) {
+		
+		//setSpecialRateData
+		
+		/** adeed by Rabil **/
+		int fcDecimalValue = currencyDao.getCurrencyList(view.getForeignCurrencyId()).get(0).getDecinalNumber().intValue();
+		BigDecimal KdFcRate = getLocalFCRate(view.getExchangeRateApplied(), fcDecimalValue);
+		
 		// Special Exchange Rate
 		if (view.getCurrencyQuoteName() != null && currencyQuoteName != null && view.getExchangeRateApplied() != null) {
-			obj.setSpecialExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "
-					+ view.getExchangeRateApplied().toString());
+			obj.setSpecialExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "  "+ view.getExchangeRateApplied().toString() +"   "+currencyQuoteName+" / "+view.getCurrencyQuoteName()+" "+KdFcRate);
 		}
 
 		// Equivalent kwd Amount
 		if (view.getLocalTransactionAmount() != null && view.getLocalTransactionCurrencyId() != null) {
 			BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),
 					decimalPerCurrency);
-			obj.setSpecialKwdAmount(currencyQuoteName + "     " + transationAmount.toString());
+			obj.setSpecialKwdAmount(currencyQuoteName + "   " + transationAmount.toString());
 		}
 
 		// Branch Exchange Rate and kwd Amount
@@ -781,41 +791,51 @@ public class ReportManagerService extends AbstractService {
 				// != 1) {
 				if (JaxUtil.isNullZeroBigDecimalCheck(view.getRackExchangeRate())
 						&& view.getRackExchangeRate().compareTo(view.getExchangeRateApplied()) != 1) {
+					
+					KdFcRate = getLocalFCRate(view.getExchangeRateApplied(), fcDecimalValue);
+					
 					obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "
-							+ view.getExchangeRateApplied().toString());
+							+ view.getExchangeRateApplied().toString()+"   "+currencyQuoteName+" / "+view.getCurrencyQuoteName()+" "+KdFcRate);
+							
 					if (view.getLocalTransactionAmount() != null && view.getLocalTransactionCurrencyId() != null) {
 						BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),
 								decimalPerCurrency);
-						obj.setKwdAmount(currencyQuoteName + "     " + transationAmount.toString());
+						obj.setKwdAmount(currencyQuoteName + "    " + transationAmount.toString());
 					}
 				} else {
 					// obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " +
 					// currencyQuoteName + " "+ view.getOriginalExchangeRate().toString());
+					
+					KdFcRate = getLocalFCRate(view.getRackExchangeRate()==null?view.getOriginalExchangeRate():view.getRackExchangeRate(), fcDecimalValue);
+					
 					obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "
 							+ (view.getRackExchangeRate() == null ? view.getOriginalExchangeRate().toString()
-									: view.getRackExchangeRate().toString()));
+									: view.getRackExchangeRate().toString() +"   "+currencyQuoteName+" / "+view.getCurrencyQuoteName()+" "+KdFcRate));
 					if (view.getRackExchangeRate() != null && view.getForeignTransactionAmount() != null
 							&& view.getLocalTransactionCurrencyId() != null) {
 						// BigDecimal calKwtAmt =
 						// view.getOriginalExchangeRate().multiply(view.getForeignTransactionAmount());
 						BigDecimal calKwtAmt = view.getRackExchangeRate().multiply(view.getForeignTransactionAmount());
 						BigDecimal transationAmount = RoundUtil.roundBigDecimal((calKwtAmt), decimalPerCurrency);
-						obj.setKwdAmount(currencyQuoteName + "     " + transationAmount.toString());
+						obj.setKwdAmount(currencyQuoteName + "   " + transationAmount.toString());
 					}
 				}
 
 			}
 
 		} else {
+			
 			if (view.getCurrencyQuoteName() != null && currencyQuoteName != null
 					&& view.getExchangeRateApplied() != null) {
+				
+				KdFcRate = getLocalFCRate(view.getExchangeRateApplied(), fcDecimalValue);
+				
 				obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "
-						+ view.getExchangeRateApplied().toString());
+						+ view.getExchangeRateApplied().toString() +"   "+currencyQuoteName+" / "+view.getCurrencyQuoteName()+" "+KdFcRate);
 			}
 			if (view.getLocalTransactionAmount() != null && view.getLocalTransactionCurrencyId() != null) {
-				BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),
-						decimalPerCurrency);
-				obj.setKwdAmount(currencyQuoteName + "     " + transationAmount.toString());
+				BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),decimalPerCurrency);
+				obj.setKwdAmount(currencyQuoteName + "   " + transationAmount.toString());
 			}
 		}
 	}
@@ -887,5 +907,23 @@ public class ReportManagerService extends AbstractService {
 		this.remittanceReceiptSubreportList = remittanceReceiptSubreportList;
 	}
 
+	public BigDecimal getLocalFCRate(BigDecimal exchangeRate,int decimalValue) {
+		BigDecimal kdRate=BigDecimal.ZERO;
+		try {
+		if(JaxUtil.isNullZeroBigDecimalCheck(exchangeRate) && decimalValue>0) {
+			kdRate =  new BigDecimal(1).divide(exchangeRate, 10, RoundingMode.HALF_UP);
+			if(JaxUtil.isNullZeroBigDecimalCheck(kdRate)) {
+				kdRate = RoundUtil.roundBigDecimal(kdRate,decimalValue);
+			}
+		}
+		}catch(Exception e) {
+			logger.error(e);
+		}
+		
+		return kdRate;
+		
+	}
+	
+	
 }
 

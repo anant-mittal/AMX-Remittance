@@ -85,6 +85,15 @@ public class JaxTenantProperties {
 	@TenantValue("${support.online.email}")
 	String supportOnlineEmail;
 
+	@TenantValue("${jax.verify.link.limit.attempt}")
+	private Integer verificationAttemptLimit;
+
+	@TenantValue("${jax.verify.link.valid.hours}")
+	private Integer verificationValidHours;
+	
+	@TenantValue("${jax.verify.link.resend.minute}")
+	private Integer verificationResendAfterMinutes;
+
 	@TenantValue("${jax.authfailog.interval}")
 	private Integer authFailLogInterval;
 	
@@ -259,16 +268,16 @@ public class JaxTenantProperties {
 		this.authFailLogInterval = authFailLogInterval;
 	}
 
-	public Integer getAuthFailLogAttemps() {
-		return authFailLogAttemps;
+	public Integer getVerificationAttemptLimit() {
+		return verificationAttemptLimit;
 	}
 
-	public void setAuthFailLogAttemps(Integer authFailLogAttemps) {
-		this.authFailLogAttemps = authFailLogAttemps;
+	public Integer getVerificationResendAfterMinutes() {
+		return verificationResendAfterMinutes;
 	}
 
-	public Integer getAuthFailBlocktime() {
-		return authFailBlocktime;
+	public Integer getVerificationValidHours() {
+		return verificationValidHours;
 	}
 
 	public void setAuthFailBlocktime(Integer authFailBlocktime) {
@@ -283,6 +292,16 @@ public class JaxTenantProperties {
 		this.itOpsEmail = itOpsEmail;
 	}
 
-	
+	public Integer getAuthFailLogAttemps() {
+		return authFailLogAttemps;
+	}
+
+	public void setAuthFailLogAttemps(Integer authFailLogAttemps) {
+		this.authFailLogAttemps = authFailLogAttemps;
+	}
+
+	public Integer getAuthFailBlocktime() {
+		return authFailBlocktime;
+	}
 
 }

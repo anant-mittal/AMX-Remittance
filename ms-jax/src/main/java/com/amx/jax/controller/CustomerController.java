@@ -247,7 +247,7 @@ public class CustomerController implements ICustomerService {
 		List<ContactType> channel = new ArrayList<>();
 		channel.add(ContactType.EMAIL);
 		channel.add(ContactType.SMS);
-		communicationPreferencesManager.validateCommunicationPreferences(channel,CommunicationEvents.CONTACT_DETAILS,null);
+		//communicationPreferencesManager.validateCommunicationPreferences(channel,CommunicationEvents.CONTACT_DETAILS,null);
 		if (custModel.getMobile() != null) {
 			logger.info("Validating mobile for client id : " + custModel.getCustomerId());
 			userService.validateMobile(custModel);

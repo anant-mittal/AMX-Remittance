@@ -651,10 +651,10 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 				CustomerBank customerBankDt = new CustomerBank();
 				customerBankDt.setBankCode(customerBankRequest.getBankCode());
 				if(JaxUtil.isNullZeroBigDecimalCheck(customerBankRequest.getBankId())) {
-				customerBankDt.setBankId(customerBankRequest.getBankId());
+	 				customerBankDt.setBankId(customerBankRequest.getBankId());
 				}else {
-					throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "Cuctomer Bank id is required");	
-				}
+						throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "Cuctomer Bank id is required");	
+					}
 				customerBankDt.setCollectionMode(customerBankRequest.getCollectionMode());
 				customerBankDt.setCreatedBy(empDet.getUserName());
 				customerBankDt.setCreatedDate(new Date());

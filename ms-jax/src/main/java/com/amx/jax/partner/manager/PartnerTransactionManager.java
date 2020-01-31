@@ -412,7 +412,20 @@ public class PartnerTransactionManager extends AbstractModel {
 		boolean status = checkBeneCountryParam(destinationCountryAlpha3);
 		if(!status){
 			beneficiaryDto.setState(removeSpaces(beneficiaryDetailsDTO.getStateName())); 
-			beneficiaryDto.setStreet(removeSpaces(beneficiaryDetailsDTO.getStreetNo()));
+			//beneficiaryDto.setStreet(removeSpaces(beneficiaryDetailsDTO.getStreetNo()));
+			
+			StringBuffer streetDetails = new StringBuffer();
+			if(beneficiaryDetailsDTO.getBuildingNo() != null){
+				streetDetails.append("House No "+ beneficiaryDetailsDTO.getBuildingNo());
+			}
+			if(beneficiaryDetailsDTO.getFlatNo() != null){
+				streetDetails.append(" Flat No "+ beneficiaryDetailsDTO.getFlatNo());
+			}
+			if(beneficiaryDetailsDTO.getStreetNo() != null){
+				streetDetails.append(" Street "+ beneficiaryDetailsDTO.getStreetNo());
+			}
+			
+			beneficiaryDto.setStreet(removeSpaces(streetDetails.toString()));
 
 			StringBuffer strAdd = new StringBuffer();
 			if (beneficiaryDetailsDTO.getStateName() != null) {
@@ -1306,12 +1319,21 @@ public class PartnerTransactionManager extends AbstractModel {
 		model.setCustomerReference(remittanceTransactionView.getCustomerReference());
 		model.setCustomerContact(remittanceTransactionView.getContactNumber());
 		model.setExceptionMessage(remitTrnxSPDTO.getActionInd() + " : " + remitTrnxSPDTO.getResponseDescription() + " : " + remittanceTransactionView.getCountryBranchName() + " : " +remittanceTransactionView.getCreatedBy());
-		model.setRoutingBankCode(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name());
+		//model.setRoutingBankCode(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name());
 		model.setTransactionAmount(remittanceTransactionView.getLocalNetTransactionAmount());
 		model.setTransactionForeignAmount(remittanceTransactionView.getForeignTransactionAmount());
 		model.setTransactionDocNumber(remittanceTransactionView.getDocumentNo());
 		model.setTransactionDocYear(remittanceTransactionView.getDocumentFinancialYear());
 		model.setTransactionId(transactionId);
+		
+		BankMasterMdlv1 bankMaster = bankMasterRepo.findByBankIdAndRecordStatus(remittanceTransactionView.getBankId(), PricerServiceConstants.Yes);
+		if(bankMaster != null){
+			model.setRoutingBankCode(bankMaster.getBankCode());
+			model.setServiceProvider(bankMaster.getBankFullName());
+		}
+		model.setPartnerReference(transactionId);
+		model.setBeneBankReference("");
+		model.setAmxReference("");
 		
 		logger.info("Email Service Provider Fail Transaction : " + JsonUtil.toJson(model));
 		
