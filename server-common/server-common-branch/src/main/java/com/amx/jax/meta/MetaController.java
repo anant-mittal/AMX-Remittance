@@ -112,8 +112,8 @@ public class MetaController {
 
 
 	@RequestMapping(value = "/pub/meta/currency/list", method = RequestMethod.GET)
-	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyList() {
-		return metaClient.getAllExchangeRateCurrencyList();
+	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyList(Boolean isActive) {
+		return metaClient.getAllExchangeRateCurrencyList(isActive);
 	}
 
 	@RequestMapping(value = "/pub/meta/currency/list", method = RequestMethod.POST)

@@ -13,7 +13,7 @@ public class JaxTenantProperties {
 
 	@TenantValue("${support.compliance.email}")
 	private String complianceEmail;
-
+	
 	@TenantValue("${dynamic.pricing.enabled}")
 	private Boolean isDynamicPricingEnabled;
 
@@ -45,40 +45,43 @@ public class JaxTenantProperties {
 
 	@TenantValue("${jax.properties.device.autoactivate}")
 	Boolean deviceAutoActivate;
-
+	
 	@TenantValue("${wantit.buyit.startdate}")
 	private String startDate;
-
+	
 	@TenantValue("${wantit.buyit.enddate}")
 	private String endDate;
-
+	
 	@TenantValue("${jax.max.captcha.count}")
 	private Integer maxCaptchaCount;
-
+	
 	@TenantValue("${support.app.email}")
 	private String appSupportEmail;
 
 	@TenantValue("${jax.max.captcha.enabled}")
 	Boolean captchaEnable;
-
+	
 	@TenantValue("${jax.properties.hash.signature}")
 	private Boolean hashSigEnable;
-
+	
+	
 	@TenantValue("${key.store.location}")
 	private String keyStoreLocatin;
-
+	
+	
 	@TenantValue("${key.alias.in.keystore}")
 	private String keyStoreAlias;
-
+	
+	
 	@TenantValue("${key.store.password}")
 	private String keyStorePwd;
-
+	
 	@TenantValue("${signature.algorithem}")
 	private String sigAlgorithem;
-
+	
 	@TenantValue("${jax.max.loyalty.count}")
 	private BigDecimal loyaltyCount;
-
+	
 	@TenantValue("${support.online.email}")
 	String supportOnlineEmail;
 
@@ -91,10 +94,22 @@ public class JaxTenantProperties {
 	@TenantValue("${jax.verify.link.resend.minute}")
 	private Integer verificationResendAfterMinutes;
 
+	@TenantValue("${jax.authfailog.interval}")
+	private Integer authFailLogInterval;
+	
+	@TenantValue("${jax.authfaillog.attempts}")
+	private Integer authFailLogAttemps;
+
+	@TenantValue("${jax.authfaillog.blocktime}")
+	private Integer authFailBlocktime;
+	
+	@TenantValue("${support.itops.email}")
+	private String itOpsEmail;
+
 	public Boolean getCashDisable() {
 		return cashDisable;
 	}
-
+	
 	public void setCashDisable(Boolean cashDisable) {
 		this.cashDisable = cashDisable;
 	}
@@ -171,6 +186,7 @@ public class JaxTenantProperties {
 		this.maxCaptchaCount = maxCaptchaCount;
 	}
 
+
 	public String getAppSupportEmail() {
 		return appSupportEmail;
 	}
@@ -178,6 +194,7 @@ public class JaxTenantProperties {
 	public void setAppSupportEmail(String appSupportEmail) {
 		this.appSupportEmail = appSupportEmail;
 	}
+
 
 	public Boolean getHashSigEnable() {
 		return hashSigEnable;
@@ -218,7 +235,6 @@ public class JaxTenantProperties {
 	public void setSigAlgorithem(String sigAlgorithem) {
 		this.sigAlgorithem = sigAlgorithem;
 	}
-
 	public Boolean getCaptchaEnable() {
 		return captchaEnable;
 	}
@@ -239,9 +255,17 @@ public class JaxTenantProperties {
 	public String getSupportOnlineEmail() {
 		return supportOnlineEmail;
 	}
+	
+	public Integer getAuthFailLogInterval() {
+		return authFailLogInterval;
+	}
 
 	public void setSupportOnlineEmail(String supportOnlineEmail) {
 		this.supportOnlineEmail = supportOnlineEmail;
+	}
+	
+	public void setAuthFailLogInterval(Integer authFailLogInterval) {
+		this.authFailLogInterval = authFailLogInterval;
 	}
 
 	public Integer getVerificationAttemptLimit() {
@@ -254,6 +278,30 @@ public class JaxTenantProperties {
 
 	public Integer getVerificationValidHours() {
 		return verificationValidHours;
+	}
+
+	public void setAuthFailBlocktime(Integer authFailBlocktime) {
+		this.authFailBlocktime = authFailBlocktime;
+	}
+
+	public String getItOpsEmail() {
+		return itOpsEmail;
+	}
+
+	public void setItOpsEmail(String itOpsEmail) {
+		this.itOpsEmail = itOpsEmail;
+	}
+
+	public Integer getAuthFailLogAttemps() {
+		return authFailLogAttemps;
+	}
+
+	public void setAuthFailLogAttemps(Integer authFailLogAttemps) {
+		this.authFailLogAttemps = authFailLogAttemps;
+	}
+
+	public Integer getAuthFailBlocktime() {
+		return authFailBlocktime;
 	}
 
 }

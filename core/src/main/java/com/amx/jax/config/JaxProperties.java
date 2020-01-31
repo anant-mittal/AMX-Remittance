@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+/**
+ * Use JaxTenantProperties class for tenant specific properties
+ * */
 public class JaxProperties {
 
 	@Value("#{'${support.soa.email}'.split(',')}")

@@ -351,6 +351,7 @@ public enum JaxError implements IExceptionEnum {
 	//Pay at Branch
 	PAYAT_BRANCH_TRNX_NOT_FOUND,
 	BPI_SETUP_IS_MISSING,
+	
 	// Job In Progress Error Key
 	JAX_JOB_IN_PROGRESS,
 	RATE_PLACE_ERROR,
@@ -359,10 +360,10 @@ public enum JaxError implements IExceptionEnum {
 	DIRECT_LINK_DEACTIVATED,
 	DIRECT_LINK_EXPIRED,
 	DIRECT_LINK_INVALID,
-
 	HOMESEND_APPL_NOT_ALLOWED,
 	//Language related
 	SOURCE_OF_INCOME_NOT_FOUND,
+	CLIENT_IP_BLOCKED,
 	//Communication Preferences
 	
 	SMS_NOT_VERIFIED,

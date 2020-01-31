@@ -36,10 +36,11 @@ public class DiscountMgmtClient extends AbstractJaxServiceClient implements IDis
 	@Autowired
 	PricerServiceClient pricerServiceClient;
 
-	public AmxApiResponse<CountryBranchDTO, Object> getCountryBranchList() {
+	public AmxApiResponse<CountryBranchDTO, Object> getCountryBranchList(Boolean isActive) {
 		
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(ApiEndPoints.GET_COUNTRY_BRANCH)
+					.queryParam("isActive", isActive)
 					.meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CountryBranchDTO, Object>>() {
 					});

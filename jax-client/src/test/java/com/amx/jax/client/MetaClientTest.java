@@ -98,7 +98,8 @@ public class MetaClientTest extends AbstractTestClient {
 	public void testAllExchangeRateCurrencyList() {
 		setDefaults();
 		AmxApiResponse<CurrencyMasterDTO, Object> response = null;
-		response = metaclient.getAllExchangeRateCurrencyList();
+		Boolean isActive=true;
+		response = metaclient.getAllExchangeRateCurrencyList(isActive);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 		// assertNotNull(response.getResult().getCurrencyName());

@@ -251,9 +251,10 @@ public class MetaClient extends AbstractJaxServiceClient implements IMetaControl
 	}
 
 	// added by chetan 30/04/2018 list the country for currency.
-	public AmxApiResponse<CurrencyMasterDTO, Object> getAllExchangeRateCurrencyList() {
+	public AmxApiResponse<CurrencyMasterDTO, Object> getAllExchangeRateCurrencyList(Boolean isActive) {
 		
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.EXCHANGE_RATE_CURRENCY_LIST)
+					.queryParam("isActive", isActive)
 					.meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CurrencyMasterDTO, Object>>() {
 					});

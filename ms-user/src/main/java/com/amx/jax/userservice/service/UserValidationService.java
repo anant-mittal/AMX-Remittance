@@ -720,7 +720,7 @@ public class UserValidationService {
 		}
 	}
 
-	private boolean isOldVerificationDone(CustomerVerification cv) {
+	/*private boolean isOldVerificationDone(CustomerVerification cv) {
 		return !(cv != null && ConstantDocument.No.equals(cv.getVerificationStatus()) && cv.getFieldValue() != null);
 	}
 
@@ -741,7 +741,19 @@ public class UserValidationService {
 			}
 			
 		}
+	}*/
+	public void validateCustomerVerification(BigDecimal customerId) {
+
+		if (customerId != null) {
+			CustomerVerification cv = customerVerificationService.getVerification(customerId,
+					CustomerVerificationType.EMAIL);
+			if (cv != null && ConstantDocument.No.equals(cv.getVerificationStatus()) && cv.getFieldValue() != null) {
+				throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED,
+						"Your email verificaiton is pending");
+			}
+		}
 	}
+
 
 	public void validateActiveCustomer(CustomerOnlineRegistration onlineCustReg, Boolean initRegistration) {
 		if (initRegistration != null && initRegistration) {

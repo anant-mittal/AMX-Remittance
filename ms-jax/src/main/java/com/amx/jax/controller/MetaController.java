@@ -281,8 +281,8 @@ public class MetaController {
 
 	// added by chetan 30/04/2018 list the country for currency.
 	@RequestMapping(value = MetaApi.EXCHANGE_RATE_CURRENCY_LIST, method = RequestMethod.GET)
-	public AmxApiResponse<CurrencyMasterDTO, Object> getAllExchangeRateCurrencyDetails() {
-		return currencyMasterService.getAllExchangeRateCurrencyList();
+	public AmxApiResponse<CurrencyMasterDTO, Object> getAllExchangeRateCurrencyDetails(@RequestParam(value = "isActive", required = false, defaultValue = "false") Boolean isActive) {
+		return currencyMasterService.getAllExchangeRateCurrencyList(isActive);
 	}
 
 	@RequestMapping(value = "/currency/bycountry/{countryId}", method = RequestMethod.GET)

@@ -36,7 +36,8 @@ public class DiscountMgmtClientTest extends AbstractTestClient {
 		
 		AmxApiResponse<CountryBranchDTO,Object> response = null;
 		LOGGER.info("In Country Branch Client Test ");
-		response = disMgmtClient.getCountryBranchList();
+		Boolean isActive=true;
+		response = disMgmtClient.getCountryBranchList(isActive);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 	}

@@ -103,10 +103,10 @@ public class MetaController {
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = { "/api/meta/ccy/list" }, method = { RequestMethod.POST, RequestMethod.GET })
-	public ResponseWrapper<List<CurrencyMasterDTO>> ccyList(@RequestParam(required = false) Boolean xrate) {
+	public ResponseWrapper<List<CurrencyMasterDTO>> ccyList(@RequestParam(required = false) Boolean xrate,@RequestParam(required = false) Boolean isActive) {
 		if (xrate != null && xrate == true) {
 			return new ResponseWrapper<List<CurrencyMasterDTO>>(
-					jaxService.setDefaults().getMetaClient().getAllExchangeRateCurrencyList().getResults());
+					jaxService.setDefaults().getMetaClient().getAllExchangeRateCurrencyList(isActive).getResults());
 		}
 		return new ResponseWrapper<List<CurrencyMasterDTO>>(tenantContext.getOnlineCurrencies());
 	}

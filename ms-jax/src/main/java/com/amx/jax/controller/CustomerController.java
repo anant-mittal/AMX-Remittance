@@ -29,6 +29,8 @@ import com.amx.amxlib.service.ICustomerService;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.auth.AuthFailureLogManager;
+import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.customer.manager.CustomerManagementManager;
 import com.amx.jax.customer.service.CustomerService;
 import com.amx.jax.customer.service.JaxCustomerContactVerificationService;
@@ -52,6 +54,7 @@ import com.amx.jax.userservice.service.CustomerModelService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.ConverterUtil;
+import com.amx.jax.util.JaxContextUtil;
 
 @RestController
 @RequestMapping(CUSTOMER_ENDPOINT)
@@ -94,7 +97,8 @@ public class CustomerController implements ICustomerService {
 	
 	@Autowired
 	OnlineCustomerRepository onlineCustomerRepository;
-	
+	@Autowired
+	AuthFailureLogManager authFailureLogManager;
 	@Autowired
 	CommunicationPreferencesManager communicationPreferencesManager;
 	
@@ -243,7 +247,7 @@ public class CustomerController implements ICustomerService {
 		List<ContactType> channel = new ArrayList<>();
 		channel.add(ContactType.EMAIL);
 		channel.add(ContactType.SMS);
-		communicationPreferencesManager.validateCommunicationPreferences(channel,CommunicationEvents.CONTACT_DETAILS,null);
+		//communicationPreferencesManager.validateCommunicationPreferences(channel,CommunicationEvents.CONTACT_DETAILS,null);
 		if (custModel.getMobile() != null) {
 			logger.info("Validating mobile for client id : " + custModel.getCustomerId());
 			userService.validateMobile(custModel);
@@ -272,6 +276,7 @@ public class CustomerController implements ICustomerService {
 			@PathVariable("init-registration") Boolean init,
 			@RequestParam(required = false) ContactType contactType) {
 		logger.info("initRegistrationSendOtp Request:civilId" + civilId);
+		JaxContextUtil.setJaxEvent(JaxEvent.ONLINE_SIGNUP);
 		List<ContactType> contactTypes = new ArrayList<ContactType>();
 		if (contactType != null) {
 			contactTypes.add(contactType);
