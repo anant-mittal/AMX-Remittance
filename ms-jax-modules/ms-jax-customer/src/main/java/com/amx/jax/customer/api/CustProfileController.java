@@ -59,7 +59,7 @@ public class CustProfileController implements ICustomerProfileService {
 		}
 
 		CustomerContactVerification x = customerContactVerificationManager.create(c, contactType);
-		jaxCustomerContactVerificationService.sendVerificationLink(c, x);
+		//jaxCustomerContactVerificationService.sendVerificationLink(c, x);
 
 		return AmxApiResponse.build(customerContactVerificationManager.convertToDto(x));
 	}
