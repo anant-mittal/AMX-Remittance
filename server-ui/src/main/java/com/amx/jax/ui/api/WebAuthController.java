@@ -44,7 +44,7 @@ import io.swagger.annotations.Api;
 @RestController
 @Api(value = "User Auth APIs")
 @ApiStatusService(ICustomerService.class)
-public class AuthController {
+public class WebAuthController {
 
 	/** The login service. */
 	@Autowired

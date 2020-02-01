@@ -1,4 +1,4 @@
-package com.amx.jax.kiosk;
+package com.amx.jax.ui;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -8,8 +8,6 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 
-import com.amx.jax.ui.WebCommonApplication;
-
 /**
  * The Class WebApplication.
  */
@@ -18,7 +16,7 @@ import com.amx.jax.ui.WebCommonApplication;
 @ComponentScan("com.amx.jax")
 @EnableAsync
 @EnableCaching
-public class KioskOWS extends WebCommonApplication {
+public class WebOWS extends WebCommonApplication {
 
 	/**
 	 * The main method.
@@ -38,7 +36,7 @@ public class KioskOWS extends WebCommonApplication {
 	 */
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder applicationBuilder) {
-		return applicationBuilder.sources(KioskOWS.class);
+		return applicationBuilder.sources(WebOWS.class);
 	}
 
 }
