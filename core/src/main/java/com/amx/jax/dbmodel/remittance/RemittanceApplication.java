@@ -172,6 +172,10 @@ public class RemittanceApplication implements Serializable {
 	/** added by Rabil  on 22Oct 2019**/
 	private String productAvaliable;
 	private String fundAvaliable;
+	
+	
+	/** added for cart table reference **/
+	private BigDecimal cartId;
     
     
 
@@ -1135,6 +1139,15 @@ public class RemittanceApplication implements Serializable {
 
 		public void setFundAvaliable(String fundAvaliable) {
 			this.fundAvaliable = fundAvaliable;
+		}
+
+		@Column(name = "CART_ID")
+		public BigDecimal getCartId() {
+			return cartId;
+		}
+
+		public void setCartId(BigDecimal cartId) {
+			this.cartId = cartId;
 		}
 		
 	

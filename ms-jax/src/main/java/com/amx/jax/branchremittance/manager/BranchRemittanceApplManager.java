@@ -74,6 +74,7 @@ import com.amx.jax.manager.RemittanceApplicationManager;
 import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.manager.remittance.AdditionalBankDetailManager;
 import com.amx.jax.manager.remittance.CorporateDiscountManager;
+import com.amx.jax.manager.remittance.CustomerCartManager;
 import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
 import com.amx.jax.manager.remittance.RemittanceApplicationParamManager;
 import com.amx.jax.meta.MetaData;
@@ -253,6 +254,8 @@ public class BranchRemittanceApplManager {
 	@Autowired
 	IBizComponentDataRepository  bizComponentDataRepository;
 	
+	@Autowired
+	CustomerCartManager customerCartManager;
 	
 	public BranchRemittanceApplResponseDto saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel) {
 		Map<String,Object> hashMap = new HashMap<>();
@@ -391,6 +394,10 @@ public class BranchRemittanceApplManager {
 		
 		validateApplDetails(mapAllDetailApplSave);
 		brRemittanceDao.saveAllApplications(mapAllDetailApplSave);
+		
+		//CART DETAILS ADDED In JAX_CUSTOMER_CART
+		customerCartManager.addToCustomerCart(remittanceApplication);
+		
 		auditService.log(new CActivityEvent(Type.APPLICATION_CREATED,String.format("%s/%s", remittanceApplication.getDocumentFinancialyear(),remittanceApplication.getDocumentNo()))
 				.field("STATUS").to(JaxTransactionStatus.APPLICATION_CREATED)
 				.set(new RemitInfo(remittanceApplication.getRemittanceApplicationId(), remittanceApplication.getLocalTranxAmount()))
@@ -915,6 +922,10 @@ public class BranchRemittanceApplManager {
 	public BranchRemittanceApplResponseDto deleteFromShoppingCart(BigDecimal remittanceAppliId) {
 		//brRemittanceDao.deleteFromCart(remittanceAppliId,ConstantDocument.Deleted);
 		brRemittanceDao.deleteFromCartUsingJdbcTemplate(remittanceAppliId,ConstantDocument.Deleted);
+		
+		//CART APPL-ID DELETED In JAX_CUSTOMER_CART
+		customerCartManager.deleteInCustomerCart(metaData.getCustomerId(), remittanceAppliId);
+		
 		BranchRemittanceApplResponseDto applResponseDto = branchRemittancePaymentManager.fetchCustomerShoppingCart(metaData.getCustomerId(),metaData.getDefaultCurrencyId());
 		return applResponseDto;
 	}

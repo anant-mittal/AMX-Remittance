@@ -96,6 +96,7 @@ import com.amx.jax.logger.events.CActivityEvent.Type;
 import com.amx.jax.logger.events.RemitInfo;
 import com.amx.jax.manager.remittance.AdditionalBankDetailManager;
 import com.amx.jax.manager.remittance.CorporateDiscountManager;
+import com.amx.jax.manager.remittance.CustomerCartManager;
 import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
 import com.amx.jax.manager.remittance.RemittanceOtpManager;
 import com.amx.jax.meta.MetaData;
@@ -336,6 +337,10 @@ public class RemittanceTransactionManager {
 	
 	@Autowired
 	RemittanceApplicationRepository applRepository;
+	
+	@Autowired
+	CustomerCartManager customerCartManager;
+	
 	private static final String IOS = "IOS";
 	private static final String ANDROID = "ANDROID";
 	private static final String WEB = "WEB";
@@ -1466,6 +1471,8 @@ public class RemittanceTransactionManager {
 		
 		logger.info("Application saved successfully, response: " + remiteAppModel.toString());
 
+		//CART DETAILS ADDED In JAX_CUSTOMER_CART
+		customerCartManager.addToCustomerCart(remittanceApplication);
 		
 		BranchRemittanceApplResponseDto custShpCart = branchRemittancePaymentManager.fetchCustomerShoppingCart(meta.getCustomerId(),meta.getDefaultCurrencyId());
 		//custShpCart.setCivilIdOtpModel(civilIdOtpModel);

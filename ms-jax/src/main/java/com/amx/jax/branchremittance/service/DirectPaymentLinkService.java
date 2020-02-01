@@ -92,6 +92,8 @@ public class DirectPaymentLinkService extends AbstractService {
 			directPaymentLinkManager.validateHomesendApplication(shpCartData.getShoppingCartDetails());
 		}
 		
+		directPaymentLinkManager.increaseLinkCount(customerId);
+		
 		PersonInfo personInfo = userService.getPersonInfo(customerId);
 		Customer customer = custDao.getActiveCustomerDetailsByCustomerId(customerId);
 		CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(CommunicationEvents.PAYMENT_LINK, customer);

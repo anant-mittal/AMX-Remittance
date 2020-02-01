@@ -116,5 +116,11 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
 	@Query("update RemittanceApplication appl set isactive = 'D',applicaitonStatus = null where appl.fsCustomer=:customerId and trunc(sysdate)=trunc(createdDate) " 
 			+"and isactive <> 'D' and appl.loccod <>:locCod and NVL(applicaitonStatus,' ')<>'T' and transactionDocumentNo is null")
 	public void deActivateBranchApplicationInOnline(@Param("customerId") Customer customerId,@Param("locCod") BigDecimal locCod);
+
+	
+	@Transactional
+	@Modifying
+	@Query("update RemittanceApplication appl set cartId = :cartId where appl.remittanceApplicationId=:remittanceApplicationId")
+	public void updateCartId(@Param("remittanceApplicationId") BigDecimal remittanceApplicationId, @Param("cartId") BigDecimal cartId);
 	
 }

@@ -84,6 +84,9 @@ public class JaxTenantProperties {
 	
 	@TenantValue("${support.online.email}")
 	String supportOnlineEmail;
+	
+	@TenantValue("${jax.max.link.count}")
+	private Integer directLinkCount;
 
 	public Boolean getCashDisable() {
 		return cashDisable;
@@ -239,6 +242,13 @@ public class JaxTenantProperties {
 		this.supportOnlineEmail = supportOnlineEmail;
 	}
 
-	
+	public Integer getDirectLinkCount() {
+		return directLinkCount;
+	}
+
+	public void setDirectLinkCount(Integer directLinkCount) {
+		this.directLinkCount = directLinkCount;
+	}
+
 
 }

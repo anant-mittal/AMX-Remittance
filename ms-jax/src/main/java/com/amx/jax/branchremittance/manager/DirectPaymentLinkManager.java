@@ -23,10 +23,13 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.AmxConfig;
 import com.amx.jax.api.ResponseCodeDetailDTO;
+import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxTransactionStatus;
 import com.amx.jax.dao.BranchRemittancePaymentDao;
+import com.amx.jax.dao.CustomerCartDao;
 import com.amx.jax.dao.FcSaleApplicationDao;
+import com.amx.jax.dbmodel.CustomerCartMaster;
 import com.amx.jax.dbmodel.PaygDetailsModel;
 import com.amx.jax.dbmodel.PaymentModeModel;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
@@ -47,6 +50,7 @@ import com.amx.jax.repository.CurrencyRepository;
 import com.amx.jax.repository.PaygDetailsRepository;
 import com.amx.jax.repository.PaymentModeRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
+import com.amx.jax.repository.remittance.CustomerCartRepository;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.utils.Random;
@@ -94,7 +98,17 @@ public class DirectPaymentLinkManager extends AbstractModel {
 	@Autowired
 	JaxNotificationService notificationService;
 	
+	@Autowired
+	CustomerCartDao customerCartDao;
+	
+	@Autowired
+	JaxTenantProperties jaxTenantProperties;
+	
+	@Autowired
+	CustomerCartRepository customerCartRepository;
+	
 	public PaymentLinkRespDTO getPaymentLinkDetails(BigDecimal customerId, BranchRemittanceApplResponseDto shpCartData) {
+		validateLinkCount(customerId);
 		deactivatePaymentLink(customerId);
 		deactivatePreviousLinkResend(customerId);	
 		PaymentLinkRespDTO paymentLinkResp = new PaymentLinkRespDTO();
@@ -486,9 +500,33 @@ public class DirectPaymentLinkManager extends AbstractModel {
 	     
 	     
 	}
-
 	
+	private void validateLinkCount(BigDecimal customerId) {
+		CustomerCartMaster linkCountData = customerCartDao.getCartData(customerId);
+		
+		final Integer MAX_LINK_COUNT = jaxTenantProperties.getDirectLinkCount();
+		if(linkCountData != null) {
+			if(linkCountData.getLinkCount() != null) {
+				int lockCnt = linkCountData.getLinkCount().intValue();
+				if (lockCnt == MAX_LINK_COUNT.intValue()) {
+					throw new GlobalException(JaxError.LINK_COUNT_ATTEMPT_EXCEEDED, "Link count time exceeded");
+				}
+			}
+		}
+	}
 
-	
+	public void increaseLinkCount(BigDecimal customerId) {
+		CustomerCartMaster cartData = customerCartDao.getCartData(customerId);
+		Integer lockCnt = 0;
+		if(cartData != null){
+			if(cartData.getLinkCount() != null) {
+				lockCnt = cartData.getLinkCount().intValue();
+			}
+			lockCnt++;
+			cartData.setLinkCount(new BigDecimal(lockCnt));
+			
+			customerCartRepository.save(cartData);
+		}
+	}
 
 }
