@@ -6,11 +6,13 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -19,13 +21,13 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.config.JaxTenantProperties;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.dbmodel.auth.AuthFailureLog;
 import com.amx.jax.dbmodel.auth.BlockedIPAdress;
 import com.amx.jax.dbmodel.auth.IPBlockedReasoncode;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.postman.PostManService;
-import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.repository.auth.AuthFailureLogRepository;
 import com.amx.jax.repository.auth.BlockedIPAdressRepository;
@@ -83,6 +85,14 @@ public class AuthFailureLogManager {
 			cal.add(Calendar.MINUTE, jaxTenantProperties.getAuthFailBlocktime() * -1);
 			Long authFailRecordcnt = authFailureLogRepository.getFailedRecordCountForIp(clientIp, cal.getTime());
 			if (authFailRecordcnt > jaxTenantProperties.getAuthFailLogAttemps()) {
+				Date unblockDate = getLastUnblockDate(clientIp);
+				// if unblocked today then check again no of count again
+				if (unblockDate != null) {
+					authFailRecordcnt = authFailureLogRepository.getFailedRecordCountForIp(clientIp, unblockDate);
+					if (authFailRecordcnt <= jaxTenantProperties.getAuthFailLogAttemps()) {
+						return;
+					}
+				}
 				log.info("IP {} is being blocked by jax", clientIp);
 				BlockedIPAdress blockedIp = new BlockedIPAdress(clientIp, reasonCode);
 				blockedIPAdressRepository.save(blockedIp);
@@ -90,6 +100,16 @@ public class AuthFailureLogManager {
 			}
 		}
 
+	}
+
+	private Date getLastUnblockDate(String clientIp) {
+		Date unblockedDate = null;
+		List<BlockedIPAdress> blockedIpList = blockedIPAdressRepository.findByIpAddressAndIsActiveAndBlockedIpIdIsNotNull(clientIp,
+				ConstantDocument.No, new Sort("unblockedDate"));
+		if (CollectionUtils.isNotEmpty(blockedIpList)) {
+			unblockedDate = blockedIpList.get(0).getUnblockedDate();
+		}
+		return unblockedDate;
 	}
 
 	private void sendEmailAlert(BlockedIPAdress blockedIp) {
@@ -101,6 +121,7 @@ public class AuthFailureLogManager {
 			sBuf.append("IP address: ").append(blockedIp.getIpAddress());
 			sBuf.append(" is blocked from JAX application, due to multiple failed attempts");
 			email.setMessage(sBuf.toString());
+			email.setSubject("IP Blocked - JAX");
 			postManService.sendEmail(email);
 		}
 	}
