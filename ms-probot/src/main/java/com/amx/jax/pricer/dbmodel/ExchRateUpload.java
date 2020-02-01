@@ -82,7 +82,7 @@ public class ExchRateUpload implements Serializable, Cloneable {
 	@Column(name = "APPROVED_DATE")
 	private Date approvedDate;
 
-	@Column(name = "COMMENT")
+	@Column(name = "COMMENT_STR")
 	private String comment;
 
 	public BigDecimal getId() {
