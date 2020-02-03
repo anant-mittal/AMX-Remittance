@@ -667,7 +667,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("currencyAndAmount") + "                " +$F{tranx}.get("branchExchangeRate")+" / "+$F{tranx}.get("kwdAmount")]]>
+                                    <![CDATA[$F{tranx}.get("currencyAndAmount") + "                " +$F{tranx}.get("branchExchangeRate")+"\n"+$F{tranx}.get("kwdAmount")]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -802,7 +802,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("currencyAndAmount") + "                " +$F{tranx}.get("specialExchangeRate") + " / " +$F{tranx}.get("specialKwdAmount")]]>
+                                    <![CDATA[$F{tranx}.get("currencyAndAmount") + "                " +$F{tranx}.get("specialExchangeRate") + "\n" +$F{tranx}.get("specialKwdAmount")]]>
                                 </textFieldExpression>
                             </textField>
 
