@@ -40,8 +40,9 @@ public class BlockedIPAdress {
 
 	@Column(name = "ISACTIVE")
 	String isActive;
-	
-	
+
+	@Column(name = "UNBLOCKED_DATE")
+	Date unblockedDate;
 
 	public BlockedIPAdress() {
 		super();
@@ -101,6 +102,14 @@ public class BlockedIPAdress {
 
 	public void setIsActive(String isActive) {
 		this.isActive = isActive;
+	}
+
+	public Date getUnblockedDate() {
+		return unblockedDate;
+	}
+
+	public void setUnblockedDate(Date unblockedDate) {
+		this.unblockedDate = unblockedDate;
 	}
 
 }
