@@ -147,8 +147,9 @@ public class ComplianceService extends AbstractJaxServiceClient{
 				LOGGER.error("fileformat value" + ex.get(0).getReqXml());
 				Clob fileformat = ex.get(0).getReqXml();
 				LOGGER.error("fileformat value is" + fileformat);
-
+				LOGGER.error("reader value in fileforamt is" + fileformat.getCharacterStream());
 				Reader reader = fileformat.getCharacterStream();
+				LOGGER.error("reader value is" + reader);
 				StringWriter writer = new StringWriter();
 				IOUtils.copy(reader, writer);
 				String clobContent = writer.toString();
