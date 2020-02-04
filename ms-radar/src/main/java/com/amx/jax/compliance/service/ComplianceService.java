@@ -143,8 +143,10 @@ public class ComplianceService extends AbstractJaxServiceClient{
 
 					LOGGER.error("error in token generation" + e.getMessage());
 				}
-
+				LOGGER.error("fileformat size" + ex.get(0).getReqXml().length());
+				LOGGER.error("fileformat value" + ex.get(0).getReqXml());
 				Clob fileformat = ex.get(0).getReqXml();
+				LOGGER.error("fileformat value is" + fileformat);
 
 				Reader reader = fileformat.getCharacterStream();
 				StringWriter writer = new StringWriter();
