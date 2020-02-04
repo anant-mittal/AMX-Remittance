@@ -94,7 +94,7 @@
                         </frame>
                         <!--##################HEADER END####################-->
 
-                        <!--##################Sender Details START####################-->
+                          <!--##################Sender Details START####################-->
                         <frame>
                             <reportElement x="5" y="80" width="585" height="17"/>
                             <staticText>
@@ -229,7 +229,7 @@
                         <frame>
                             <reportElement x="5" y="140" width="585" height="30"/>
                             <staticText>
-                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "55" backcolor = "#FFFFFF" />
+                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "30" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
                                 <textElement />
                                 <text><![CDATA[]]></text>
@@ -279,7 +279,7 @@
 
                         <!--##################Insurance START####################-->
                         <frame>
-                            <reportElement x="5" y="197" width="585" height="45"/>
+                            <reportElement x="5" y="177" width="585" height="45"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "80" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -329,7 +329,7 @@
 
                         <!--##################Location / Phone No START####################-->
                         <frame>
-                            <reportElement x="5" y="280" width="585" height="17"/>
+                            <reportElement x="5" y="260" width="585" height="17"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -376,7 +376,7 @@
 
                         <!--##################Beneficiary Details START####################-->
                         <frame>
-                            <reportElement x="5" y="298" width="585" height="17"/>
+                            <reportElement x="5" y="278" width="585" height="17"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#000000" /></box>
@@ -411,7 +411,7 @@
 
                         <!--##################Beneficiary Details START####################-->
                         <frame>
-                            <reportElement x="5" y="318" width="585" height="17"/>
+                            <reportElement x="5" y="298" width="585" height="17"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "15" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -460,7 +460,7 @@
 
                         <!--##################Beneficiary Details START####################-->
                         <frame>
-                            <reportElement x="5" y="335" width="585" height="16"/>
+                            <reportElement x="5" y="315" width="585" height="16"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "16" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -508,7 +508,7 @@
 
                         <!--##################Name START####################-->
                         <frame>
-                            <reportElement x="5" y="352" width="585" height="17"/>
+                            <reportElement x="5" y="332" width="585" height="17"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -556,9 +556,9 @@
 
                         <!--##################Bank Name START####################-->
                         <frame>
-                            <reportElement x="5" y="368" width="585" height="17"/>
+                            <reportElement x="5" y="351" width="585" height="36"/>
                             <staticText>
-                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
+                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "35" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
                                 <textElement />
                                 <text><![CDATA[]]></text>
@@ -677,7 +677,33 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("currencyAndAmount") + "                " +$F{tranx}.get("branchExchangeRate")+"\n"+$F{tranx}.get("kwdAmount")]]>
+                                    <![CDATA[$F{tranx}.get("currencyAndAmount")]]>
+                                </textFieldExpression>
+                            </textField>
+                            
+                            <textField isStretchWithOverflow="true">
+                                <reportElement x="120" y="15" width="380" height="17"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true"/>
+                                <textElement textAlignment="Left">
+                                    <font fontName="Arial" size="11" isItalic="true"
+                                          pdfFontName="fonts/all/arial.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String">
+                                    <![CDATA[$F{tranx}.get("kwdAmount")]]>
+                                </textFieldExpression>
+                            </textField>
+                            
+                            <textField isStretchWithOverflow="true">
+                                <reportElement x="250" y="2" width="250" height="17"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true"/>
+                                <textElement textAlignment="Left">
+                                    <font fontName="Arial" size="11" isItalic="true"
+                                          pdfFontName="fonts/all/arialbd.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String">
+                                    <![CDATA[$F{tranx}.get("branchExchangeRate")]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -758,7 +784,7 @@
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
                                     <font fontName="Arial" size="11" isItalic="true"
-                                          pdfFontName="fonts/all/arial.ttf"/>
+                                          pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
                                     <![CDATA[$F{tranx}.get("specialExchangeRate")]]>
@@ -812,7 +838,33 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("currencyAndAmount") + "                " +$F{tranx}.get("specialExchangeRate") + "\n" +$F{tranx}.get("specialKwdAmount")]]>
+                                    <![CDATA[$F{tranx}.get("currencyAndAmount")]]>
+                                </textFieldExpression>
+                            </textField>
+                            
+                            <textField isStretchWithOverflow="true">
+                                <reportElement x="120" y="15" width="380" height="17"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true"/>
+                                <textElement textAlignment="Left">
+                                    <font fontName="Arial" size="11" isItalic="true"
+                                          pdfFontName="fonts/all/arial.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String">
+                                    <![CDATA[$F{tranx}.get("specialKwdAmount")]]>
+                                </textFieldExpression>
+                            </textField>
+                            
+                            <textField isStretchWithOverflow="true">
+                                <reportElement x="250" y="2" width="250" height="17"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true"/>
+                                <textElement textAlignment="Left">
+                                    <font fontName="Arial" size="11" isItalic="true"
+                                          pdfFontName="fonts/all/arialbd.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String">
+                                    <![CDATA[$F{tranx}.get("specialExchangeRate")]]>
                                 </textFieldExpression>
                             </textField>
 
