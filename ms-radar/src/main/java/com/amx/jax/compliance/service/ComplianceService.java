@@ -132,6 +132,8 @@ public class ComplianceService extends AbstractJaxServiceClient{
 				generateXMLFile(docFyr, documnetNo, employeeId,reason,action);
 
 				List<ExCbkStrReportLOG> ex = exCbkReportLogRepo.getComplainceData(cbk.getTranxNo());
+				
+				LOGGER.error("xml  value" + ex.get(0).getReqXml());
 
 				ExOwsLoginCredentials bankCode = exOwsLoginCredentialsRepository.findByBankCode(Paramss.COMPLAINCE_BANK_CODE);
 
@@ -139,6 +141,7 @@ public class ComplianceService extends AbstractJaxServiceClient{
 					token = tokenGenaration(bankCode.getWsUserName(), bankCode.getWsPassword(), bankCode.getWsPin());
 
 					token = token.replaceAll("^\"|\"$", "");
+					LOGGER.error("token value" + token.replaceAll("^\"|\"$", ""));
 				} catch (Exception e) {
 
 					LOGGER.error("error in token generation" + e.getMessage());
