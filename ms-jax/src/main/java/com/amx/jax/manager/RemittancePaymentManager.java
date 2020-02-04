@@ -872,6 +872,8 @@ public class RemittancePaymentManager extends AbstractService{
 						throw new GlobalException("The payment is already initiated for this application. Click OK to refresh the cart");
 					}else if(applicationDetails!=null && applicationDetails.getIsactive().equalsIgnoreCase(ConstantDocument.Deleted)){
 						throw new GlobalException("The application is already deleted for which you are trying to make payment. Click OK to refresh the cart.");
+					}else if(applicationDetails!=null && JaxUtil.isNullZeroBigDecimalCheck(applicationDetails.getTransactionDocumentNo())) {
+						throw new GlobalException("The payment is already initiated for this application. Click OK to refresh the cart");
 					}
 				}
 			}else {
