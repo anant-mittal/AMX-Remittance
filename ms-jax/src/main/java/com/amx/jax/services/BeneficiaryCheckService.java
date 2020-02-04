@@ -136,7 +136,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			}
 		}
 		if (!StringUtils.isBlank(beneDto.getArbenificaryName())) {
-			List<BlackListModel> blist = blackListDao.getBlackByLocalName(beneDto.getBenificaryName());
+			List<BlackListModel> blist = blackListDao.getBlackByLocalName(beneDto.getArbenificaryName());
 			if (blist != null && !blist.isEmpty()) {
 
 				beneDto.setUpdateNeeded(true);
