@@ -169,13 +169,14 @@ public class ReportJaxB {
 			
 			xmlMapper.setDefaultUseWrapper(true);
 			xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true );
-			LOGGER.error("TEST  value" +xmlMapper.writeValueAsString(repo));
+			LOGGER.debug("TEST  value" +xmlMapper.writeValueAsString(repo));
 			String xml = xmlMapper.writeValueAsString(repo);
 			
 			 xmlMapper.writeValue(new File("src\\main\\java\\data\\report.xml"),
 					 repo);
 			 
-			 LOGGER.error("clob  value" +IoUtils.stringToClob(xml));
+			 LOGGER.debug("xml  value" +xml);
+			 LOGGER.debug("clob  value" +IoUtils.stringToClob(xml));
 	      
 			//Inserting data into ExCbkStrReportLOG      
 			Date date = new Date();
