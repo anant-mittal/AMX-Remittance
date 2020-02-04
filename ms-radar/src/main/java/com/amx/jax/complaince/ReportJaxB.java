@@ -176,6 +176,8 @@ public class ReportJaxB {
 					 repo);
 			 
 			 LOGGER.debug("xml  value" +xml);
+			 
+			 LOGGER.debug("xml  length" +xml.length());
 			 LOGGER.debug("clob  value" +IoUtils.stringToClob(xml));
 	      
 			//Inserting data into ExCbkStrReportLOG      
