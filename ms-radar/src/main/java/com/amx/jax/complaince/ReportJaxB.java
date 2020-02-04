@@ -15,6 +15,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
+
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.amx.jax.AppContextUtil;
@@ -63,6 +65,8 @@ public class ReportJaxB {
 	ReasonRepo reasonRepo;
 	
 	private XmlMapper xmlMapper = new XmlMapper();
+	
+	private final Logger LOGGER = Logger.getLogger(ReportJaxB.class);
 
 
 	public void Marshilling(jaxCbkReport cbk,BigDecimal employeeId, String reasonCode, String actionCode) {
@@ -165,10 +169,13 @@ public class ReportJaxB {
 			
 			xmlMapper.setDefaultUseWrapper(true);
 			xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true );
-			System.out.println("TEST"+xmlMapper.writeValueAsString(repo));
+			LOGGER.error("TEST  value" +xmlMapper.writeValueAsString(repo));
 			String xml = xmlMapper.writeValueAsString(repo);
+			
 			 xmlMapper.writeValue(new File("src\\main\\java\\data\\report.xml"),
 					 repo);
+			 
+			 LOGGER.error("clob  value" +IoUtils.stringToClob(xml));
 	      
 			//Inserting data into ExCbkStrReportLOG      
 			Date date = new Date();
