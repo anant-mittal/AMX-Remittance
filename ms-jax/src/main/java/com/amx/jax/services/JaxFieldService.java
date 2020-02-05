@@ -82,7 +82,7 @@ public class JaxFieldService extends AbstractService {
 			output = jaxConditionalFieldRuleRepository.findByEntityNameAndConditionKeyAndConditionValue(request.getEntity(), "country-institution",
 					"ALL");
 		}
-		if (countryService.isEgyptCountry(countryId) && !beneficiaryService.isNonIndividualBene(beneficaryTypeId)) {
+		if (!beneficiaryService.isNonIndividualBene(beneficaryTypeId)) {
 			output = jaxConditionalFieldRuleRepository.findByEntityNameAndConditionKeyAndConditionValue(request.getEntity(), "bene-country-id",
 					countryId.toString());
 		}
