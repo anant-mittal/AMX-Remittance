@@ -127,13 +127,16 @@ public class BeneficiaryCheckService extends AbstractService {
 		if (!StringUtils.isBlank(beneDto.getBenificaryName())) {
 			List<BlackListModel> blist = blackListDao.getBlackByName(beneDto.getBenificaryName());
 			if (blist != null && !blist.isEmpty()) {
-
 				beneDto.setUpdateNeeded(true);
 				errorDesc = "English name Of beneficiary matching with black listed customer";
 				errorStatusDto = this.setBeneError(JaxError.BLACK_LISTED_CUSTOMER.toString(), errorDesc);
-
 				errorListDto.add(errorStatusDto);
 			}
+		}else {
+			beneDto.setUpdateNeeded(true);
+			errorDesc = "English name Of beneficiary is null or blank";
+			errorStatusDto = this.setBeneError(JaxError.NULL_CHECK.toString(), errorDesc);
+			errorListDto.add(errorStatusDto);
 		}
 		if (!StringUtils.isBlank(beneDto.getArbenificaryName())) {
 			List<BlackListModel> blist = blackListDao.getBlackByLocalName(beneDto.getArbenificaryName());
