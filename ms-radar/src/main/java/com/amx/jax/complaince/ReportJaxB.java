@@ -170,23 +170,27 @@ public class ReportJaxB {
 			xmlMapper.setDefaultUseWrapper(true);
 			xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true );
 			LOGGER.debug("TEST  value" +xmlMapper.writeValueAsString(repo));
-			 LOGGER.debug("clob  value" +IoUtils.stringToClob(xmlMapper.writeValueAsString(repo)));
+			// LOGGER.debug("clob  value" +IoUtils.stringToClob(xmlMapper.writeValueAsString(repo)));
 			
 			//String xml = xmlMapper.writeValueAsString(repo);
 			
-			 xmlMapper.writeValue(new File("src\\main\\java\\data\\report.xml"),
-					 repo);
+			// xmlMapper.writeValue(new File("src\\main\\java\\data\\report.xml"),
+				//	 repo);
 			 
-			// LOGGER.debug("xml  value" +xml);
+			//LOGGER.debug("xml  value" +xml);
 			 
 			// LOGGER.debug("xml  length" +xml.length());
 			 LOGGER.debug("clob  value" +IoUtils.stringToClob(xmlMapper.writeValueAsString(repo)));
-			 LOGGER.debug("clob  value" +IoUtils.stringToClob(xmlMapper.writeValueAsString(repo).toString()));
+			 LOGGER.debug("clob  value String" +IoUtils.stringToClob(xmlMapper.writeValueAsString(repo).toString()));
 	      
 			//Inserting data into ExCbkStrReportLOG      
 			Date date = new Date();
 			ExCbkStrReportLOG logtable = new ExCbkStrReportLOG();
-			logtable.setReqXml(IoUtils.stringToClob(xmlMapper.writeValueAsString(repo)));
+			if(xmlMapper.writeValueAsString(repo).toString()!=null) {
+			logtable.setReqXml(IoUtils.stringToClob(xmlMapper.writeValueAsString(repo).toString()));
+			}else {
+				logtable.setReqXml(IoUtils.stringToClob(xmlMapper.writeValueAsString(repo)));
+			}
 			logtable.setCustomerName(cbk.getCustFirstName() + cbk.getCustLastName());
 			logtable.setRemittanceTranxId(cbk.getTranxNo());
 			logtable.setCreatedDate(date);
