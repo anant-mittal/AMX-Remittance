@@ -44,10 +44,7 @@
                             <![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{model}.getList("/data/remittanceApplList"))]]></dataSourceExpression>
                     </datasetRun>
                     <c:listContents height="800">
-
-                       
-                        
-                       <!--##################HEADER START####################-->
+<!--##################HEADER START####################-->
                         <frame>
                             <reportElement x="0" y="0" width="595" height="80"
                                            forecolor="blue"/>
@@ -94,19 +91,20 @@
                         </frame>
                         <!--##################HEADER END####################-->
 
+                       
                         <!--##################Sender Details START####################-->
                         <frame>
-                            <reportElement x="5" y="80" width="585" height="17"/>
+                            <reportElement x="5" y="80" width="585" height="15"/>
                             <staticText>
-                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.25" lineColor = "#CCCCCC" /></box>
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
                             <staticText>
-                                <reportElement x="0" y="2" width="185" height="17" isPrintWhenDetailOverflows="true"/>
+                                <reportElement x="0" y="3" width="185" height="15" isPrintWhenDetailOverflows="true"/>
                                 <textElement>
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <text><![CDATA[Sender Details]]></text>
@@ -114,11 +112,11 @@
 
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="2" width="100" height="17"
+                                <reportElement x="485" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -130,28 +128,28 @@
 
                         <!--##################Customer ID /Name START####################-->
                         <frame>
-                            <reportElement x="5" y="98" width="585" height="17"/>
+                            <reportElement x="5" y="95" width="585" height="15"/>
                             <staticText>
-                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.25" lineColor = "#000000" /></box>
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
                             <staticText>
-                                <reportElement x="0" y="3   " width="185" height="17" isPrintWhenDetailOverflows="true"/>
+                                <reportElement x="0" y="3   " width="185" height="15" isPrintWhenDetailOverflows="true"/>
                                 <textElement>
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <text><![CDATA[Customer ID /Name]]></text>
                             </staticText>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="120" y="2" width="380" height="17"
+                                <reportElement x="100" y="4" width="400" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -160,11 +158,11 @@
                             </textField>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="2" width="100" height="17"
+                                <reportElement x="485" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -175,70 +173,20 @@
                         </frame>
                         <!--##################Customer ID /Name END####################-->
 
-
-
-                        <!--##################Customer ID /Name START####################-->
-                        <frame>
-                        <reportElement x="5" y="119" width="585" height="17"/>
-                        <staticText>
-                            <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
-                            <box><bottomPen lineWidth = "0.25" lineColor = "#000000" /></box>
-                            <textElement />
-                            <text><![CDATA[]]></text>
-                        </staticText>
-                        <staticText>
-                            <reportElement x="0" y="3   " width="185" height="17" isPrintWhenDetailOverflows="true"/>
-                            <textElement>
-                                <font fontName="Arial" size="11" isItalic="true"
-                                        pdfFontName="fonts/all/arialbd.ttf"/>
-                            </textElement>
-                            <text><![CDATA[Civil ID]]></text>
-                        </staticText>
-
-                        <textField isStretchWithOverflow="true">
-                            <reportElement x="120" y="2" width="380" height="17"
-                                            forecolor="#000000"
-                                            isPrintWhenDetailOverflows="true"/>
-                            <textElement textAlignment="Left">
-                                <font fontName="Arial" size="11" isItalic="true"
-                                        pdfFontName="fonts/all/arial.ttf"/>
-                            </textElement>
-                            <textFieldExpression class="java.lang.String">
-                                <![CDATA[$F{tranx}.get("civilId") + "                     Mobile No : " + $F{tranx}.get("mobileNo")]]>
-                            </textFieldExpression>
-                        </textField>
-
-                        <textField isStretchWithOverflow="true">
-                            <reportElement x="485" y="2" width="100" height="17"
-                                            forecolor="#000000"
-                                            isPrintWhenDetailOverflows="true"/>
-                            <textElement textAlignment="Right">
-                                <font fontName="Arial" size="11" isItalic="true"
-                                        pdfFontName="fonts/all/arialbd.ttf"/>
-                            </textElement>
-                            <textFieldExpression class="java.lang.String">
-                                <![CDATA[$R{label.civilId}]]>
-                            </textFieldExpression>
-                        </textField>
-
-                    </frame>
-                    <!--##################Customer ID /Name END####################-->
-
-                    
                         <!--##################Loyalty Point Expiring START####################-->
                         <frame>
-                            <reportElement x="5" y="140" width="585" height="30"/>
+                            <reportElement x="5" y="115" width="585" height="30"/>
                             <staticText>
-                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "55" backcolor = "#FFFFFF" />
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "29" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
                             
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="0" y="2" width="185" height="17" isPrintWhenDetailOverflows="true"/>
+                                <reportElement x="0" y="3" width="185" height="15" isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -247,11 +195,11 @@
                             </textField>
                             
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="120" y="2" width="380" height="30"
+                                <reportElement x="100" y="4" width="400" height="30"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -262,11 +210,11 @@
 
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="2" width="100" height="17"
+                                <reportElement x="485" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -279,18 +227,18 @@
 
                         <!--##################Insurance START####################-->
                         <frame>
-                            <reportElement x="5" y="197" width="585" height="45"/>
+                            <reportElement x="5" y="150" width="585" height="45"/>
                             <staticText>
-                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "80" backcolor = "#FFFFFF" />
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "44" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
                            
                              <textField isStretchWithOverflow="true">
-                                <reportElement x="0" y="2" width="185" height="17" isPrintWhenDetailOverflows="true"/>
+                                <reportElement x="0" y="3" width="185" height="15" isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -299,11 +247,11 @@
                             </textField>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="120" y="2" width="380" height="45"
+                                <reportElement x="100" y="4" width="400" height="45"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -312,11 +260,11 @@
                             </textField>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="2" width="100" height="45"
+                                <reportElement x="485" y="4" width="100" height="45"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -329,28 +277,28 @@
 
                         <!--##################Location / Phone No START####################-->
                         <frame>
-                            <reportElement x="5" y="280" width="585" height="17"/>
+                            <reportElement x="5" y="195" width="585" height="15"/>
                             <staticText>
-                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
                             <staticText>
-                                <reportElement x="0" y="2" width="185" height="17" isPrintWhenDetailOverflows="true"/>
+                                <reportElement x="0" y="3" width="185" height="15" isPrintWhenDetailOverflows="true"/>
                                 <textElement>
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <text><![CDATA[Location]]></text>
                             </staticText>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="120" y="2" width="380" height="17"
+                                <reportElement x="100" y="4" width="485" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -359,11 +307,11 @@
                             </textField>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="2" width="100" height="17"
+                                <reportElement x="485" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -376,17 +324,17 @@
 
                         <!--##################Beneficiary Details START####################-->
                         <frame>
-                            <reportElement x="5" y="298" width="585" height="17"/>
+                            <reportElement x="5" y="212" width="585" height="15"/>
                             <staticText>
-                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#000000" /></box>
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
                             <staticText>
-                                <reportElement x="0" y="2" width="185" height="17" isPrintWhenDetailOverflows="true"/>
+                                <reportElement x="0" y="3" width="185" height="15" isPrintWhenDetailOverflows="true"/>
                                 <textElement>
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <text><![CDATA[Beneficiary Details]]></text>
@@ -394,11 +342,11 @@
 
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="2" width="100" height="17"
+                                <reportElement x="485" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -409,30 +357,30 @@
                         </frame>
                         <!--##################Beneficiary Details END####################-->
 
-                        <!--##################Beneficiary Details START####################-->
+                        <!--##################Transaction No, Date and Time START####################-->
                         <frame>
-                            <reportElement x="5" y="318" width="585" height="17"/>
+                            <reportElement x="5" y="230" width="585" height="25"/>
                             <staticText>
-                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "15" backcolor = "#FFFFFF" />
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "24" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
                             <staticText>
-                                <reportElement x="0" y="2" width="100" height="25" isPrintWhenDetailOverflows="true"/>
+                                <reportElement x="0" y="3" width="80" height="25" isPrintWhenDetailOverflows="true"/>
                                 <textElement>
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
-                                <text><![CDATA[Transaction No, Date and Time]]></text>
+                                <text><![CDATA[Txn Reference ID, Date and Time]]></text>
                             </staticText>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="120" y="2" width="405" height="17"
+                                <reportElement x="100" y="4" width="405" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -441,11 +389,11 @@
                             </textField>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="2" width="100" height="17"
+                                <reportElement x="485" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -454,34 +402,127 @@
                             </textField>
                         
                         </frame>
-                        <!--##################Payment Mode END####################-->
+                        <!--##################Transaction No, Date and Time END####################-->
                         
-                        <!--##################Beneficiary Details END####################-->
-
-                        <!--##################Beneficiary Details START####################-->
+               	 		<!--##################Transaction ID START####################-->
                         <frame>
-                            <reportElement x="5" y="335" width="585" height="16"/>
+                            <reportElement x="5" y="257" width="585" height="15"/>
                             <staticText>
-                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "16" backcolor = "#FFFFFF" />
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
                             <staticText>
-                                <reportElement x="0" y="2" width="185" height="17" isPrintWhenDetailOverflows="true"/>
+                                <reportElement x="0" y="3" width="185" height="15" isPrintWhenDetailOverflows="true"/>
                                 <textElement>
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
+                                          pdfFontName="fonts/all/arialbd.ttf"/>
+                                </textElement>
+                                <text><![CDATA[Transaction ID]]></text>
+                            </staticText>
+
+                            <textField isStretchWithOverflow="true">
+                                <reportElement x="100" y="4" width="485" height="15"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true"/>
+                                <textElement textAlignment="Left">
+                                    <font fontName="Arial" size="8" isItalic="true"
+                                          pdfFontName="fonts/all/arial.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String">
+                                    <![CDATA[$F{tranx}.get("pgTransId")]]>
+                                </textFieldExpression>
+                            </textField>
+
+                            <textField isStretchWithOverflow="true">
+                                <reportElement x="485" y="4" width="100" height="15"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true"/>
+                                <textElement textAlignment="Right">
+                                    <font fontName="Arial" size="8" isItalic="true"
+                                          pdfFontName="fonts/all/arialbd.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String">
+                                    <![CDATA[$R{label.transactionId}]]>
+                                </textFieldExpression>
+                            </textField>
+
+                        </frame>
+                        <!--################Transaction ID END####################-->
+                        
+                         <!--################## Reference ID START####################-->
+                        <frame>
+                            <reportElement x="5" y="273" width="585" height="15"/>
+                            <staticText>
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
+                                <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
+                                <textElement />
+                                <text><![CDATA[]]></text>
+                            </staticText>
+                            <staticText>
+                                <reportElement x="0" y="3" width="185" height="15" isPrintWhenDetailOverflows="true"/>
+                                <textElement>
+                                    <font fontName="Arial" size="8" isItalic="true"
+                                          pdfFontName="fonts/all/arialbd.ttf"/>
+                                </textElement>
+                                <text><![CDATA[Reference ID]]></text>
+                            </staticText>
+
+                            <textField isStretchWithOverflow="true">
+                                <reportElement x="100" y="4" width="485" height="15"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true"/>
+                                <textElement textAlignment="Left">
+                                    <font fontName="Arial" size="8" isItalic="true"
+                                          pdfFontName="fonts/all/arial.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String">
+                                    <![CDATA[$F{tranx}.get("pgReferenceId")]]>
+                                </textFieldExpression>
+                            </textField>
+
+                            <textField isStretchWithOverflow="true">
+                                <reportElement x="485" y="4" width="100" height="15"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true"/>
+                                <textElement textAlignment="Right">
+                                    <font fontName="Arial" size="8" isItalic="true"
+                                          pdfFontName="fonts/all/arialbd.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String">
+                                    <![CDATA[$R{label.referenceId}]]>
+                                </textFieldExpression>
+                            </textField>
+
+                        </frame>
+                        <!--##################Name END####################-->
+               	
+
+                        <!--#################PIN Number START####################-->
+                        <frame>
+                            <reportElement x="5" y="288" width="585" height="15"/>
+                            <staticText>
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
+                                <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
+                                <textElement />
+                                <text><![CDATA[]]></text>
+                            </staticText>
+                            <staticText>
+                                <reportElement x="0" y="3" width="185" height="15" isPrintWhenDetailOverflows="true"/>
+                                <textElement>
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <text><![CDATA[PIN Number]]></text>
                             </staticText>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="120" y="2" width="380" height="17"
+                                <reportElement x="100" y="4" width="485" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -490,11 +531,11 @@
                             </textField>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="2" width="100" height="17"
+                                <reportElement x="485" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -503,33 +544,33 @@
                             </textField>
 
                         </frame>
-                        <!--##################Beneficiary Details END####################-->
+                        <!--##################PIN Numbers END####################-->
 
 
                         <!--##################Name START####################-->
                         <frame>
-                            <reportElement x="5" y="352" width="585" height="17"/>
+                            <reportElement x="5" y="303" width="585" height="15"/>
                             <staticText>
-                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
                             <staticText>
-                                <reportElement x="0" y="2" width="185" height="17" isPrintWhenDetailOverflows="true"/>
+                                <reportElement x="0" y="3" width="185" height="15" isPrintWhenDetailOverflows="true"/>
                                 <textElement>
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <text><![CDATA[Name]]></text>
                             </staticText>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="120" y="2" width="380" height="17"
+                                <reportElement x="100" y="4" width="485" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -538,11 +579,11 @@
                             </textField>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="2" width="100" height="17"
+                                <reportElement x="485" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -553,31 +594,30 @@
                         </frame>
                         <!--##################Name END####################-->
 
-
-                        <!--##################Bank Name START####################-->
+ 				 <!--##################Bank Name START####################-->
                         <frame>
-                            <reportElement x="5" y="368" width="585" height="17"/>
+                            <reportElement x="5" y="318" width="585" height="15"/>
                             <staticText>
-                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
                             <staticText>
-                                <reportElement x="0" y="2" width="185" height="17" isPrintWhenDetailOverflows="true"/>
+                                <reportElement x="0" y="3" width="185" height="15" isPrintWhenDetailOverflows="true"/>
                                 <textElement>
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <text><![CDATA[Bank Name, Branch]]></text>
                             </staticText>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="120" y="2" width="380" height="17"
+                                <reportElement x="100" y="4" width="485" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -586,11 +626,11 @@
                             </textField>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="2" width="100" height="17"
+                                <reportElement x="485" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -601,30 +641,30 @@
                         </frame>
                         <!--##################Bank Name END####################-->
 
-                        <!--##################Account No START####################-->
+                       <!--##################Account No START####################-->
                         <frame>
-                            <reportElement x="5" y="387" width="585" height="17"/>
+                            <reportElement x="5" y="333" width="585" height="15"/>
                             <staticText>
-                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
                             <staticText>
-                                <reportElement x="0" y="2" width="185" height="17" isPrintWhenDetailOverflows="true"/>
+                                <reportElement x="0" y="3" width="185" height="15" isPrintWhenDetailOverflows="true"/>
                                 <textElement>
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <text><![CDATA[Account No]]></text>
                             </staticText>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="120" y="2" width="380" height="17"
+                                <reportElement x="100" y="4" width="485" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -633,11 +673,11 @@
                             </textField>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="2" width="100" height="17"
+                                <reportElement x="485" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -647,20 +687,21 @@
 
                         </frame>
                         <!--##################Account No END####################-->
-
-                        <!--##################Currency &amp; Amount START####################-->
+                        
+                          <!--##################Currency &amp; Amount START####################-->
                         <frame>
-                            <reportElement x="5" y="406" width="585" height="30"/>
+                            <reportElement x="5" y="348" width="585" height="23"/>
                             <staticText>
-                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "30" backcolor = "#FFFFFF" />
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "22" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
+                           
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="0" y="2" width="100" height="23" isPrintWhenDetailOverflows="true"/>
+                                <reportElement x="0" y="3" width="90" height="23" isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -669,26 +710,26 @@
                             </textField>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="120" y="2" width="380" height="17"
+                                <reportElement x="100" y="4" width="485" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("currencyAndAmount") + "                " +$F{tranx}.get("branchExchangeRate")+"\n"+$F{tranx}.get("kwdAmount")]]>
+                                    <![CDATA[$F{tranx}.get("currencyAndAmount") + "                      " +$F{tranx}.get("branchExchangeRate")+"                      "+$F{tranx}.get("kwdAmount")]]>
                                 </textFieldExpression>
                             </textField>
 
-                              <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="2" width="100" height="17"
+                           <textField isStretchWithOverflow="true">
+                                <reportElement x="485" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true">
                               	<printWhenExpression><![CDATA[$P{TU}.prop("tenant").toUpperCase().trim().equalsIgnoreCase("KWT")]]></printWhenExpression>
                                  </reportElement>
                                 <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -697,14 +738,14 @@
                             </textField>
                             
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="2" width="100" height="17"
+                                <reportElement x="485" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true">
                               	<printWhenExpression><![CDATA[$P{TU}.prop("tenant").toUpperCase().trim().equalsIgnoreCase("BHR")]]></printWhenExpression>
                                
                                 </reportElement>
                                 <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -713,51 +754,50 @@
                             </textField>
                             
                              <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="2" width="100" height="17"
+                                <reportElement x="485" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true">
                               	<printWhenExpression><![CDATA[$P{TU}.prop("tenant").toUpperCase().trim().equalsIgnoreCase("OMN")]]></printWhenExpression>
                                
                                 </reportElement>
                                 <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
                                     <![CDATA[$R{label.omrCurrencyAndAmount}]]>
                                 </textFieldExpression>
                             </textField>
-                            
 
                         </frame>
                         <!--##################Currency &amp; Amount END####################-->
-
-                          <!--##################Special Exchange Rate START####################-->
+ 				
+ 				    <!--##################Special Exchange Rate START####################-->
                         <frame>
-                            <reportElement  x="5" y="438" width="585" height="17">
+                            <reportElement  x="5" y="372" width="585" height="15">
                                         <printWhenExpression><![CDATA[$F{tranx}.get("amountSaved") != ""]]></printWhenExpression>
                                 </reportElement>
                             <staticText>
-                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
                             <staticText>
-                                <reportElement x="0" y="2" width="185" height="17" isPrintWhenDetailOverflows="true"/>
+                                <reportElement x="0" y="3" width="185" height="15" isPrintWhenDetailOverflows="true"/>
                                 <textElement>
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <text><![CDATA[Special Rate]]></text>
                             </staticText>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="120" y="2" width="380" height="17"
+                                <reportElement x="100" y="4" width="485" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -766,11 +806,11 @@
                             </textField>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="2" width="100" height="17"
+                                <reportElement x="485" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -780,22 +820,23 @@
 
                         </frame>
                         <!--##################Special Exchange Rate END####################-->
-                           <!--##################KWD Amount at Special Rate START####################-->
+                        
+                          <!--##################KWD Amount at Special Rate START####################-->
                         <frame>
-                            <reportElement x="5" y="457" width="585" height="30">
+                            <reportElement x="5" y="388" width="585" height="23">
                                 <printWhenExpression><![CDATA[$F{tranx}.get("amountSaved") != ""]]></printWhenExpression>
                             </reportElement>
                             <staticText>
-                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "30" backcolor = "#FFFFFF" />
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "22" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
-                            
-                            <textField isStretchWithOverflow="true">
-                                <reportElement x="0" y="2" width="110" height="23" isPrintWhenDetailOverflows="true"/>
+                           
+                              <textField isStretchWithOverflow="true">
+                                <reportElement x="0" y="3" width="90" height="23" isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -803,27 +844,28 @@
                                 </textFieldExpression>
                             </textField>
                             
+
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="120" y="2" width="380" height="17"
+                                <reportElement x="100" y="4" width="485" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("currencyAndAmount") + "                " +$F{tranx}.get("specialExchangeRate") + "\n" +$F{tranx}.get("specialKwdAmount")]]>
+                                    <![CDATA[$F{tranx}.get("currencyAndAmount") + "                      " +$F{tranx}.get("specialExchangeRate") + "                      " +$F{tranx}.get("specialKwdAmount")]]>
                                 </textFieldExpression>
                             </textField>
-
-                          <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="2" width="100" height="17"
+  							
+  							<textField isStretchWithOverflow="true">
+                                <reportElement x="485" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true">
                               	<printWhenExpression><![CDATA[$P{TU}.prop("tenant").toUpperCase().trim().equalsIgnoreCase("KWT")]]></printWhenExpression>
                                 </reportElement>
                                  <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -832,13 +874,13 @@
                             </textField>
                             
                              <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="2" width="100" height="17"
+                                <reportElement x="485" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true">
                                 <printWhenExpression><![CDATA[$P{TU}.prop("tenant").toUpperCase().trim().equalsIgnoreCase("BHR")]]></printWhenExpression>
                                  </reportElement>
                                  <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -847,60 +889,66 @@
                             </textField>
                             
                              <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="2" width="100" height="17"
+                                <reportElement x="485" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true">
                                <printWhenExpression><![CDATA[$P{TU}.prop("tenant").toUpperCase().trim().equalsIgnoreCase("OMN")]]></printWhenExpression>
                                </reportElement>
                                  <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
                                     <![CDATA[$R{label.omrSpecialRate}]]>
                                 </textFieldExpression>
                             </textField>
-
+                            
                         </frame>
                            <!--##################KWD Amount at Special Rate End####################-->
-
-                        <!--##################Commission START####################-->
+                        
+                           <!--##################Commission START####################-->
                         <frame>
-                            <reportElement x="5" y="490" width="585" height="17"/>
+                            <reportElement x="5" y="410" width="585" height="15"/>
                             <staticText>
-                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
                             <staticText>
-                                <reportElement x="0" y="2" width="185" height="17" isPrintWhenDetailOverflows="true"/>
+                                <reportElement mode = "Opaque" x = "0" y = "0" width = "585" height = "14" backcolor = "#FFFFFF" />
+                                <box><topPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
+                                <textElement />
+                                <text><![CDATA[]]></text>
+                            </staticText>
+                            <staticText>
+                                <reportElement x="0" y="3" width="185" height="15" isPrintWhenDetailOverflows="true"/>
                                 <textElement>
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <text><![CDATA[Commission]]></text>
                             </staticText>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="120" y="2" width="380" height="17"
+                                <reportElement x="100" y="4" width="485" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("commision")+"                        "+$F{tranx}.get("discountOnCommissionStr")]]>
+                                    <![CDATA[$F{tranx}.get("commision")+"             "+$F{tranx}.get("discountOnCommissionStr")]]>
                                 </textFieldExpression>
                             </textField>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="2" width="100" height="17"
+                                <reportElement x="485" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -910,32 +958,30 @@
 
                         </frame>
                         <!--##################Commission END####################-->
-
-
-                        <!--##################Other Charges START####################-->
+                          <!--##################Other Charges START####################-->
                         <frame>
-                            <reportElement x="5" y="510" width="585" height="17"/>
+                            <reportElement x="5" y="427" width="585" height="15"/>
                             <staticText>
-                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
                             <staticText>
-                                <reportElement x="0" y="2" width="185" height="17" isPrintWhenDetailOverflows="true"/>
+                                <reportElement x="0" y="3" width="185" height="15" isPrintWhenDetailOverflows="true"/>
                                 <textElement>
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <text><![CDATA[Other Charges]]></text>
                             </staticText>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="120" y="2" width="380" height="17"
+                                <reportElement x="100" y="4" width="485" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -944,11 +990,11 @@
                             </textField>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="2" width="100" height="17"
+                                <reportElement x="485" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -958,31 +1004,30 @@
 
                         </frame>
                         <!--##################Other Charges END####################-->
-                        
-                        <!--##################Other Charges START####################-->
+                          <!--#################Customer To pay START####################-->
                         <frame>
-                            <reportElement x="5" y="530" width="585" height="17"/>
+                            <reportElement x="5" y="442" width="585" height="15"/>
                             <staticText>
-                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
                             <staticText>
-                                <reportElement x="0" y="2" width="185" height="17" isPrintWhenDetailOverflows="true"/>
+                                <reportElement x="0" y="3" width="185" height="15" isPrintWhenDetailOverflows="true"/>
                                 <textElement>
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <text><![CDATA[Customer to Pay]]></text>
                             </staticText>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="120" y="2" width="380" height="17"
+                                <reportElement x="100" y="4" width="485" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -991,11 +1036,11 @@
                             </textField>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="2" width="100" height="17"
+                                <reportElement x="485" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -1004,32 +1049,32 @@
                             </textField>
 
                         </frame>
-                        <!--##################Other Charges END####################-->
-
-                        <!--##################Payment Details START####################-->
+                        <!--##################Customer To pay END####################-->
+                        
+                         <!--##################Payment Details START####################-->
                         <frame>
-                            <reportElement x="5" y="549" width="585" height="17"/>
+                            <reportElement x="5" y="458" width="585" height="15"/>
                            <staticText>
-                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#000000" /></box>
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
 
                             <staticText>
-                                <reportElement x="0" y="2" width="185" height="17" isPrintWhenDetailOverflows="true"/>
+                                <reportElement x="0" y="3" width="185" height="15" isPrintWhenDetailOverflows="true"/>
                                 <textElement>
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <text><![CDATA[Further Instruction]]></text>
                             </staticText>
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="120" y="2" width="380" height="17"
+                                <reportElement x="100" y="4" width="485" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -1037,11 +1082,11 @@
                                 </textFieldExpression>
                             </textField>
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="2" width="100" height="17"
+                                <reportElement x="485" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -1050,9 +1095,9 @@
                             </textField>
 
                         </frame>
-                        <!--##################Amount Saved Details END####################-->
+                         <!--##################Amount Saved Details END####################-->
                         <frame>
-                            <reportElement x="5" y="509" width="585" height="60"/>
+                            <reportElement x="5" y="256" width="585" height="60"/>
                             <staticText>
                                 <reportElement mode = "Transparent" x = "0" y = "1" width = "585" height = "30"  />
                                 <textElement />
@@ -1060,7 +1105,7 @@
                             </staticText>
                             
                             <rectangle radius="15">
-                                <reportElement x="337" y="0" width="170" height="57" backcolor="#000000">
+                                <reportElement x="337" y="0" width="170" height="57" forecolor="#333333" backcolor="#000000">
                                         <printWhenExpression><![CDATA[$F{tranx}.get("amountSaved") != "" || $F{tranx}.get("totalAmountSavedStr") != ""]]></printWhenExpression>
                                 </reportElement>
                                 <graphicElement>
@@ -1084,11 +1129,10 @@
                             </textField>
 							</frame>
                         
-                     
-              
-                        <!--##################Payment Mode START####################-->
+                       
+                            <!--##################Payment Mode START####################-->
                         <componentElement>
-                            <reportElement x="0" y="573" width="595" height="48"/>
+                            <reportElement x="0" y="479" width="595" height="48"/>
                             <d:list xmlns:d="http://jasperreports.sourceforge.net/jasperreports/components"
                                     xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd"
                                     printOrder="Vertical">
@@ -1104,18 +1148,18 @@
                                         <![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{tranx}.getList("/collectionDetailList"))]]>
                                     </dataSourceExpression>
                                 </datasetRun>
-                                <d:listContents height="17">
+                                <d:listContents height="15">
                                     <frame>
                                         <reportElement x="5" y="0" width="585" height="12"/>
                                     
 
 
                                         <textField isStretchWithOverflow="true">
-                                            <reportElement x="120" y="0" width="200" height="12"
+                                            <reportElement x="100" y="0" width="200" height="12"
                                                            forecolor="#000000"
                                                            isPrintWhenDetailOverflows="true"/>
                                             <textElement textAlignment="Left">
-                                                <font fontName="Arial" size="11" isItalic="true"
+                                                <font fontName="Arial" size="8" isItalic="true"
                                                       pdfFontName="fonts/all/arial.ttf"/>
                                             </textElement>
                                             <textFieldExpression class="java.lang.String">
@@ -1128,7 +1172,7 @@
                                                            forecolor="#000000"
                                                            isPrintWhenDetailOverflows="true"/>
                                             <textElement textAlignment="Left">
-                                                <font fontName="Arial" size="11" isItalic="true"
+                                                <font fontName="Arial" size="8" isItalic="true"
                                                       pdfFontName="fonts/all/arial.ttf"/>
                                             </textElement>
                                             <textFieldExpression class="java.lang.String">
@@ -1144,16 +1188,16 @@
                         </componentElement>
 
                         <frame>
-                            <reportElement x="0" y="571" width="585" height="30"/>
+                            <reportElement x="0" y="472" width="585" height="30"/>
                             <staticText>
-                                <reportElement mode = "Transparent" x = "0" y = "1" width = "585" height = "30"  />
+                                <reportElement mode = "Transparent" x = "0" y = "2" width = "585" height = "30"  />
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
                             <staticText>
-                                <reportElement x="0" y="2" width="100" height="30" isPrintWhenDetailOverflows="true"/>
+                                <reportElement x="0" y="3" width="100" height="30" isPrintWhenDetailOverflows="true"/>
                                 <textElement>
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                     <paragraph lineSpacing="AtLeast" lineSpacingSize="14" leftIndent="5"/>
                                 </textElement>
@@ -1163,11 +1207,11 @@
                             
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="2" width="100" height="17"
+                                <reportElement x="485" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="11" isItalic="true"
+                                    <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
@@ -1177,83 +1221,19 @@
 
                         </frame>
                         <!--##################Payment Mode END####################-->
-                     
-                     <!--##################Payment Mode START####################-->
-                    <frame>
-                        <reportElement x="5" y="641" width="585" height="90"/>
-                        <staticText>
-                            <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
-                            <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
-                            <textElement />
-                            <text><![CDATA[]]></text>
-                        </staticText>
-                        <staticText>
-                            <reportElement mode = "Opaque" x = "0" y = "0" width = "585" height = "17" backcolor = "#FFFFFF" />
-                            <box><topPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
-                            <textElement />
-                            <text><![CDATA[]]></text>
-                        </staticText>
-                        <staticText>
-                            <reportElement x="0" y="2" width="585" height="17" isPrintWhenDetailOverflows="true"/>
-                            <textElement>
-                                <font fontName="Arial" size="11" isItalic="true"
-                                      pdfFontName="fonts/all/arialbd.ttf"/>
-                            </textElement>
-                            <text><![CDATA[I confirm that the beneficiary details furnished above are correct.]]></text>
-                        </staticText>
-
-                    
-                        <staticText>
-                            <reportElement x="0" y="21" width="585" height="17" isPrintWhenDetailOverflows="true"/>
-                            <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
-                            <textElement>
-                                <font fontName="Arial" size="11" isItalic="true"
-                                      pdfFontName="fonts/all/arialbd.ttf"/>
-                            </textElement>
-                            <text><![CDATA[I have read the terms and conditions overlead and confirm to have fully understood and accepted the same without any reservations.]]></text>
-                        </staticText>
-                        <image evaluationTime="Now" onErrorType="Blank">
-                            <reportElement
-                                    x="10"
-                                    y="40"
-                                    width="200"
-                                    height="60"
-                                    key="image-1"
-                                    stretchType="NoStretch" />
-   						   <imageExpression class="java.io.InputStream"><![CDATA[new java.io.ByteArrayInputStream(org.apache.commons.codec.binary.Base64.decodeBase64($F{tranx}.get("signature").getBytes()))]]></imageExpression>
-                        </image>
-
-                        <staticText>
-                            <reportElement x="37" y="99" width="200" height="17" isPrintWhenDetailOverflows="true"/>
-                            <textElement>
-                                <font fontName="Arial" size="11" isItalic="true"
-                                      pdfFontName="fonts/all/arialbd.ttf"/>
-                            </textElement>
-                            <text><![CDATA[Customer Signature]]></text>
-                        </staticText>
-                        <staticText>
-                            <reportElement x="0" y="95" width="585" height="17" isPrintWhenDetailOverflows="true"/>
-                            <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>                            
-                            <textElement>
-                                <font fontName="Arial" size="11" isItalic="true"
-                                      pdfFontName="fonts/all/arialbd.ttf"/>
-                            </textElement>
-                            <text><![CDATA[ ]]></text>
-                        </staticText>
-                    </frame>
-                    <!--##################Payment Mode END####################-->
-                    	
-                     <!--##################promotionMessage START####################-->
+                        
+                           <!--##################promotionMessage START####################-->
                         <frame>
-                            <reportElement x="5" y="757" width="585" height="17"/>
-                            <staticText>
-                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
+                            <reportElement x="5" y="538" width="585" height="15"/>
+                           <staticText>
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "11" backcolor = "#FFFFFF" />
+                                <box><topPen lineWidth = "0.25" lineColor = "#CCCCCC" /></box>
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
                             
                             <textField isStretchWithOverflow="true">
-                            <reportElement x="0" y="2" width="380" height="17"
+                            <reportElement x="0" y="4" width="485" height="15"
                                            forecolor="#3bb15d"
                                            isPrintWhenDetailOverflows="true"/>
                             <textElement textAlignment="Left">
@@ -1267,7 +1247,8 @@
                             
                          </frame>
                     <!--#################promotionMessage END####################-->
-                   <!--##################FOOTER START####################-->
+                       
+                    <!--##################FOOTER START####################-->
                     <frame>
                         <reportElement x="0" y="700" width="595" height="90"
                                        forecolor="blue"/>
