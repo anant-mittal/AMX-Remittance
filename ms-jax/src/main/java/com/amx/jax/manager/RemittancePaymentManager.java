@@ -440,7 +440,7 @@ public class RemittancePaymentManager extends AbstractService{
 					responseDto.setCollectionDocumentFYear(collectionFinanceYear);
 					responseDto.setCollectionDocumentNo(collectionDocumentNumber);
 					responseDto.setCollectionDocumentCode(collectionDocumentCode);
-					callingServiceProviderApi(responseDto,paymentResponse.getCustomerId());
+					//callingServiceProviderApi(responseDto,paymentResponse.getCustomerId());
 
 					 for(RemittanceApplication remitAppl :lstPayIdDetails) {
 						 updatePlaceOrderTransactionId(remitAppl,paymentResponse); 
