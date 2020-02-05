@@ -16,6 +16,6 @@ public interface BankMasterRepository extends CrudRepository<BankMasterMdlv1, Bi
 
 	public List<BankMasterMdlv1> findBybankCountryIdAndLanguageInd(BigDecimal bankCountryId, String languageInd);
 	
-	public BankMasterMdlv1 findByBankIdAndRecordStatus(BigDecimal bankId, String isActive);
+	public BankMasterMdlv1 findByBankIdAndRecordStatus(BigDecimal bankId, String yes);
 
 }
