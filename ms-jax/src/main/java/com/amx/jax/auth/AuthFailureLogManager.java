@@ -135,7 +135,7 @@ public class AuthFailureLogManager {
 		if (blockedRecords.size() > 0) {
 			log.info("clientIP {} is blocked {} times", clientIp, blockedRecords.size());
 			throw new GlobalException(JaxError.CLIENT_IP_BLOCKED,
-					"IP address " + clientIp + " is blocked due to frequent failed attempts, please try after sometime");
+					"IP address " + clientIp + " is blocked due to frequent failed attempts, please contact/visit branch to unblock it.");
 		}
 	}
 
