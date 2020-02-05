@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.model.GetJaxFieldRequest;
-import com.amx.amxlib.model.JaxCondition;
 import com.amx.amxlib.model.request.AddJaxFieldRequest;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
@@ -114,10 +113,19 @@ public class JaxFieldService extends AbstractService {
 	}
 
 	private List<JaxConditionalFieldDto> convert(List<JaxConditionalFieldRule> fieldList) {
+		fieldList.sort((o1, o2) -> {
+			Double s1 = o1.getField().getSortOrder();
+			Double s2 = o2.getField().getSortOrder();
+			if (s1 == null) {
+				return 0;
+			}
+			return s1.compareTo(s2);
+		});
 		List<JaxConditionalFieldDto> list = new ArrayList<>();
 		fieldList.forEach(i -> {
 			list.add(convert(i));
 		});
+
 		return list;
 	}
 

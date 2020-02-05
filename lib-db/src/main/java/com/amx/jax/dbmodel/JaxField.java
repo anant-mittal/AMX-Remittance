@@ -51,6 +51,8 @@ public class JaxField implements Serializable {
 	@Column(name = "DEFAULT_DTOPATH")
 	String defaultDtoPath;
 	
+	@Column(name = "SORT_ORDER")
+	Double sortOrder;
 
 	public String getName() {
 		return name;
@@ -123,5 +125,14 @@ public class JaxField implements Serializable {
 	public void setDefaultDtoPath(String defaultDtoPath) {
 		this.defaultDtoPath = defaultDtoPath;
 	}
+
+	public Double getSortOrder() {
+		return sortOrder;
+	}
+
+	public void setSortOrder(Double sortOrder) {
+		this.sortOrder = sortOrder;
+	}
+
 
 }
