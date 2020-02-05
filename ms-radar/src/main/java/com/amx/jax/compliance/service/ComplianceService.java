@@ -141,30 +141,28 @@ public class ComplianceService extends AbstractJaxServiceClient{
 					token = tokenGenaration(bankCode.getWsUserName(), bankCode.getWsPassword(), bankCode.getWsPin());
 
 					token = token.replaceAll("^\"|\"$", "");
-					LOGGER.error("token value" + token.replaceAll("^\"|\"$", ""));
+					
 				} catch (Exception e) {
 
 					LOGGER.error("error in token generation" + e.getMessage());
 				}
-				LOGGER.error("fileformat size" + ex.get(0).getReqXml().length());
-				LOGGER.error("fileformat value" + ex.get(0).getReqXml());
+				
 				Clob fileformat = ex.get(0).getReqXml();
-				LOGGER.error("fileformat value is" + fileformat);
-				LOGGER.error("reader value in fileforamt is" + fileformat.getCharacterStream());
+				
 				Reader reader = fileformat.getCharacterStream();
-				LOGGER.error("reader value is" + reader);
+				
 				StringWriter writer = new StringWriter();
 				IOUtils.copy(reader, writer);
 				String clobContent = writer.toString();
 
 				File file = reportJaxB.MakeZipfile(clobContent);
 
-				FileInputStream input = new FileInputStream(file);
+				FileInputStream input = new FileInputStream(reportJaxB.MakeZipfile(clobContent));
 				MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "zipfile",
 						IOUtils.toByteArray(input));
 
 				response = uploadComplaince(multipartFile, token, cbk,reason,action );
-
+				
 			}else {
 				throw new GlobalException(JaxError.DUPLICATE_TRNX_DETAILS, "Duplicate Transction Id");
 			}

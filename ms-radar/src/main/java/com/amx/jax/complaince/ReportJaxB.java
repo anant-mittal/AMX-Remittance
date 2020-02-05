@@ -2,6 +2,7 @@ package com.amx.jax.complaince;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Reader;
@@ -27,6 +28,7 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.model.response.remittance.ParameterDetailsDto;
+import com.amx.jax.radar.RadarConfig;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.EmployeeRespository;
 import com.amx.jax.repository.ParameterDetailsRespository;
@@ -170,18 +172,10 @@ public class ReportJaxB {
 			xmlMapper.setDefaultUseWrapper(true);
 			xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true );
 			LOGGER.debug("TEST  value" +xmlMapper.writeValueAsString(repo));
-			// LOGGER.debug("clob  value" +IoUtils.stringToClob(xmlMapper.writeValueAsString(repo)));
-			
-			//String xml = xmlMapper.writeValueAsString(repo);
-			
-			// xmlMapper.writeValue(new File("src\\main\\java\\data\\report.xml"),
-				//	 repo);
-			 
-			//LOGGER.debug("xml  value" +xml);
-			 
-			// LOGGER.debug("xml  length" +xml.length());
-			 LOGGER.debug("clob  value" +IoUtils.stringToClob(xmlMapper.writeValueAsString(repo)));
-			 LOGGER.debug("clob  value String" +IoUtils.stringToClob(xmlMapper.writeValueAsString(repo).toString()));
+			LOGGER.debug("clob  value" +IoUtils.stringToClob(xmlMapper.writeValueAsString(repo)));
+		    LOGGER.debug("clob  value String" +IoUtils.stringToClob(xmlMapper.writeValueAsString(repo).toString()));
+		    
+		    xmlMapper.writeValue(new File("src\\main\\java\\data\\report.xml"),repo);
 	      
 			//Inserting data into ExCbkStrReportLOG      
 			Date date = new Date();
@@ -245,34 +239,52 @@ public class ReportJaxB {
 		StringBuilder sb = new StringBuilder();
 		sb.append(content);
 
-		String abc = "_Web_Report_ReportID";
+		String fileName = "_Web_Report_ReportID";
 		Date date = new Date();
 
 		long time = date.getTime();
 
-		String filenamewithoutextension = abc + time;
-		File f = new File(filenamewithoutextension + ".zip");
+		String filenamewithoutextension = fileName + time;
 		
-		ZipOutputStream out = null;
+		File file1 = new File("src\\main\\java\\data\\report.xml");
+        String zipFileName = RadarConfig.getJobFIUzipLocationEnabled()+filenamewithoutextension+".zip";
+              
+        zipSingleFile(file1, zipFileName);
+        File zipfile = new File(zipFileName);
 
-		out = new ZipOutputStream(new FileOutputStream(f));
-
-		String fileExtension = ".xml";
-
-		String fileName = filenamewithoutextension + fileExtension;
-		ZipEntry e = new ZipEntry(fileName);
-		out.putNextEntry(e);
-
-		byte[] data = sb.toString().getBytes();
-		out.write(data, 0, data.length);
-		out.closeEntry();
-
-		out.close();
-
-		return f;
+		return zipfile;
 
 	}
+	 private static void zipSingleFile(File file, String zipFileName) {
+	        try {
+	           
+	            FileOutputStream fos = new FileOutputStream(zipFileName);
+	            ZipOutputStream zos = new ZipOutputStream(fos);
+	           
+	            ZipEntry ze = new ZipEntry(file.getName());
+	            zos.putNextEntry(ze);
+	            
+	            FileInputStream fis = new FileInputStream(file);
+	            byte[] buffer = new byte[1024];
+	            int len;
+	            while ((len = fis.read(buffer)) > 0) {
+	                zos.write(buffer, 0, len);
+	            }
+	            	           
+	            zos.closeEntry();
+	           
+	            zos.close();
+	            fis.close();
+	            fos.close();
+	            System.out.println(file.getCanonicalPath()+" is zipped to "+zipFileName);
+	            
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
 
+	    }
+
+	
 
 	public String parseTime(String date) {
 		try {

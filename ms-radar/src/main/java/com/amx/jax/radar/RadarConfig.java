@@ -55,6 +55,10 @@ public class RadarConfig {
 	
 	@Value("${jax.jobs.wa.fail.retry}")
 	boolean jobWAFailRetryEnabled;
+	
+	@TenantValue("${goaml.fiu.zipfile.location}")
+	private static String jobFIUzipLocationEnabled;
+	
 
 	public boolean isJobWAFailRetryEnabled() {
 		return jobWAFailRetryEnabled;
@@ -91,5 +95,16 @@ public class RadarConfig {
 	public String getJobsRateVersion() {
 		return jobsRateVersion;
 	}
+
+	public static String getJobFIUzipLocationEnabled() {
+		return jobFIUzipLocationEnabled;
+	}
+
+	public static void setJobFIUzipLocationEnabled(String jobFIUzipLocationEnabled) {
+		RadarConfig.jobFIUzipLocationEnabled = jobFIUzipLocationEnabled;
+	}
+
+	
+	
 
 }
