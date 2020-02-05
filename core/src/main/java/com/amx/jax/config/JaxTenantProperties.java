@@ -85,6 +85,9 @@ public class JaxTenantProperties {
 	@TenantValue("${support.online.email}")
 	String supportOnlineEmail;
 
+	@TenantValue("${jax.max.link.count}")
+	private Integer directLinkCount;
+
 	@TenantValue("${jax.verify.link.limit.attempt}")
 	private Integer verificationAttemptLimit;
 
@@ -304,4 +307,11 @@ public class JaxTenantProperties {
 		return authFailBlocktime;
 	}
 
+	public Integer getDirectLinkCount() {
+		return directLinkCount;
+	}
+
+	public void setDirectLinkCount(Integer directLinkCount) {
+		this.directLinkCount = directLinkCount;
+	}
 }
