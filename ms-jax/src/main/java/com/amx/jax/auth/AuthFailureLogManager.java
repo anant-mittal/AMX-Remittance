@@ -74,9 +74,7 @@ public class AuthFailureLogManager {
 	}
 
 	private boolean isApplicable(AbstractJaxException ex) {
-		if (JaxError.CLIENT_IP_BLOCKED.equals(ex.getError())) {
-			return false;
-		}
+		
 		return true;
 	}
 
@@ -103,9 +101,9 @@ public class AuthFailureLogManager {
 
 	}
 
-	private Date getLastUnblockDate(String clientIp) {
+	public Date getLastUnblockDate(String clientIp) {
 		Date unblockedDate = null;
-		List<BlockedIPAdress> blockedIpList = blockedIPAdressRepository.findByIpAddressAndIsActiveAndBlockedIpIdIsNotNull(clientIp,
+		List<BlockedIPAdress> blockedIpList = blockedIPAdressRepository.findByIpAddressAndIsActiveAndBlockedIpIdIsNotNullAndUnblockedDateIsNotNull(clientIp,
 				ConstantDocument.No, new Sort(Direction.DESC, "unblockedDate"));
 		if (CollectionUtils.isNotEmpty(blockedIpList)) {
 			unblockedDate = blockedIpList.get(0).getUnblockedDate();

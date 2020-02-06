@@ -19,5 +19,5 @@ public interface BlockedIPAdressRepository extends CrudRepository<BlockedIPAdres
 
 	List<BlockedIPAdress> findByIpAddressAndIsActive(String ip, String isActive);
 
-	List<BlockedIPAdress> findByIpAddressAndIsActiveAndBlockedIpIdIsNotNull(String ip, String isActive, Sort sort);
+	List<BlockedIPAdress> findByIpAddressAndIsActiveAndBlockedIpIdIsNotNullAndUnblockedDateIsNotNull(String ip, String isActive, Sort sort);
 }
