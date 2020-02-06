@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -105,7 +106,7 @@ public class AuthFailureLogManager {
 	private Date getLastUnblockDate(String clientIp) {
 		Date unblockedDate = null;
 		List<BlockedIPAdress> blockedIpList = blockedIPAdressRepository.findByIpAddressAndIsActiveAndBlockedIpIdIsNotNull(clientIp,
-				ConstantDocument.No, new Sort("unblockedDate"));
+				ConstantDocument.No, new Sort(Direction.DESC, "unblockedDate"));
 		if (CollectionUtils.isNotEmpty(blockedIpList)) {
 			unblockedDate = blockedIpList.get(0).getUnblockedDate();
 		}
