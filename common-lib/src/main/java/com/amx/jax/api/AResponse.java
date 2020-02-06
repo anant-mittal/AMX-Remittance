@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public abstract class AResponse<M> implements ApiMetaResponse<M> {
 
 	protected Long timestamp;
+	protected String traceid;
 
 	// Spring Norms
 	protected String status = "200"; // 400
@@ -293,6 +294,16 @@ public abstract class AResponse<M> implements ApiMetaResponse<M> {
 		AmxFieldError w = new AmxFieldError();
 		w.setDescription(warning);
 		this.warnings().getWarnings().add(w);
+	}
+
+	@Override
+	public String getTraceid() {
+		return traceid;
+	}
+
+	@Override
+	public void setTraceid(String traceid) {
+		this.traceid = traceid;
 	}
 
 }

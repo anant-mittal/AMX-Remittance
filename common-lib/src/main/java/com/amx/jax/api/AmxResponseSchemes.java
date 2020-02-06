@@ -32,6 +32,10 @@ public class AmxResponseSchemes {
 		public String getMessageKey();
 
 		public void setMessageKey(String messageKey);
+
+		public String getTraceid();
+		
+		public void setTraceid(String traceid);
 	}
 
 	public interface ApiMetaResponse<M> extends ApiWrapperResponse {
