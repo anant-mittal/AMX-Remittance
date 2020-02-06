@@ -30,7 +30,6 @@ import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.BanksView;
 import com.amx.jax.dbmodel.CountryBranchMdlv1;
-import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.CurrencyWiseDenominationMdlv1;
 import com.amx.jax.dbmodel.Customer;
@@ -235,20 +234,18 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 					
 					
 					BankMasterMdlv1 bankMasterView = bankService.getBankById(customerApplDto.getRoutingBankId());
-					
-					if(bankMasterView!=null && bankMasterView.getBankCode().contains(SERVICE_PROVIDER_BANK_CODE.HOME.toString()) &&  addtoCart==true) {
+					boolean canAddtoCart = canAddtoCart(bankMasterView);
+					if (!canAddtoCart && addtoCart == true) {
 						cartList.setAddToCart(false);
-						addtoCart =false;
+						addtoCart = false;
 						Iterator<PaymentModesDTO> iter = paymentModeDtoList.iterator();
-						while(iter.hasNext()) {
+						while (iter.hasNext()) {
 							PaymentModesDTO paymentModesDTO = iter.next();
-							if(ConstantDocument.PB_PAYMENT.equals(paymentModesDTO.getPaymentModeCode())) {
+							if (ConstantDocument.PB_PAYMENT.equals(paymentModesDTO.getPaymentModeCode())) {
 								iter.remove();
 								break;
 							}
 						}
-						
-						
 					}
 					
 					cartList.setPaymentModeList(paymentModeDtoList);
@@ -827,4 +824,21 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		
 	}
 
+	/**
+	 * whether add to cart is possible for given routing bank/service provider
+	 * @param bankMasterView
+	 * @return
+	 */
+	private boolean canAddtoCart(BankMasterMdlv1 bankMasterView) {
+		boolean canAddToCart = true;
+		if (bankMasterView != null) {
+			if (bankMasterView.getBankCode().contains(SERVICE_PROVIDER_BANK_CODE.HOME.toString())) {
+				canAddToCart = false;
+			}
+			if (bankMasterView.getBankCode().contains(SERVICE_PROVIDER_BANK_CODE.VINTJA.toString())) {
+				canAddToCart = false;
+			}
+		}
+		return canAddToCart;
+	}
 }
