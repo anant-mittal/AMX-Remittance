@@ -157,6 +157,7 @@ public class AppRequestFilter implements Filter {
 			RequestType reqType = apiRequest.getType();
 
 			AppContextUtil.setRequestType(reqType);
+			AppContextUtil.setApiRequestDetail(apiRequest);
 
 			// Tenant Tracking
 			String siteId = req.getHeader(TenantContextHolder.TENANT);

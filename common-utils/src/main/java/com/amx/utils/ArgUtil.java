@@ -519,6 +519,20 @@ public final class ArgUtil {
 		if (object == null || Constants.DEFAULT_STRING.equals(object)) {
 			return defaultValue;
 		}
+		
+		if(defaultValue == null && Constants.NULL_STRING.equalsIgnoreCase(object.toString().toUpperCase())) {
+			return defaultValue;
+		}
+		
+		return parseAsString(object);
+	}
+	
+	public static String parseAsStringNull(Object object, String defaultValue) {
+		if (object == null || Constants.DEFAULT_STRING.equals(object)
+				|| Constants.NULL_STRING.equalsIgnoreCase(object.toString().toUpperCase())
+				) {
+			return defaultValue;
+		}
 		return parseAsString(object);
 	}
 

@@ -35,6 +35,7 @@ public class Constants {
 
 	/** The Constant defaultString. */
 	public static final String DEFAULT_STRING = "";
+	public static final String NULL_STRING = "NULL";
 
 	/** The Constant defaultObject. */
 	public static final Object DEFAULT_OBJECT = new Object();

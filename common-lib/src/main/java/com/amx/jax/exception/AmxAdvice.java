@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
+import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AResponse;
@@ -43,6 +44,8 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.AmxFieldError;
 import com.amx.jax.exception.ApiHttpExceptions.ApiHttpArgException;
 import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
+import com.amx.jax.http.ApiRequest.ResponeError;
+import com.amx.jax.http.CommonHttpRequest.ApiRequestDetail;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.logger.events.ApiAuditEvent;
@@ -57,6 +60,9 @@ public abstract class AmxAdvice implements ResponseBodyAdvice<AmxApiResponse<?, 
 
 	@Autowired
 	private AuditService auditService;
+	
+	@Autowired
+	private AppConfig appConfig;
 
 	@ExceptionHandler(AmxApiException.class)
 	@ResponseBody
@@ -83,6 +89,15 @@ public abstract class AmxAdvice implements ResponseBodyAdvice<AmxApiResponse<?, 
 	}
 
 	public HttpStatus getHttpStatus(AmxApiException exp) {
+		ApiRequestDetail apiRequestDetail = AppContextUtil.getApiRequestDetail();
+		
+		if(apiRequestDetail.getResponeError() ==  ResponeError.PROPAGATE) {
+			return exp.getHttpStatus();
+		}
+		
+		if (appConfig.isAppResponseOK()) {
+			return HttpStatus.OK;
+		}
 		return exp.getHttpStatus();
 	}
 

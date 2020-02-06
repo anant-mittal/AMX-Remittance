@@ -35,6 +35,7 @@ public class AppConstants extends Constants {
 	public static final String LANG_PARAM_KEY = "lang";
 	public static final String TRACE_TIME_XKEY = "x-time-id";
 	public static final String REQUEST_TYPE_XKEY = "x-request-type";
+	public static final String REQUEST_DETAILS_XKEY = "x-request-details";
 	public static final String REQUEST_WARNING_XKEY = "x-request-warning";
 	public static final String TRANX_ID_XKEY = "x-tranx-id";
 	public static final String CONTEXT_ID_XKEY = "x-cntxt-id";

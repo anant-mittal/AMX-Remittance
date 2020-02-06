@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
+import com.amx.jax.http.CommonHttpRequest.ApiRequestDetail;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -22,6 +23,7 @@ public class AppContext implements Serializable {
 	String tranxId = null;
 	String actorId = null;
 	UserDeviceClient client;
+	ApiRequestDetail apiRequestDetail;
 	Map<String, Object> params = new HashMap<String, Object>();
 
 	long traceTime = 0L;
@@ -97,6 +99,14 @@ public class AppContext implements Serializable {
 
 	public void setContextId(String contextId) {
 		this.contextId = contextId;
+	}
+
+	public ApiRequestDetail getApiRequestDetail() {
+		return apiRequestDetail;
+	}
+
+	public void setApiRequestDetail(ApiRequestDetail apiRequestDetail) {
+		this.apiRequestDetail = apiRequestDetail;
 	}
 
 }

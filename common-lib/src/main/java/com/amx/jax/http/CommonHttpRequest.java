@@ -33,6 +33,7 @@ import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.dict.UserClient.DevicePlatform;
 import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.filter.AppParamController;
+import com.amx.jax.http.ApiRequest.ResponeError;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.UserDevice;
 import com.amx.utils.ArgUtil;
@@ -206,11 +207,11 @@ public class CommonHttpRequest {
 		for (String contextKey : contextKeys) {
 			String value = request.getParameter(contextKey);
 			if (ArgUtil.isEmpty(value)) {
-				value = request.getHeader(contextKey);
+				value =  ArgUtil.parseAsString(request.getHeader(contextKey), null);
 				if (ArgUtil.isEmpty(value)) {
 					Cookie cookie = WebUtils.getCookie(request, contextKey);
 					if (cookie != null) {
-						value = cookie.getValue();
+						value =  ArgUtil.parseAsString(cookie.getValue(), null);
 					}
 				}
 			}
@@ -477,6 +478,7 @@ public class CommonHttpRequest {
 
 	public static class ApiRequestDetail {
 		RequestType type;
+		ResponeError responeError;
 		boolean useAuthToken;
 		boolean useAuthKey;
 		String flow;
@@ -540,6 +542,14 @@ public class CommonHttpRequest {
 			this.deprecated = deprecated;
 		}
 
+		public ResponeError getResponeError() {
+			return responeError;
+		}
+
+		public void setResponeError(ResponeError responeError) {
+			this.responeError = responeError;
+		}
+
 	}
 
 	public ApiRequestDetail getApiRequest(HttpServletRequest req) {
@@ -553,6 +563,7 @@ public class CommonHttpRequest {
 			detail.setFeature(x.feature());
 			detail.setClientAuth(x.clientAuth());
 			detail.setDeprecated(x.deprecated());
+			detail.setResponeError(x.responeError());
 		}
 
 		if (ArgUtil.isEmpty(detail.getType()) || RequestType.DEFAULT.equals(detail.getType())) {

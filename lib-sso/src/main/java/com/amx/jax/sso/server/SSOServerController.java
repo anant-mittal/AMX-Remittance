@@ -38,6 +38,7 @@ import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.http.ApiRequest;
+import com.amx.jax.http.ApiRequest.ResponeError;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.http.RequestType;
@@ -187,6 +188,7 @@ public class SSOServerController {
 		return JsonUtil.toJson(result);
 	}
 
+	@ApiRequest(responeError = ResponeError.PROPAGATE)
 	@ApiDeviceHeaders
 	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE, SSOServerCodes.OTP_REQUIRED })
 	@RequestMapping(value = SSOConstants.SSO_LOGIN_URL_JSON, method = { RequestMethod.POST }, produces = {
@@ -251,8 +253,8 @@ public class SSOServerController {
 				AppContextUtil.addWarning(x);
 
 				if (!ArgUtil.isEmpty(sSOTranx.get().getBranchAdapterId())
-						&& UserClient.isAuthSystem(userClientDto.getClientType(), AuthSystem.TERMINAL)
-						) { // Terminal Login
+						&& UserClient.isAuthSystem(userClientDto.getClientType(), AuthSystem.TERMINAL)) { // Terminal
+																											// Login
 
 					DeviceData branchDeviceData = deviceBox.get(sSOTranx.get().getBranchAdapterId());
 					userClientDto.setLocalIpAddress(branchDeviceData.getLocalIp());
@@ -268,8 +270,7 @@ public class SSOServerController {
 							.deviceRegId(sSOTranx.get().getBranchAdapterId());
 
 				} else if (ArgUtil.is(deviceRegId) && sSOConfig.isLoginWithDevice()
-						&& UserClient.isAuthSystem(userClientDto.getClientType(), AuthSystem.DEVICE)
-						) { // Device LOGIN
+						&& UserClient.isAuthSystem(userClientDto.getClientType(), AuthSystem.DEVICE)) { // Device LOGIN
 
 					userClientDto.setLocalIpAddress(userDeviceClient.getIp());
 					userClientDto.setDeviceId(userDeviceClient.getFingerprint());

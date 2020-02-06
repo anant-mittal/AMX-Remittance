@@ -11,6 +11,10 @@ import com.amx.utils.Constants;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ApiRequest {
 
+	public enum ResponeError {
+		OK, PROPAGATE, SUPPRESS, DEFAULT
+	}
+
 	RequestType type() default RequestType.DEFAULT;
 
 	String deprecated() default Constants.BLANK;
@@ -24,5 +28,7 @@ public @interface ApiRequest {
 	String feature() default Constants.BLANK;
 
 	String clientAuth() default Constants.BLANK;
+
+	ResponeError responeError() default ResponeError.DEFAULT;
 
 }

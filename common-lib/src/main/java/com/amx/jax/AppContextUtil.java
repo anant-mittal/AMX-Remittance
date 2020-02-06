@@ -16,6 +16,7 @@ import com.amx.jax.api.AmxFieldError;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
+import com.amx.jax.http.CommonHttpRequest.ApiRequestDetail;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
@@ -154,9 +155,19 @@ public class AppContextUtil {
 		return userDeviceClient;
 	}
 
+	/**
+	 * @deprecated use {@link #getApiRequestDetail()}
+	 * 
+	 * @return
+	 */
+	@Deprecated
 	public static RequestType getRequestType() {
 		return (RequestType) ArgUtil.parseAsEnum(ContextUtil.map().get(AppConstants.REQUEST_TYPE_XKEY),
 				RequestType.DEFAULT, RequestType.class);
+	}
+
+	public static ApiRequestDetail getApiRequestDetail() {
+		return (ApiRequestDetail) ContextUtil.map().get(AppConstants.REQUEST_DETAILS_XKEY);
 	}
 
 	public static String getSessionIdFromTraceId() {
@@ -239,6 +250,10 @@ public class AppContextUtil {
 		ContextUtil.map().put(AppConstants.REQUEST_TYPE_XKEY, reqType);
 	}
 
+	public static void setApiRequestDetail(ApiRequestDetail apiRequestDetail) {
+		ContextUtil.map().put(AppConstants.REQUEST_DETAILS_XKEY, apiRequestDetail);
+	}
+
 	public static void setUserClient(UserDeviceClient userClient) {
 		ContextUtil.map().put(AppConstants.USER_CLIENT_XKEY, userClient);
 	}
@@ -312,6 +327,7 @@ public class AppContextUtil {
 		appContext.setTraceTime(getTraceTime());
 		appContext.setClient(getUserClient());
 		appContext.setParams(getParams());
+		appContext.setApiRequestDetail(getApiRequestDetail());
 		return appContext;
 	}
 
@@ -336,6 +352,8 @@ public class AppContextUtil {
 			setUserClient(context.getClient());
 		}
 
+		setApiRequestDetail(context.getApiRequestDetail());
+		
 		setTraceTime(context.getTraceTime());
 
 		return context;
