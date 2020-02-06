@@ -509,7 +509,7 @@ public class DirectPaymentLinkManager extends AbstractModel {
 			if(linkCountData.getLinkCount() != null) {
 				int lockCnt = linkCountData.getLinkCount().intValue();
 				if (lockCnt == MAX_LINK_COUNT.intValue()) {
-					throw new GlobalException(JaxError.LINK_COUNT_ATTEMPT_EXCEEDED, "Link count time exceeded");
+					throw new GlobalException(JaxError.LINK_COUNT_ATTEMPT_EXCEEDED, "Payment link send limit exceeded");
 				}
 			}
 		}
