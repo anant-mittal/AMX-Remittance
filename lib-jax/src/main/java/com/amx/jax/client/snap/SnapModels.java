@@ -418,7 +418,7 @@ public class SnapModels {
 		}
 
 		public Long getDocCount() {
-			return this.getLong("doc_count",0L);
+			return this.getLong("doc_count", 0L);
 		}
 
 	}
@@ -455,6 +455,7 @@ public class SnapModels {
 			this.map.put("filters", filters);
 			filters.add(f);
 		}
+
 		public void addValue(String key, String value) {
 			this.map.put(key, value);
 		}
