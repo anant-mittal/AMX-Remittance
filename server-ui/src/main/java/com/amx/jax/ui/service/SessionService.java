@@ -16,6 +16,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.jax.exception.AmxApiException;
+import com.amx.jax.exception.IExceptionEnum;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.model.AuthState;
@@ -195,15 +197,16 @@ public class SessionService {
 
 	/**
 	 * Un index user.
+	 * @param exc 
 	 */
-	public void unIndexUser() {
+	public void unIndexUser(AmxApiException exc) {
 		if (guestSession.getIdentity() != null) {
 			String userKeyString = String.format(USER_KEY_FORMAT, TenantContextHolder.currentSite().toString(),
 					guestSession.getIdentity());
 			if (userKeyString != null) {
 				RLocalCachedMap<String, String> map = loggedInUsers.map();
 				map.fastRemove(userKeyString);
-				auditService.log(new CAuthEvent(AuthFlow.LOGOUT, AuthStep.LOCKED));
+				auditService.log(new CAuthEvent(AuthFlow.LOGOUT,AuthStep.CLEARED).excep(exc));
 			}
 		}
 	}
