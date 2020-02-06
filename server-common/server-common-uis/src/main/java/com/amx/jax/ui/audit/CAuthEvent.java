@@ -28,7 +28,7 @@ public class CAuthEvent extends AmxAuditEvent<CAuthEvent> {
 		super(ArgUtil.ifNotEmpty(flow, AuthFlow.DEFAULT));
 		this.step = step;
 	}
-
+	
 	/**
 	 * Instantiates a new c auth event.
 	 *
