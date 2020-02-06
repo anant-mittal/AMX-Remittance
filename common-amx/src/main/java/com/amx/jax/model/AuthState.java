@@ -84,6 +84,7 @@ public class AuthState implements Serializable {
 		UNAUTH,
 		/** The locked. */
 		LOCKED,
+		CLEARED,
 		UNAUTH_DEVICE,
 		
 		//Perms

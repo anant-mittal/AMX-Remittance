@@ -94,7 +94,7 @@ public class WebJaxAdvice {
 		
 		if (exc.getError() == JaxError.USER_LOGIN_ATTEMPT_EXCEEDED
 				|| JaxError.UNAUTHORIZED.equals(exc.getError())) {
-			sessionService.unIndexUser();
+			sessionService.unIndexUser(exc);
 		}
 		
 		ApiAuditEvent apiAuditEvent = new ApiAuditEvent(exc);
