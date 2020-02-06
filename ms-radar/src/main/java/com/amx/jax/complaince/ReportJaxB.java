@@ -171,17 +171,17 @@ public class ReportJaxB {
 			
 			xmlMapper.setDefaultUseWrapper(true);
 			xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true );
+			xmlMapper.writeValue(new File(RadarConfig.getJobFIUzipLocationEnabled()+"report.xml"),repo);
 			LOGGER.debug("TEST  value" +xmlMapper.writeValueAsString(repo));
 			LOGGER.debug("clob  value" +IoUtils.stringToClob(xmlMapper.writeValueAsString(repo)));
 		    LOGGER.debug("clob  value String" +IoUtils.stringToClob(xmlMapper.writeValueAsString(repo).toString()));
-		    
-		    xmlMapper.writeValue(new File("src\\main\\java\\data\\report.xml"),repo);
-	      
+		    	      
 			//Inserting data into ExCbkStrReportLOG      
 			Date date = new Date();
 			ExCbkStrReportLOG logtable = new ExCbkStrReportLOG();
 			if(xmlMapper.writeValueAsString(repo).toString()!=null) {
 			logtable.setReqXml(IoUtils.stringToClob(xmlMapper.writeValueAsString(repo).toString()));
+			
 			}else {
 				logtable.setReqXml(IoUtils.stringToClob(xmlMapper.writeValueAsString(repo)));
 			}
@@ -198,6 +198,9 @@ public class ReportJaxB {
 			logtable.setCustIsActive(cbk.getIsActive());
 		
 			exCbkReportLogRepo.save(logtable);
+			
+			LOGGER.debug("logtable save done");
+			
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -236,6 +239,8 @@ public class ReportJaxB {
 
 		String content = stringBuilder.toString();
 		
+		content = xmlMapper.writeValueAsString(content);
+		
 		StringBuilder sb = new StringBuilder();
 		sb.append(content);
 
@@ -246,7 +251,7 @@ public class ReportJaxB {
 
 		String filenamewithoutextension = fileName + time;
 		
-		File file1 = new File("src\\main\\java\\data\\report.xml");
+		File file1 = new File(RadarConfig.getJobFIUzipLocationEnabled()+"report.xml");
         String zipFileName = RadarConfig.getJobFIUzipLocationEnabled()+filenamewithoutextension+".zip";
               
         zipSingleFile(file1, zipFileName);
