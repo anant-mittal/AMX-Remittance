@@ -26,6 +26,8 @@ public @interface ApiRequest {
 	String flow() default Constants.BLANK;
 
 	String feature() default Constants.BLANK;
+	
+	String tracefilter() default Constants.BLANK;
 
 	String clientAuth() default Constants.BLANK;
 

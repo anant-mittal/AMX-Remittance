@@ -8,7 +8,12 @@ public interface IMetaRequestOutFilter<T extends RequestMetaInfo> {
 	 * @param meta
 	 */
 	@Deprecated
-	public T exportMeta();
+	public default T exportMeta() {
+		@SuppressWarnings("unchecked")
+		T requestMeta = (T) new RequestMetaInfo();
+		outFilter(requestMeta);
+		return requestMeta;
+	};
 
 	/**
 	 * Meta Data Info you want to send with outgoing request
