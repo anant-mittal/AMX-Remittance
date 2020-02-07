@@ -14,6 +14,7 @@ import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
+import com.amx.jax.rest.AppRequestContextOutFilter;
 import com.amx.utils.CryptoUtil;
 
 @Component
@@ -22,9 +23,16 @@ public class AppClientInterceptor implements ClientHttpRequestInterceptor {
 	@Autowired
 	AppConfig appConfig;
 
+	@Autowired(required = false)
+	AppRequestContextOutFilter appContextOutFilter;
+
 	@Override
 	public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
 			throws IOException {
+
+		if (appContextOutFilter != null) {
+			appContextOutFilter.appRequestContextOutFilter(request);
+		}
 
 		AppContextUtil.exportAppContextTo(request.getHeaders());
 		// restMetaService.exportMetaTo(request.getHeaders());

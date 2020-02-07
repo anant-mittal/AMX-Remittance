@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.def.ATxCacheBox.Tx;
 import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
@@ -190,6 +191,7 @@ public class PayGController {
 		Tx<PayGModels> tx = payGSession.getX();
 		tx.get().setParams(payGParams);
 		tx.get().setResponse(respModel);
+		tx.get().setClient(AppContextUtil.getUserClient());
 
 		try {
 			payGClient.initialize(payGParams, respModel);
@@ -232,6 +234,7 @@ public class PayGController {
 		try {
 
 			Tx<PayGModels> tx = payGSession.getX();
+			AppContextUtil.getUserClient().setClientType(tx.get().getClient().getClientType());
 
 			LOGGER.info("Inside capture method with parameters tenant : " + tnt + " paygCode : " + paygCode);
 			PayGClient payGClient = payGClients.getPayGClient(paygCode);

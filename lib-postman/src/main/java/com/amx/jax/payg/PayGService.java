@@ -83,6 +83,8 @@ public class PayGService {
 				.queryParam("tnt", context.getTenant()).queryParam("callbackd", callbackd)
 				.queryParam("prod", payment.getProduct())
 				.queryParam("payId", payment.getPayId())
+				.queryParam(AppConstants.DEVICE_ID_XKEY, context.getClient().getFingerprint())
+				.queryParam(AppConstants.UDC_CLIENT_TYPE_XKEY, context.getClient().getClientType())
 				.queryParam(AppConstants.TRACE_ID_XKEY, context.getTraceId())
 				.queryParam("detail", getEnCryptedDetails(payment.getTrackId(), payment.getAmount(),
 						payment.getDocId(), payment.getDocNo(), payment.getDocFy(), payment.getPayId()))

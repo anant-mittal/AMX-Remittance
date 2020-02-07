@@ -17,7 +17,7 @@ public class UserClient {
 	 *
 	 */
 	public enum Channel {
-		ONLINE, KIOSK, MOBILE, BRANCH, TPC, SYSTEM, UNKNOWN,OFFSITE;
+		ONLINE, KIOSK, MOBILE, BRANCH, TPC, SYSTEM, UNKNOWN, OFFSITE;
 	}
 
 	/**
@@ -288,7 +288,7 @@ public class UserClient {
 		public void setLang(Language lang) {
 			this.lang = lang;
 		}
-		}
+	}
 
 	public static boolean isAuthSystem(ClientType clientType, AuthSystem authSystem) {
 		if (ArgUtil.isEmpty(clientType) || ArgUtil.isEmpty(authSystem)) {

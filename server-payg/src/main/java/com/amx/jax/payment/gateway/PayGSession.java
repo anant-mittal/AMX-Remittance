@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.cache.TxCacheBox;
+import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.payg.PayGParams;
 import com.amx.jax.payment.gateway.PayGSession.PayGModels;
 import com.amx.utils.ArgUtil;
@@ -24,6 +25,8 @@ public class PayGSession extends TxCacheBox<PayGModels> {
 		PayGParams params;
 
 		PaymentGateWayResponse response;
+
+		private UserDeviceClient client;
 
 		String callback = null;
 
@@ -49,6 +52,14 @@ public class PayGSession extends TxCacheBox<PayGModels> {
 
 		public void setCallback(String callback) {
 			this.callback = callback;
+		}
+
+		public UserDeviceClient getClient() {
+			return client;
+		}
+
+		public void setClient(UserDeviceClient client) {
+			this.client = client;
 		}
 	}
 

@@ -133,16 +133,12 @@ public class CommonHttpRequest {
 	}
 
 	public String getDeviceId() {
-		String deviceId = null;
-		if (request != null) {
-			deviceId = request.getHeader(AppConstants.DEVICE_ID_XKEY);
-			if (ArgUtil.isEmpty(deviceId)) {
-				Cookie cookie = WebUtils.getCookie(request, AppConstants.DEVICE_ID_KEY);
-				if (cookie != null) {
-					deviceId = cookie.getValue();
-				}
-			}
-		}
+		return this.getRequestParam(AppConstants.DEVICE_ID_XKEY, AppConstants.DEVICE_ID_KEY);
+	}
+	
+	private String readDeviceId() {
+		String deviceId = this.getRequestParam(AppConstants.DEVICE_ID_XKEY, AppConstants.DEVICE_ID_KEY);
+		this.setCookie(AppConstants.DEVICE_ID_KEY, deviceId);
 		return deviceId;
 	}
 
@@ -166,8 +162,8 @@ public class CommonHttpRequest {
 	}
 
 	public ClientType setClientType(ClientType clientType) {
-		if (request != null) {
-			return null;
+		if (request == null) {
+			return clientType;
 		}
 		String clientTypeStr = ArgUtil.parseAsString(clientType);
 		HttpSession session = request.getSession(false);
@@ -179,7 +175,7 @@ public class CommonHttpRequest {
 	}
 
 	public ClientType getClientType() {
-		if (request != null) {
+		if (request == null) {
 			return null;
 		}
 		String clientTypeStr = this.getRequestParam(AppConstants.UDC_CLIENT_TYPE_XKEY);
@@ -297,7 +293,8 @@ public class CommonHttpRequest {
 		if (request != null) {
 			String browserDetails = request.getHeader("User-Agent");
 			return UserAgent.parseUserAgentString(browserDetails);
-			//return UserAgent.parseUserAgentString("QuickRemit/403 CFNetwork/978.0.7 Darwin/18.7.0");
+			// return UserAgent.parseUserAgentString("QuickRemit/403 CFNetwork/978.0.7
+			// Darwin/18.7.0");
 		}
 		return agent;
 	}
@@ -371,7 +368,7 @@ public class CommonHttpRequest {
 		}
 		userDevice.setType(deviceType);
 
-		userDevice.setFingerprint(this.getDeviceId());
+		userDevice.setFingerprint(this.readDeviceId());
 
 		userDevice.setId(ArgUtil.parseAsString(userAgent.getId()));
 
