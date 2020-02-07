@@ -238,9 +238,11 @@ public class AppRequestFilter implements Filter {
 				traceId = ArgUtil.parseAsString(req.getParameter(AppConstants.TRACE_ID_XKEY));
 			}
 			if (StringUtils.isEmpty(traceId) && ArgUtil.is(apiRequest.getTraceFilter())) {
-				Pattern pattern = Pattern.compile("^" + appConfig.getAppPrefix() + req.getRequestURI());
-				Matcher matcher = pattern.matcher(apiRequest.getTraceFilter());
-				traceId = matcher.group("traceid");
+				Pattern pattern = Pattern.compile("^" + appConfig.getAppPrefix() + apiRequest.getTraceFilter());
+				Matcher matcher = pattern.matcher(req.getRequestURI());
+				if(matcher.find()) {
+					traceId = matcher.group("traceid");					
+				}
 			}
 			
 			if (StringUtils.isEmpty(traceId)) {

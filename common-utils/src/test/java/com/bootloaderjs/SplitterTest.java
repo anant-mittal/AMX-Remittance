@@ -17,6 +17,8 @@ public class SplitterTest { // Noncompliant
 	public static final String PAYMENT_CAPTURE_CALLBACK_V2_WILDCARD = "/v2/capture/{paygCode}/{tenant}/{channel}/{product}/{uuid}/*";
 	public static final String PAYMENT_CAPTURE_CALLBACK_V2_REGEX = "/app/v2/capture/([a-zA-Z0-9_]+)/([a-zA-Z0-9_]+)/([a-zA-Z0-9_]+)/([a-zA-Z0-9_]+)/(?<trace>[0-9A-Za-z\\-]+)/?(.*)";
 	public static final String PAYMENT_CAPTURE_CALLBACK_V2_REGEX2 = "/app/v2/capture/[\\w]/[\\w]/[\\w]/[\\w]/(?<traceid>[-a-zA-Z0-9])/(.*)";
+	//# ^/payg2/app/v2/capture/([a-zA-Z0-9_]+)/([a-zA-Z0-9_]+)/([a-zA-Z0-9_]+)/([a-zA-Z0-9_]+)/(?<traceid>[0-9A-Za-z\-]+)/?(.*)
+	//#  /payg2/app/v2/capture/KNET2/KWT/ONLINE/REMIT/BKJ-7TSqm-7TSqmFsIe09-005218-prm-7TSqrAmaIl7
 	public static final String PAYMENT_CAPTURE_CALLBACK_V2_REGEX_TEST = "/payg/app/v2/capture/KNET/KWT/ONLINE/REMIT/BKJ-79020-7TScwusMzwU-184466-prm-7TSd5hgYrtD";
 
 	/**
