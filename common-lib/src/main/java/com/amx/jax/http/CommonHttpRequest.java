@@ -480,6 +480,7 @@ public class CommonHttpRequest {
 		boolean useAuthKey;
 		String flow;
 		String feature;
+		String traceFilter;
 
 		public RequestType getType() {
 			return type;
@@ -521,6 +522,14 @@ public class CommonHttpRequest {
 			this.feature = feature;
 		}
 
+		public String getTraceFilter() {
+			return traceFilter;
+		}
+
+		public void setTraceFilter(String traceFilter) {
+			this.traceFilter = traceFilter;
+		}
+
 	}
 
 	public ApiRequestDetail getApiRequest(HttpServletRequest req) {
@@ -532,6 +541,7 @@ public class CommonHttpRequest {
 			detail.setUseAuthToken(x.useAuthToken());
 			detail.setFlow(x.flow());
 			detail.setFeature(x.feature());
+			detail.setTraceFilter(x.tracefilter());
 		}
 
 		if (ArgUtil.isEmpty(detail.getType()) || RequestType.DEFAULT.equals(detail.getType())) {

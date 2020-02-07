@@ -68,7 +68,7 @@ public class AppContextUtil {
 
 	/**
 	 * 
-	 * @param generate - create new token if not present
+	 * @param generate - create new token if absent
 	 * @param override - create new token anyway
 	 * @return -returns current token
 	 */
@@ -87,6 +87,11 @@ public class AppContextUtil {
 		return traceId;
 	}
 
+	/**
+	 * 
+	 * @param generate - create new token if absent
+	 * @return
+	 */
 	public static String getTraceId(boolean generate) {
 		return getTraceId(generate, false);
 	}

@@ -27,6 +27,7 @@ import com.amx.jax.def.ATxCacheBox.Tx;
 import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.http.ApiRequest;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.payg.PayGParams;
@@ -212,6 +213,7 @@ public class PayGController {
 		return null;
 	}
 
+	@ApiRequest(tracefilter = PaymentConstant.Filter.PAYMENT_CAPTURE_CALLBACK_V2_REGEX)
 	@RequestMapping(value = { PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V1_WILDCARD,
 			PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V1, PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V2,
 			PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V2_WILDCARD })
