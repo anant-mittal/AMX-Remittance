@@ -24,7 +24,7 @@ public class WebOWS extends WebCommonApplication {
 	 * @param args the arguments
 	 */
 	public static void main(String[] args) {
-		run(WebCommonApplication.class, args);
+		run(WebOWS.class, args);
 	}
 
 	/*
