@@ -3,6 +3,7 @@ package com.amx.jax.model.request.benebranch;
 import java.math.BigDecimal;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import org.springframework.format.annotation.NumberFormat;
@@ -59,12 +60,14 @@ public class BenePersonalDetailModel extends AbstractModel {
 	private BigDecimal relationsId;
 	private BigDecimal beneficaryTypeId;
 	
-	@Size(min=1, max=50, message="institutionName should be between 1 and 50 characters")
+	@Size(min = 1, max = 50, message = "institutionName should be between 1 and 50 characters")
+	@Pattern(regexp = "^[A-Za-z]+$", message = "Invalid institutionName, only alphabets allowed")
 	private String institutionName;
 	
-	@Size(min=1, max=50, message="institutionName local should be between 1 and 50 characters")
+	@Size(min = 1, max = 50, message = "institutionName local should be between 1 and 50 characters")
+	@Pattern(regexp = "^[\\u0621-\\u064A\\u0660-\\u0669 ]+$", message = "Invalid institutionNameLocal, enter valid input")
 	private String institutionNameLocal;
-	
+
 	private BigDecimal institutionCategoryId;
 
 	@Override
