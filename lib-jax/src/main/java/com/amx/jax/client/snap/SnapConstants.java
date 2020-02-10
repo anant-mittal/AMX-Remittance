@@ -48,7 +48,6 @@ public class SnapConstants {
 		RPTMONTHLY("rptmonthly", SnapIndexName.TRANX),
 		RPTCOMPARISON("rptcomparison", SnapIndexName.TRANX),
 		RPTMONTHCOMPARISON("rptmonthcomparison", SnapIndexName.TRANX),
-		RPT_DUMMY("rpt_dummy", SnapIndexName.TRANX),
 		
 		TRNX_LIFECYCLE("trnx-lifecycle", SnapIndexName.TRANX),
 		TRNX_LIFECYCLE_DUMMY("trnx-lifecycle-dummy", SnapIndexName.TRANX),
