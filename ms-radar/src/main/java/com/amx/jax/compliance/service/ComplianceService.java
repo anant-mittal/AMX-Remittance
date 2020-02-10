@@ -110,7 +110,6 @@ public class ComplianceService extends AbstractJaxServiceClient{
 					.field("charset", "UTF-8").field("ContentType", "application/octet-stream").post(requestEntity).postJson(content).as(new ParameterizedTypeReference<String>() {
 					});
 
-
 			return response;
 		
 
@@ -129,6 +128,8 @@ public class ComplianceService extends AbstractJaxServiceClient{
 
 
 		jaxCbkReport cbk = complainceRepository.getCBKReportByDocNoAndDocFyr(documnetNo, docFyr);
+		LOGGER.debug("xml  value" + cbk.getTranxNo());
+		
 
 		if(cbk!=null) {
 			
@@ -172,7 +173,7 @@ public class ComplianceService extends AbstractJaxServiceClient{
 				response = uploadComplaince(multipartFile, token, cbk,reason,action );
 				
 				fileName = file.getAbsolutePath();
-				String fileUploadLocation =RadarConfig.getJobFIUzipLocationEnabled()+multipartFile.getOriginalFilename().toString();
+				String fileUploadLocation =RadarConfig.getJobFIUzipLocationEnabled()+"/"+multipartFile.getOriginalFilename().toString();
 				File newFile = new File(fileUploadLocation);
 
 				LOGGER.debug("File name "+newFile);

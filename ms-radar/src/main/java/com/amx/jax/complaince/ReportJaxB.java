@@ -171,7 +171,7 @@ public class ReportJaxB {
 			
 			xmlMapper.setDefaultUseWrapper(true);
 			xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true );
-			xmlMapper.writeValue(new File(RadarConfig.getJobFIUzipLocationEnabled()+"report.xml"),repo);
+			xmlMapper.writeValue(new File(RadarConfig.getJobFIUzipLocationEnabled()+"/"+"report.xml"),repo);
 			LOGGER.debug("TEST  value" +xmlMapper.writeValueAsString(repo));
 			LOGGER.debug("clob  value" +IoUtils.stringToClob(xmlMapper.writeValueAsString(repo)));
 		    LOGGER.debug("clob  value String" +IoUtils.stringToClob(xmlMapper.writeValueAsString(repo).toString()));
@@ -251,11 +251,13 @@ public class ReportJaxB {
 
 		String filenamewithoutextension = fileName + time;
 		
-		File file1 = new File(RadarConfig.getJobFIUzipLocationEnabled()+"report.xml");
-        String zipFileName = RadarConfig.getJobFIUzipLocationEnabled()+filenamewithoutextension+".zip";
+		File file1 = new File(RadarConfig.getJobFIUzipLocationEnabled()+"/"+"report.xml");
+        String zipFileName = RadarConfig.getJobFIUzipLocationEnabled()+"/"+filenamewithoutextension+".zip";
         
         
         LOGGER.debug("File nameeeee "+zipFileName);
+        LOGGER.debug("File nameeeee "+file1.getName());
+        
 
               
         zipSingleFile(file1, zipFileName);
