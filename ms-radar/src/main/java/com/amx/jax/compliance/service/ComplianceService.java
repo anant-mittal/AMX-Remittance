@@ -13,7 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import javax.servlet.http.Cookie;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -27,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
+
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.UserFinancialYearDTO;
 import com.amx.jax.AppContextUtil;
@@ -48,6 +51,7 @@ import com.amx.jax.complaince.controller.IComplainceService.ComplainceApiEndpoin
 import com.amx.jax.dbmodel.webservice.ExOwsLoginCredentials;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.radaar.ExCbkStrReportLogDto;
+import com.amx.jax.radar.RadarConfig;
 import com.amx.jax.repository.webservice.ExOwsLoginCredentialsRepository;
 import com.amx.jax.rest.RestService;
 
@@ -119,6 +123,9 @@ public class ComplianceService extends AbstractJaxServiceClient{
 
 		List<ExCbkStrReportLogDto> response = null;
 		String token = null;
+		
+		String fileName;
+		 boolean fileExists = false; 
 
 
 		jaxCbkReport cbk = complainceRepository.getCBKReportByDocNoAndDocFyr(documnetNo, docFyr);
@@ -156,12 +163,32 @@ public class ComplianceService extends AbstractJaxServiceClient{
 				String clobContent = writer.toString();
 
 				File file = reportJaxB.MakeZipfile(clobContent);
+				LOGGER.debug("File name123 "+file.getName());
 
-				FileInputStream input = new FileInputStream(reportJaxB.MakeZipfile(clobContent));
+				FileInputStream input = new FileInputStream(file);
 				MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "zipfile",
 						IOUtils.toByteArray(input));
 
 				response = uploadComplaince(multipartFile, token, cbk,reason,action );
+				
+				fileName = file.getAbsolutePath();
+				String fileUploadLocation =RadarConfig.getJobFIUzipLocationEnabled()+multipartFile.getOriginalFilename().toString();
+				File newFile = new File(fileUploadLocation);
+
+				LOGGER.debug("File name "+newFile);
+							
+				fileExists= newFile.exists();
+				
+				LOGGER.debug("File exists"+fileExists);
+							
+				if (fileExists) {
+					
+					input.close();
+					newFile.delete();
+					
+					LOGGER.debug("File deleted ");
+				}
+								
 				
 			}else {
 				throw new GlobalException(JaxError.DUPLICATE_TRNX_DETAILS, "Duplicate Transction Id");

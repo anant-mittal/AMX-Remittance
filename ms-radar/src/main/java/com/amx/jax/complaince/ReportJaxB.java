@@ -253,9 +253,15 @@ public class ReportJaxB {
 		
 		File file1 = new File(RadarConfig.getJobFIUzipLocationEnabled()+"report.xml");
         String zipFileName = RadarConfig.getJobFIUzipLocationEnabled()+filenamewithoutextension+".zip";
+        
+        
+        LOGGER.debug("File nameeeee "+zipFileName);
+
               
         zipSingleFile(file1, zipFileName);
         File zipfile = new File(zipFileName);
+        
+        LOGGER.debug("File name0 "+zipfile.getName());
 
 		return zipfile;
 
