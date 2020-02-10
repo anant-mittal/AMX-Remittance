@@ -173,7 +173,7 @@ public class ComplianceService extends AbstractJaxServiceClient{
 				response = uploadComplaince(multipartFile, token, cbk,reason,action );
 				
 				fileName = file.getAbsolutePath();
-				String fileUploadLocation =RadarConfig.getJobFIUzipLocationEnabled()+multipartFile.getOriginalFilename().toString();
+				String fileUploadLocation =RadarConfig.getJobFIUzipLocationEnabled()+"/"+multipartFile.getOriginalFilename().toString();
 				File newFile = new File(fileUploadLocation);
 
 				LOGGER.debug("File name "+newFile);
