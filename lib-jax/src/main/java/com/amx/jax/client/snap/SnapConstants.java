@@ -1,6 +1,7 @@
 package com.amx.jax.client.snap;
 
 import com.amx.jax.def.AbstractQueryFactory.IQueryTemplate;
+import com.amx.jax.grid.GridView;
 
 public class SnapConstants {
 
@@ -33,11 +34,11 @@ public class SnapConstants {
 		CUSTOMER_VERIFICATION_REPORT("customer-verification-report", SnapIndexName.LOGS, "auditlogs"),
 		CUSTOMER_VERIFICATION_REPORT2("customer-verification-report2", SnapIndexName.LOGS, "auditlogs"),
 		CUSTOMER_VERIFICATION_REPORT_TOTAL("customer-verification-report-total", SnapIndexName.LOGS, "auditlogs"),
+		CUSTOMER_VERIFICATION_REPORT_DB("customer-verification-report-db", GridView.CUSTOMER_VERIFICATION_REPORT),
 		CUSTOMER_LOGIN("customer-login", SnapIndexName.LOGS, "auditlogs"),
-		
-		
+
 		BUGZ_STORIES("bugz-stories", SnapIndexName.ALL),
-		BUGZ_STORIES_STATUS("bugz-stories-status", SnapIndexName.ALL,"bugzilla-bugs"),
+		BUGZ_STORIES_STATUS("bugz-stories-status", SnapIndexName.ALL, "bugzilla-bugs"),
 		RPTPG2("rptpg2", SnapIndexName.TRANX),
 		RPT("rpt", SnapIndexName.TRANX),
 		RPT2("rpt2", SnapIndexName.TRANX),
@@ -45,8 +46,7 @@ public class SnapConstants {
 		RPTCOMPARISON("rptcomparison", SnapIndexName.TRANX),
 		RPTMONTHCOMPARISON("rptmonthcomparison", SnapIndexName.TRANX),
 		RPT_DUMMY("rpt_dummy", SnapIndexName.TRANX),
-		
-		
+
 		ACTIVE_DEVICE_REPORT("active-device", SnapIndexName.ALL),
 		ACTIVE_SIGNPAD_REPORT("active-signpad", SnapIndexName.ALL),
 		ACTIVE_TERMINAL_REPORT("active-terminal", SnapIndexName.ALL);
@@ -55,6 +55,7 @@ public class SnapConstants {
 		String index;
 		String indexType;
 		String queryParams;
+		GridView gridView;
 
 		public String getQueryParams() {
 			return queryParams;
@@ -66,6 +67,11 @@ public class SnapConstants {
 
 		SnapQueryTemplate(String file) {
 			this.file = file;
+		}
+
+		SnapQueryTemplate(String file, GridView gridView) {
+			this.file = file;
+			this.gridView = gridView;
 		}
 
 		SnapQueryTemplate(String file, String indexType) {
@@ -101,11 +107,17 @@ public class SnapConstants {
 			RPTPG2.setQueryParams("PrevMonth:PrevMonth;ThisMonth:ThisMonth");
 			RPT_DUMMY.setQueryParams("PrevMonth:PrevMonth;ThisMonth:ThisMonth");
 			RPTMONTHLY.setQueryParams("PrevMonth:PrevMonth;Month:Month");
-			RPTCOMPARISON.setQueryParams("MonthOneFrom:2019-08-06;MonthOneTo:2019-09-06;MonthTwoFrom:2019-09-07;MonthTwoTo:2019-10-07");
+			RPTCOMPARISON.setQueryParams(
+					"MonthOneFrom:2019-08-06;MonthOneTo:2019-09-06;MonthTwoFrom:2019-09-07;MonthTwoTo:2019-10-07");
 			RPTMONTHCOMPARISON.setQueryParams("MonthOneName:Sept;MonthOne:2019-09;MonthTwoName:Oct;MonthTwo:2019-10");
-			CUSTOMER_LOGIN.setQueryParams("traceid:D1F06B23-0001-4B62-BB2C-3D17F2F74964;logmap.client.fp:D1F06B23-0001-4B62-BB2C-3D17F2F74964;"
-					+ "logmap.client.ip:188.236.139.6;customerId:513;logmap.agent.browser:CFNETWORK;logmap.agent.operatingSystem:MAC_OS_X;"
-					+ "logmap.client.ct:ONLINE_WEB");
+			CUSTOMER_LOGIN.setQueryParams(
+					"traceid:D1F06B23-0001-4B62-BB2C-3D17F2F74964;logmap.client.fp:D1F06B23-0001-4B62-BB2C-3D17F2F74964;"
+							+ "logmap.client.ip:188.236.139.6;customerId:513;logmap.agent.browser:CFNETWORK;logmap.agent.operatingSystem:MAC_OS_X;"
+							+ "logmap.client.ct:ONLINE_WEB");
+		}
+
+		public GridView getGridView() {
+			return gridView;
 		}
 
 	}

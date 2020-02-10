@@ -37,7 +37,6 @@ public class ContactAuditHandler implements AuditHandler {
 
 	@Override
 	public void doHandle(AuditMapModel event) {
-
 		BigDecimal verificationId = event.getTargetId();
 		if (ArgUtil.is(verificationId)) {
 			CustomerContactVerification customerContactVerification = customerContactVerificationRepository

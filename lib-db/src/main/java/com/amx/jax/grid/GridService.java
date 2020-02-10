@@ -57,6 +57,21 @@ public class GridService {
 
 	}
 
+	public <T> GridViewBuilder<T> view(GridView gridView,
+			String sqlQuery) {
+		@SuppressWarnings("unchecked")
+		GridInfo<T> gridInfo = (GridInfo<T>) GridViewFactory.get(gridView);
+		Class<T> gridViewRecordClass = gridInfo.getResultClass();
+		try {
+			LOGGER.debug(sqlQuery);
+			Query query = entityManager.createNativeQuery(sqlQuery, gridViewRecordClass);
+			return new GridViewBuilder<T>(query, null).queryStr(sqlQuery).gridView(gridView);
+		} catch (Exception e) {
+			LOGGER.error("GridViewError V:{} Q {}", gridView, sqlQuery);
+			throw e;
+		}
+	}
+
 	public static class GridViewBuilder<T> {
 		Query query;
 		DataTableRequest dataTableRequest;
@@ -90,7 +105,7 @@ public class GridService {
 						totalRecords = ((GridViewRecord) firstElement).getTotalRecords();
 					}
 					meta.setRecordsTotal(ArgUtil.parseAsString(totalRecords));
-					if (dataTableRequest.getPaginationRequest().isFilterByEmpty()) {
+					if (dataTableRequest!=null && dataTableRequest.getPaginationRequest().isFilterByEmpty()) {
 						meta.setRecordsFiltered(ArgUtil.parseAsString(totalRecords));
 					} else {
 						meta.setRecordsFiltered(ArgUtil.parseAsString(userList.size()));
