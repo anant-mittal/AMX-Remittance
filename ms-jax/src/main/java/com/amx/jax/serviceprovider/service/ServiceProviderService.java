@@ -1,6 +1,7 @@
 package com.amx.jax.serviceprovider.service;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -113,10 +114,12 @@ public class ServiceProviderService extends AbstractService {
 		logger.info("File path is "+fileUploadLocation);
 		File newFile = new File(fileUploadLocation);
 		file.transferTo(newFile);
+		logger.debug("FIle exists or not "+newFile.exists());
 
-
+		
 		int i, j;
-		Workbook workbook = WorkbookFactory.create(file.getInputStream());
+		InputStream targetStream = new FileInputStream(newFile);
+		Workbook workbook = WorkbookFactory.create(targetStream);
 		LocalDate today = fileDate.toLocalDate();
 		int year = today.getYear();
 		int month = today.getMonthValue();
