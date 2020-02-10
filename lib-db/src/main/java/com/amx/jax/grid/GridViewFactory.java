@@ -6,6 +6,7 @@ import java.util.Map;
 import com.amx.jax.dbmodel.BranchSystemDetail;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.employee.UserSession;
+import com.amx.jax.grid.views.ContactVerificationReport;
 import com.amx.jax.grid.views.CustomerDetailViewRecord;
 import com.amx.jax.grid.views.CustomerLogViewRecord;
 import com.amx.jax.grid.views.EmployeeDetailViewRecord;
@@ -41,6 +42,8 @@ public class GridViewFactory {
 		map.put(GridView.VW_ONEVIEW_TRNX, new GridInfo<OneViewTrnx>(OneViewTrnx.class));
 		map.put(GridView.VW_ONEVIEW_TRNX_BY_BENE, new GridInfo<OneViewTrnxRecordByBene>(OneViewTrnxRecordByBene.class));
 		map.put(GridView.VW_CUST_LOG, new GridInfo<CustomerLogViewRecord>(CustomerLogViewRecord.class));
+		map.put(GridView.CUSTOMER_VERIFICATION_REPORT,
+				new GridInfo<ContactVerificationReport>(ContactVerificationReport.class));
 
 	}
 

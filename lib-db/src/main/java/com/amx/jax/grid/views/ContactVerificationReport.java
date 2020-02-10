@@ -1,0 +1,112 @@
+package com.amx.jax.grid.views;
+
+import java.math.BigDecimal;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Id;
+
+import com.amx.jax.dict.ContactType;
+import com.amx.jax.util.AmxDBConstants.Status;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@Entity
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class ContactVerificationReport implements java.io.Serializable {
+
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@Column(name = "id")
+	private String id;
+
+	@Column(name = "EMPLOYEE_ID")
+	private BigDecimal employeeId;
+
+	/*
+	 * @Column(name = "EMPLOYEE_NAME") private String employeeName;
+	 * 
+	 * @Column(name = "BRANCH_NAME") private String branchName;
+	 * 
+	 * @Column(name = "AREA_NAME") private String areaName;
+	 * 
+	 */
+
+	@Column(name = "CONTACT_TYPE")
+	@Enumerated(value = EnumType.STRING)
+	private ContactType contactType;
+
+	@Column(name = "ISACTIVE")
+	@Enumerated(value = EnumType.STRING)
+	private Status isActive;
+
+	@Column(name = "SENT")
+	private BigDecimal count;
+
+	@Column(name = "CUSTOMERS")
+	private BigDecimal customers;
+
+	@Column(name = "VERIFIED")
+	private BigDecimal verified;
+
+	public BigDecimal getEmployeeId() {
+		return employeeId;
+	}
+
+	public void setEmployeeId(BigDecimal employeeId) {
+		this.employeeId = employeeId;
+	}
+
+	public ContactType getContactType() {
+		return contactType;
+	}
+
+	public void setContactType(ContactType contactType) {
+		this.contactType = contactType;
+	}
+
+	public Status getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Status isActive) {
+		this.isActive = isActive;
+	}
+
+	public BigDecimal getCount() {
+		return count;
+	}
+
+	public void setCount(BigDecimal count) {
+		this.count = count;
+	}
+
+	public BigDecimal getCustomers() {
+		return customers;
+	}
+
+	public void setCustomers(BigDecimal customers) {
+		this.customers = customers;
+	}
+
+	public BigDecimal getVerified() {
+		return verified;
+	}
+
+	public void setVerified(BigDecimal verified) {
+		this.verified = verified;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+}

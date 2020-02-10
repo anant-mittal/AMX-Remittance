@@ -24,6 +24,7 @@ public class RadarMVCConfig extends WebMvcConfigurerAdapter {
 	public static final String XML_TEMPLATES_RESOLVE_PATTERN = "xml/*";
 	/** Pattern relative to templates base used to match JSON templates. */
 	public static final String JSON_TEMPLATES_RESOLVE_PATTERN = "json/*";
+	public static final String SQL_TEMPLATES_RESOLVE_PATTERN = "sql/*";
 	/** Pattern relative to templates base used to match text templates. */
 	public static final String TEXT_TEMPLATES_RESOLVE_PATTERN = "text/*";
 
@@ -53,6 +54,19 @@ public class RadarMVCConfig extends WebMvcConfigurerAdapter {
 		theResourceTemplateResolver.setPrefix(TEMPLATES_BASE);
 		theResourceTemplateResolver.setResolvablePatterns(Collections.singleton(JSON_TEMPLATES_RESOLVE_PATTERN));
 		theResourceTemplateResolver.setSuffix(".json");
+		theResourceTemplateResolver.setTemplateMode(TemplateMode.TEXT);
+		theResourceTemplateResolver.setCharacterEncoding("UTF-8");
+		theResourceTemplateResolver.setCacheable(thymleafCache);
+		theResourceTemplateResolver.setOrder(1);
+		return theResourceTemplateResolver;
+	}
+
+	@Bean
+	public SpringResourceTemplateResolver sqlMessageTemplateResolver() {
+		SpringResourceTemplateResolver theResourceTemplateResolver = new SpringResourceTemplateResolver();
+		theResourceTemplateResolver.setPrefix(TEMPLATES_BASE);
+		theResourceTemplateResolver.setResolvablePatterns(Collections.singleton(SQL_TEMPLATES_RESOLVE_PATTERN));
+		theResourceTemplateResolver.setSuffix(".sql");
 		theResourceTemplateResolver.setTemplateMode(TemplateMode.TEXT);
 		theResourceTemplateResolver.setCharacterEncoding("UTF-8");
 		theResourceTemplateResolver.setCacheable(thymleafCache);
