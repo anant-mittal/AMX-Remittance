@@ -46,6 +46,7 @@ public class AppConstants extends Constants {
 	 * User Device Client Keys
 	 */
 	public static final String UDC_CLIENT_TYPE_XKEY = "x-client-type";
+	public static final String UDC_CLIENT_TYPE_XKEY_CLEAN = UDC_CLIENT_TYPE_XKEY.replaceAll("[-]", "_");
 	public static final String UDC_DEVICE_TYPE_XKEY = "x-device-type";
 	public static final String APP_VERSION_XKEY = "x-app-version";
 	

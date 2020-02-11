@@ -122,6 +122,7 @@ public class SSOServerController {
 		map.put(SSOConstants.SECURITY_CODE_KEY, ssoUser.getSelfSAC());
 		map.put(SSOConstants.PARTNER_SECURITY_CODE_KEY, ssoUser.getPartnerSAC());
 		map.put(SSOConstants.SSO_TENANT_KEY, AppContextUtil.getTenant());
+		map.put(AppConstants.UDC_CLIENT_TYPE_XKEY, ssoUser.getClientType());
 
 		String adapterUrl = sSOConfig.getAdapterUrl();
 		Cookie kooky = commonHttpRequest.getCookie("adapter.url");
