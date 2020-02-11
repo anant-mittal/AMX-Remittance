@@ -582,9 +582,10 @@ public class UserAuthService {
 					|| StringUtils.isBlank(userClientDto.getDeviceRegToken())) {
 
 				throw new AuthServiceException(RbaacServiceError.INVALID_OR_MISSING_DEVICE_ID,
-						"Valid Device Info is Mandatory for Mobile/Tablet Devices, DeviceId: "
-								+ userClientDto.getDeviceId() + ", Device Reg Id: " + userClientDto.getDeviceRegId()
-								+ " Device Reg Token: " + userClientDto.getDeviceRegToken());
+						"The device is not mapped to the Civil ID entered. Please map the device to successfully login.")
+				.put("deviceId", userClientDto.getDeviceId())
+				.put("deviceRegId", userClientDto.getDeviceRegId())
+				.put("deviceRegToken", userClientDto.getDeviceRegToken());
 
 			}
 
