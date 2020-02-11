@@ -49,7 +49,9 @@ public class SSOLoginUrlEntry extends LoginUrlAuthenticationEntryPoint {
 		builder.path(SSOConstants.APP_LOGIN_URL_CHECK).pathParam(SSOConstants.PARAM_STEP, SSOAuthStep.CHECK)
 				.queryParam(AppConstants.TRANX_ID_XKEY, tranxId);
 		try {
-			redirectStrategy.sendRedirect(request, response, builder.getRelativeURL());
+			String redirUrl = builder.getRelativeURL();
+			LOGGER.debug("redirUrl == ",redirUrl);
+			redirectStrategy.sendRedirect(request, response,redirUrl);
 		} catch (URISyntaxException e) {
 			LOGGER.error("SSOLoginUrlEntry commence error", e);
 			redirectStrategy.sendRedirect(request, response, SSOConstants.APP_LOGIN_URL_CHECK);
