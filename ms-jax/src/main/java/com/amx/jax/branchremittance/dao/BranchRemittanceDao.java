@@ -503,8 +503,11 @@ public class BranchRemittanceDao {
 		if(trnxDetails!=null && !StringUtils.isBlank(signature) && JaxUtil.isNullZeroBigDecimalCheck(trnxDetails.getRemittanceTransactionId())) {
 			RemittanceTransaction remit = remitTrnxRepository.findOne(trnxDetails.getRemittanceTransactionId());
 			if(remit!=null) {
-				remit.setCustomerSignature(signature);
-				remitTrnxRepository.save(remit);
+				String sql = "UPDATE EX_REMIT_TRNX set SIGNATURE_SPECIMEN='"+signature+"' where  REMITTANCE_TRANSACTION_ID ="+trnxDetails.getRemittanceTransactionId();
+				logger.info("updateSignatureHash sql :"+sql);
+				jdbcTemplate.update(sql);
+				//remit.setCustomerSignature(signature);
+				//remitTrnxRepository.save(remit);
 			}
 		}
 	
