@@ -89,7 +89,10 @@ public class ServiceProviderService extends AbstractService {
 	public List<ServiceProviderSummaryDTO> uploadServiceProviderFile(MultipartFile file,Date fileDate,String tpcCode) throws Exception {
 		summaryValidations(fileDate, tpcCode);
 		JobProgressModel jobProgressModel = jobProgressRepository.findOne(tpcCode);
-
+		File newFile = null;
+		Workbook workbook = null;
+		List<ServiceProviderSummaryModel> serviceProviderSummaryModelList = null;
+		try {
 		if (!jobProgressModel.getUploadStatus().equalsIgnoreCase(ConstantDocument.JOB_COMPLETED)) {
 			throw new GlobalException(JaxError.JAX_JOB_IN_PROGRESS, "Please wait while upload is in progress");
 		}
@@ -112,14 +115,14 @@ public class ServiceProviderService extends AbstractService {
 		
 		String fileUploadLocation =jaxProperties.getDefUploadDir()+"/"+ file.getOriginalFilename();
 		logger.info("File path is "+fileUploadLocation);
-		File newFile = new File(fileUploadLocation);
+		newFile = new File(fileUploadLocation);
 		file.transferTo(newFile);
 		logger.debug("FIle exists or not "+newFile.exists());
 
 		
 		int i, j;
 		InputStream targetStream = new FileInputStream(newFile);
-		Workbook workbook = WorkbookFactory.create(targetStream);
+		workbook = WorkbookFactory.create(targetStream);
 		LocalDate today = fileDate.toLocalDate();
 		int year = today.getYear();
 		int month = today.getMonthValue();
@@ -194,18 +197,22 @@ public class ServiceProviderService extends AbstractService {
 			fileRowList.add(fileUploadTempModel);
 
 		}
-
 		serviceProviderTempUploadRepository.save(fileRowList);
-		if (!jobProgressModel.getUploadStatus().equalsIgnoreCase(ConstantDocument.JOB_COMPLETED)) {
-			jobProgressModel.setUploadStatus(ConstantDocument.JOB_COMPLETED);
-			jobProgressRepository.save(jobProgressModel);
-		}
+		
+		
+		
 
 		serviceProviderDao.saveDataByProcedure(fileDate, tpcCode);
-		List<ServiceProviderSummaryModel> serviceProviderSummaryModelList = serviceProviderDao.getSummary();
-
-		workbook.close();
-		newFile.delete();
+		serviceProviderSummaryModelList = serviceProviderDao.getSummary();
+		}finally {
+			if (!jobProgressModel.getUploadStatus().equalsIgnoreCase(ConstantDocument.JOB_COMPLETED)) {
+				jobProgressModel.setUploadStatus(ConstantDocument.JOB_COMPLETED);
+				jobProgressRepository.save(jobProgressModel);
+			}
+			workbook.close();
+			newFile.delete();
+		}
+		
 		return (convertServiceProviderSummary(serviceProviderSummaryModelList));
 		
 	}
