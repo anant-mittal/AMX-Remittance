@@ -347,8 +347,8 @@ public class ExchangeDataService {
 		return exchangeRateManager.getRateUploadRulesByStatus(status, onlyActive);
 	}
 
-	public RoutingCountryBankInfo getRoutingCountryBanksForCurrency(BigDecimal currencyId) {
-		return exchangeRateManager.getRoutingCountryBanksForCurrency(currencyId);
+	public RoutingCountryBankInfo getRoutingCountryBanksForCurrency(BigDecimal currencyId,Boolean isActive) {
+		return exchangeRateManager.getRoutingCountryBanksForCurrency(currencyId,isActive);
 	}
 
 }

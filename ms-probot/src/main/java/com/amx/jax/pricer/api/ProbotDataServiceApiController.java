@@ -250,11 +250,11 @@ public class ProbotDataServiceApiController implements ProbotDataService {
 	@Override
 	@RequestMapping(value = ApiEndPoints.GET_ROUTE_COUNTRY_BANKS, method = RequestMethod.POST)
 	public AmxApiResponse<RoutingCountryBankInfo, Object> getRoutingCountryBanksForCurrency(
-			@RequestParam(required = true) BigDecimal currencyId) {
+			@RequestParam(required = true) BigDecimal currencyId,@RequestParam(value = "isActive", required = false, defaultValue = "false") Boolean isActive) {
 
 		LOGGER.info("Received Probot API Service Request for Get Routing Country Bank Info");
 
-		RoutingCountryBankInfo info = dataService.getRoutingCountryBanksForCurrency(currencyId);
+		RoutingCountryBankInfo info = dataService.getRoutingCountryBanksForCurrency(currencyId,isActive);
 
 		return AmxApiResponse.build(info);
 	}

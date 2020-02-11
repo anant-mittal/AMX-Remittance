@@ -18,6 +18,10 @@ public class RoutingProdStatusDao {
 	public List<VwExRoutingProduct> getByCurrencyId(BigDecimal currencyId) {
 		return repo.findByCurrencyId(currencyId);
 	}
+	
+	public List<VwExRoutingProduct> findByCurrencyIdAndrouting(BigDecimal currencyId) {
+		return repo.findByCurrencyIdAndrouting(currencyId);
+	}
 
 	public List<VwExRoutingProduct> getByCurrencyIdAndCountryId(BigDecimal currencyId, BigDecimal countryId) {
 		return repo.findByCurrencyIdAndCountryId(currencyId, countryId);

@@ -68,6 +68,6 @@ public interface ProbotDataService extends AbstractProbotInterface {
 	public AmxApiResponse<List<RateUploadRuleDto>, Object> getRateUploadRulesByStatus(RATE_UPLOAD_STATUS status,
 			Boolean onlyActive);
 
-	public AmxApiResponse<RoutingCountryBankInfo, Object> getRoutingCountryBanksForCurrency(BigDecimal currencyId);
+	public AmxApiResponse<RoutingCountryBankInfo, Object> getRoutingCountryBanksForCurrency(BigDecimal currencyId, Boolean isActive);
 
 }

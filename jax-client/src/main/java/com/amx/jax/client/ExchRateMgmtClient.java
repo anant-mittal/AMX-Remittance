@@ -47,8 +47,8 @@ public class ExchRateMgmtClient extends AbstractJaxServiceClient {
 		return pricerServiceClient.deleteGroup(applicationCountryId, groupId, groupType, groupName);
 	}
 
-	public AmxApiResponse<RoutingCountryBankInfo, Object> getRoutingCountryBanksForCurrency(BigDecimal currencyId) {
-		return pricerServiceClient.getRoutingCountryBanksForCurrency(currencyId);
+	public AmxApiResponse<RoutingCountryBankInfo, Object> getRoutingCountryBanksForCurrency(BigDecimal currencyId,Boolean isActive) {
+		return pricerServiceClient.getRoutingCountryBanksForCurrency(currencyId,isActive);
 	}
 
 	public AmxApiResponse<List<RateUploadRuleDto>, Object> getRateUploadRulesByStatus(RATE_UPLOAD_STATUS status,
