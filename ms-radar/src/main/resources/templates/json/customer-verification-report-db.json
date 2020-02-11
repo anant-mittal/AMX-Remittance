@@ -1,0 +1,16 @@
+{
+
+  "sql" : "",
+  "pivot" : [
+  	{
+	 "rows" : ["employeeId"],
+	 "cols" : ["contactType"],
+	 "vals" : ["sum count AS count DEFAULT 0", "sum customers AS customers DEFAULT 0", "sum verified AS verified DEFAULT 0"],
+	 "defaults" : [
+ 		"SMS_count 0","EMAIL_count 0","WHATSAPP_count 0",
+ 		"SMS_customers 0","EMAIL_customers 0","WHATSAPP_customers 0",
+ 		"SMS_verified 0","EMAIL_verified 0","WHATSAPP_verified 0"
+ 	 ]
+  	}
+  ]
+}

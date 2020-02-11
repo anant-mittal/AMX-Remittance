@@ -1,6 +1,7 @@
 package com.amx.jax.client.snap;
 
 import com.amx.jax.def.AbstractQueryFactory.IQueryTemplate;
+import com.amx.jax.grid.GridView;
 
 public class SnapConstants {
 
@@ -33,6 +34,7 @@ public class SnapConstants {
 		CUSTOMER_VERIFICATION_REPORT("customer-verification-report", SnapIndexName.LOGS, "auditlogs"),
 		CUSTOMER_VERIFICATION_REPORT2("customer-verification-report2", SnapIndexName.LOGS, "auditlogs"),
 		CUSTOMER_VERIFICATION_REPORT_TOTAL("customer-verification-report-total", SnapIndexName.LOGS, "auditlogs"),
+		CUSTOMER_VERIFICATION_REPORT_DB("customer-verification-report-db", GridView.CUSTOMER_VERIFICATION_REPORT),
 		CUSTOMER_LOGIN("customer-login", SnapIndexName.LOGS, "auditlogs"),
 		
 		
@@ -49,7 +51,7 @@ public class SnapConstants {
 		
 		TRNX_LIFECYCLE("trnx-lifecycle", SnapIndexName.TRANX),
 		TRNX_LIFECYCLE_DUMMY("trnx-lifecycle-dummy", SnapIndexName.TRANX),
-
+		
 		
 		ACTIVE_DEVICE_REPORT("active-device", SnapIndexName.ALL),
 		ACTIVE_SIGNPAD_REPORT("active-signpad", SnapIndexName.ALL),
@@ -59,6 +61,7 @@ public class SnapConstants {
 		String index;
 		String indexType;
 		String queryParams;
+		GridView gridView;
 
 		public String getQueryParams() {
 			return queryParams;
@@ -70,6 +73,11 @@ public class SnapConstants {
 
 		SnapQueryTemplate(String file) {
 			this.file = file;
+		}
+
+		SnapQueryTemplate(String file, GridView gridView) {
+			this.file = file;
+			this.gridView = gridView;
 		}
 
 		SnapQueryTemplate(String file, String indexType) {
@@ -112,6 +120,10 @@ public class SnapConstants {
 			CUSTOMER_LOGIN.setQueryParams("traceid:D1F06B23-0001-4B62-BB2C-3D17F2F74964;logmap.client.fp:D1F06B23-0001-4B62-BB2C-3D17F2F74964;"
 					+ "logmap.client.ip:188.236.139.6;customerId:513;logmap.agent.browser:CFNETWORK;logmap.agent.operatingSystem:MAC_OS_X;"
 					+ "logmap.client.ct:ONLINE_WEB");
+		}
+
+		public GridView getGridView() {
+			return gridView;
 		}
 
 	}

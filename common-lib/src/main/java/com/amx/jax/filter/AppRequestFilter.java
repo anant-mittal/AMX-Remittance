@@ -1,6 +1,8 @@
 package com.amx.jax.filter;
 
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -249,6 +251,14 @@ public class AppRequestFilter implements Filter {
 			if (StringUtils.isEmpty(traceId)) {
 				traceId = ArgUtil.parseAsString(req.getParameter(AppConstants.TRACE_ID_XKEY));
 			}
+			if (StringUtils.isEmpty(traceId) && ArgUtil.is(apiRequest.getTraceFilter())) {
+				Pattern pattern = Pattern.compile("^" + appConfig.getAppPrefix() + apiRequest.getTraceFilter());
+				Matcher matcher = pattern.matcher(req.getRequestURI());
+				if(matcher.find()) {
+					traceId = matcher.group("traceid");					
+				}
+			}
+			
 			if (StringUtils.isEmpty(traceId)) {
 				setFlow(req, apiRequest);
 				HttpSession session = req.getSession(appConfig.isAppSessionEnabled());

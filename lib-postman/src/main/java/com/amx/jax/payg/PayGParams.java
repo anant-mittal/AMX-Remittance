@@ -5,6 +5,7 @@ import java.io.Serializable;
 import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

@@ -23,10 +23,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.def.ATxCacheBox.Tx;
 import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.http.ApiRequest;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.payg.PayGParams;
@@ -189,6 +191,7 @@ public class PayGController {
 		Tx<PayGModels> tx = payGSession.getX();
 		tx.get().setParams(payGParams);
 		tx.get().setResponse(respModel);
+		tx.get().setClient(AppContextUtil.getUserClient());
 
 		try {
 			payGClient.initialize(payGParams, respModel);
@@ -212,6 +215,7 @@ public class PayGController {
 		return null;
 	}
 
+	@ApiRequest(tracefilter = PaymentConstant.Filter.PAYMENT_CAPTURE_CALLBACK_V2_REGEX)
 	@RequestMapping(value = { PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V1_WILDCARD,
 			PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V1, PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V2,
 			PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V2_WILDCARD })
@@ -230,6 +234,7 @@ public class PayGController {
 		try {
 
 			Tx<PayGModels> tx = payGSession.getX();
+			AppContextUtil.getUserClient().setClientType(tx.get().getClient().getClientType());
 
 			LOGGER.info("Inside capture method with parameters tenant : " + tnt + " paygCode : " + paygCode);
 			PayGClient payGClient = payGClients.getPayGClient(paygCode);

@@ -134,16 +134,12 @@ public class CommonHttpRequest {
 	}
 
 	public String getDeviceId() {
-		String deviceId = null;
-		if (request != null) {
-			deviceId = request.getHeader(AppConstants.DEVICE_ID_XKEY);
-			if (ArgUtil.isEmpty(deviceId)) {
-				Cookie cookie = WebUtils.getCookie(request, AppConstants.DEVICE_ID_KEY);
-				if (cookie != null) {
-					deviceId = cookie.getValue();
+		return this.getRequestParam(AppConstants.DEVICE_ID_XKEY, AppConstants.DEVICE_ID_KEY);
 				}
-			}
-		}
+	
+	private String readDeviceId() {
+		String deviceId = this.getRequestParam(AppConstants.DEVICE_ID_XKEY, AppConstants.DEVICE_ID_KEY);
+		this.setCookie(AppConstants.DEVICE_ID_KEY, deviceId);
 		return deviceId;
 	}
 
@@ -167,8 +163,8 @@ public class CommonHttpRequest {
 	}
 
 	public ClientType setClientType(ClientType clientType) {
-		if (request != null) {
-			return null;
+		if (request == null) {
+			return clientType;
 		}
 		String clientTypeStr = ArgUtil.parseAsString(clientType);
 		HttpSession session = request.getSession(false);
@@ -180,7 +176,7 @@ public class CommonHttpRequest {
 	}
 
 	public ClientType getClientType() {
-		if (request != null) {
+		if (request == null) {
 			return null;
 		}
 		String clientTypeStr = this.getRequestParam(AppConstants.UDC_CLIENT_TYPE_XKEY);
@@ -298,7 +294,8 @@ public class CommonHttpRequest {
 		if (request != null) {
 			String browserDetails = request.getHeader("User-Agent");
 			return UserAgent.parseUserAgentString(browserDetails);
-			//return UserAgent.parseUserAgentString("QuickRemit/403 CFNetwork/978.0.7 Darwin/18.7.0");
+			// return UserAgent.parseUserAgentString("QuickRemit/403 CFNetwork/978.0.7
+			// Darwin/18.7.0");
 		}
 		return agent;
 	}
@@ -372,7 +369,7 @@ public class CommonHttpRequest {
 		}
 		userDevice.setType(deviceType);
 
-		userDevice.setFingerprint(this.getDeviceId());
+		userDevice.setFingerprint(this.readDeviceId());
 
 		userDevice.setId(ArgUtil.parseAsString(userAgent.getId()));
 
@@ -483,6 +480,7 @@ public class CommonHttpRequest {
 		boolean useAuthKey;
 		String flow;
 		String feature;
+		String traceFilter;
 		String clientAuth;
 		String deprecated;
 
@@ -526,6 +524,14 @@ public class CommonHttpRequest {
 			this.feature = feature;
 		}
 
+		public String getTraceFilter() {
+			return traceFilter;
+		}
+
+		public void setTraceFilter(String traceFilter) {
+			this.traceFilter = traceFilter;
+		}
+
 		public String getClientAuth() {
 			return clientAuth;
 		}
@@ -561,6 +567,7 @@ public class CommonHttpRequest {
 			detail.setUseAuthToken(x.useAuthToken());
 			detail.setFlow(x.flow());
 			detail.setFeature(x.feature());
+			detail.setTraceFilter(x.tracefilter());
 			detail.setClientAuth(x.clientAuth());
 			detail.setDeprecated(x.deprecated());
 			detail.setResponeError(x.responeError());

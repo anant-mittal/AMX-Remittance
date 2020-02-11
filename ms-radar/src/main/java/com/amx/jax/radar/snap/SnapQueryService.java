@@ -20,6 +20,8 @@ import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.client.snap.SnapModels.SnapQueryParams;
 import com.amx.jax.client.snap.SnapQueryException;
 import com.amx.jax.def.AbstractQueryFactory.QueryProcessor;
+import com.amx.jax.grid.GridService;
+import com.amx.jax.grid.GridView;
 import com.amx.jax.radar.AESDocument;
 import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
 import com.amx.jax.radar.ESRepository;
@@ -83,7 +85,20 @@ public class SnapQueryService {
 		return JsonUtil.getMapFromJsonString(this.buildQueryString(template, params));
 	}
 
-	@SuppressWarnings("unchecked")
+	public String processSql(SnapQueryTemplate template, Context context) {
+		return templateEngine.process("sql/" + template.getFile(), context);
+	}
+
+	public String buildSQLString(SnapQueryTemplate template, Map<String, Object> map) {
+		Locale locale = new Locale("en");
+		Context context = new Context(locale);
+		if (!map.containsKey("_type")) {
+			map.put("_type", template.getIndexType());
+		}
+		context.setVariables(map);
+		return this.processSql(template, context);
+	}
+
 	public SnapModelResponse executeQuery(Map<String, Object> query, String index) {
 		Map<String, Object> x = null;
 		String fullIndex = resolveIndex(EsConfig.indexName(index));
@@ -161,6 +176,35 @@ public class SnapQueryService {
 		return esRepository.update(EsConfig.indexName(index), vote.getType(), vote);
 	}
 
+	@Autowired
+	GridService gridService;
+
+	public SnapModelResponse executeGridQuery(GridView gridView, String sqlQuery, Map<String, Object> query) {
+		Map<String, Object> x = new HashMap<String, Object>();
+		Object pivot = query.remove("pivot");
+		try {
+			x.put("bulk",
+					JsonUtil.getListFromJsonString(JsonUtil.toJson(gridService.view(gridView, sqlQuery).get().getResults())));
+		} catch (Exception e) {
+			log.error(e);
+		}
+		x.put("_query", query);
+		x.put("_pivot", pivot);
+		// System.out.println(JsonUtil.toJson(query));
+		return new SnapModelResponse(x);
+	}
+
+	public SnapModelResponse executeSQL(SnapQueryTemplate snapView, Map<String, Object> params) {
+		Map<String, Object> query = null;
+		String sqlQuery = this.buildSQLString(snapView, params);
+		try {
+			query = getQuery(snapView, params);
+		} catch (IOException e) {
+			throw new SnapQueryException(SnapQueryException.SnapServiceCodes.INVALID_QUERY);
+		}
+		return executeGridQuery(snapView.getGridView(), sqlQuery, query);
+	}
+
 	public SnapModelWrapper process(SnapQueryTemplate snapView, SnapQueryParams params) {
 		Integer level = params.getLevel();
 		Integer minCount = params.getMinCount();
@@ -169,17 +213,23 @@ public class SnapQueryService {
 
 		SnapModelResponse x;
 
+		List<Map<String, Object>> inputBulk = null;
 		if (ArgUtil.is(qp)) {
 			x = new SnapModelResponse("{}");
 			x.toMap().put("bulk", qp.process(params));
 			return x;
+		} else if (ArgUtil.is(snapView.getGridView())) {
+			x = this.executeSQL(snapView, params.toMap());
+			inputBulk = x.getBulk();
+		} else {
+			x = this.execute(snapView, params.toMap());
+			if (level >= 0) {
+				inputBulk = x.getAggregations().toBulk(minCount);
+			}
 		}
 
-		x = this.execute(snapView, params.toMap());
-
-		if (level >= 0) {
+		if (level >= 0 && ArgUtil.is(inputBulk)) {
 			List<Map<String, List<String>>> p = x.getPivot();
-			List<Map<String, Object>> inputBulk = x.getAggregations().toBulk(minCount);
 			Object cols = null;
 			for (Map<String, List<String>> pivot : p) {
 				level--;
