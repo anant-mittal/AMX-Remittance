@@ -207,7 +207,7 @@ public enum Language implements EnumType {
 	SW("swa", 100, "Swahili"),
 
 	TA("tam", 7, "Tamil"),
-	TE("tel", 100, "Telugu"),
+	TE("tel", 11, "Telugu"),
 	TG("tgk", 100, "Tajik"),
 	TH("tha", 100, "Thai"),
 	TI("tir", 100, "Tigrinya"),
