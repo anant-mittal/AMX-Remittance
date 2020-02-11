@@ -498,7 +498,7 @@ public class BranchRemittanceDao {
 		return responseModel;
 	}
 	
-
+	@Transactional
 	public void updateSignatureHash(RemittanceTransactionView trnxDetails,String signature) {
 		String sql = null;
 		try {
