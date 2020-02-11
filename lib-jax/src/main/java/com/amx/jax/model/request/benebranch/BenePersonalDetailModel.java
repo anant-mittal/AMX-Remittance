@@ -61,11 +61,10 @@ public class BenePersonalDetailModel extends AbstractModel {
 	private BigDecimal beneficaryTypeId;
 	
 	@Size(min = 1, max = 50, message = "institutionName should be between 1 and 50 characters")
-	@Pattern(regexp = "^[A-Za-z]+$", message = "Invalid institutionName, only alphabets allowed")
+	@Pattern(regexp = "^[A-Za-z\\s]+$", message = "Invalid institutionName, only alphabets allowed")
 	private String institutionName;
 	
 	@Size(min = 1, max = 50, message = "institutionName local should be between 1 and 50 characters")
-	@Pattern(regexp = "^[\\u0621-\\u064A\\u0660-\\u0669 ]+$", message = "Invalid institutionNameLocal, enter valid input")
 	private String institutionNameLocal;
 
 	private BigDecimal institutionCategoryId;
