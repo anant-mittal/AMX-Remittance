@@ -91,7 +91,7 @@ public class ComplianceService extends AbstractJaxServiceClient{
 	@Autowired
 	UserFinancialYearRepo financeYearRespository;
 
-	public String tokenGenaration(String userNAme, String password, String tokenLifeTime) throws Exception {
+	public String tokenGenaration(String userNAme, String password, String tokenLifeTime, String tokenURL) throws Exception {
 		
 			String response;
 			
@@ -106,7 +106,7 @@ public class ComplianceService extends AbstractJaxServiceClient{
 			
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			
-			response = restService.ajax("https://goaml.kwfiu.gov.kw/goAMLWeb/api/Authenticate/GetToken")
+			response = restService.ajax(tokenURL)
 					.field("charset", "UTF-8").field("ContentType", "application/octet-stream").post(requestEntity).postJson(content).as(new ParameterizedTypeReference<String>() {
 					});
 
@@ -141,12 +141,14 @@ public class ComplianceService extends AbstractJaxServiceClient{
 
 				List<ExCbkStrReportLOG> ex = exCbkReportLogRepo.getComplainceData(cbk.getTranxNo());
 				
-				LOGGER.error("xml  value" + ex.get(0).getReqXml());
+				LOGGER.debug("xml  value" + ex.get(0).getReqXml());
 
 				ExOwsLoginCredentials bankCode = exOwsLoginCredentialsRepository.findByBankCode(Paramss.COMPLAINCE_BANK_CODE);
 
 				try {
-					token = tokenGenaration(bankCode.getWsUserName(), bankCode.getWsPassword(), bankCode.getWsPin());
+					
+					LOGGER.debug("tokenURL"+bankCode.getFlexiField1());
+					token = tokenGenaration(bankCode.getWsUserName(), bankCode.getWsPassword(), bankCode.getWsPin(), bankCode.getFlexiField1());
 
 					token = token.replaceAll("^\"|\"$", "");
 					
@@ -169,8 +171,9 @@ public class ComplianceService extends AbstractJaxServiceClient{
 				FileInputStream input = new FileInputStream(file);
 				MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "zipfile",
 						IOUtils.toByteArray(input));
+				LOGGER.debug("uploadURL"+bankCode.getFlexiField2());
 
-				response = uploadComplaince(multipartFile, token, cbk,reason,action );
+				response = uploadComplaince(multipartFile, token, cbk,reason,action, bankCode.getFlexiField2());
 				
 				fileName = file.getAbsolutePath();
 				String fileUploadLocation =RadarConfig.getJobFIUzipLocationEnabled()+"/"+multipartFile.getOriginalFilename().toString();
@@ -186,7 +189,6 @@ public class ComplianceService extends AbstractJaxServiceClient{
 					
 					input.close();
 					newFile.delete();
-					
 					LOGGER.debug("File deleted ");
 				}
 								
@@ -285,9 +287,9 @@ public class ComplianceService extends AbstractJaxServiceClient{
 	}
 
 	public List<ExCbkStrReportLogDto> uploadComplaince(MultipartFile file,
-			String token, jaxCbkReport cbk, String reason , String action) throws IOException {
-
-		String resp = restService.ajax("https://goaml.kwfiu.gov.kw/goAMLWeb/api/Reports/PostReport")
+			String token, jaxCbkReport cbk, String reason , String action , String uploadURL) throws IOException {
+		
+		String resp = restService.ajax(uploadURL)
 
 				.field("charset", "UTF-8").field("ContentType", "application/octet-stream").field("zipfile", file)
 				.cookie(new Cookie("SqlAuthCookie", token)).postForm().as(new ParameterizedTypeReference<String>() {
