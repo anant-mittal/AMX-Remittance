@@ -8,5 +8,5 @@ package com.amx.jax.client.bene;
  */
 public enum ReasoncodeCategory {
 
-	BENEFICIARY;
+	BENEFICIARY, BENEFICIARY_DISABLE, BENEFICIARY_ENABLE;
 }
