@@ -82,6 +82,7 @@ public class BenePersonalDetailValidator implements Validator {
 		validateBeneBlacklist(benePersonalDetailModel);
 		validateBeneArabicBlacklist(benePersonalDetailModel);
 		validateBeneBlackListInstitutional(benePersonalDetailModel);
+		validateBeneBlackListInstitutional(benePersonalDetailModel);
 		validateInstitutionalBeneForUpdate(request, benificiaryListView);
 	}
 
