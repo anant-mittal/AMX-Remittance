@@ -156,6 +156,7 @@ import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
+import com.amx.jax.validation.AddToCartRequestValidator;
 import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 import com.amx.utils.JsonUtil;
 
@@ -341,6 +342,8 @@ public class RemittanceTransactionManager {
 	
 	@Autowired
 	CustomerCartManager customerCartManager;
+	@Autowired
+	AddToCartRequestValidator addToCartRequestValidator;
 	
 	private static final String IOS = "IOS";
 	private static final String ANDROID = "ANDROID";
@@ -1388,6 +1391,7 @@ public class RemittanceTransactionManager {
 		if (validationResults == null) {
 			throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "Validation is missing");
 		}
+		addToCartRequestValidator.checkServiceProviderValidation(applReqModel);
 		remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
 		remittanceTransactionRequestValidator.validatePurposeOfTransaction(model, remitApplParametersMap);
 		remittanceAdditionalFieldManager.validateAdditionalFields(model, remitApplParametersMap);
@@ -1414,7 +1418,6 @@ public class RemittanceTransactionManager {
 		remittanceTransactionRequestValidator.saveFlexFields(model, remitApplParametersMap);
 		/** validation for  Service Provider **/
 		applReqModel.setAdditionalFields(remitApplParametersMap);
-		branchRemittanceApplManager.checkServiceProviderValidation(applReqModel);
 		
 		
 		RemittanceApplication remittanceApplication = remitAppManager.createRemittanceApplicationV2(model,validatedObjects, validationResults, remitApplParametersMap);

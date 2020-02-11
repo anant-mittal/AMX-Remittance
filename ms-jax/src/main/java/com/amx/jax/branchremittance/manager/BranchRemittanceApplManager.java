@@ -115,6 +115,7 @@ import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
+import com.amx.jax.validation.AddToCartRequestValidator;
 import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 import com.amx.utils.JsonUtil;
 
@@ -256,6 +257,8 @@ public class BranchRemittanceApplManager {
 	
 	@Autowired
 	CustomerCartManager customerCartManager;
+	@Autowired
+	AddToCartRequestValidator addToCartRequestValidator;
 	
 	public BranchRemittanceApplResponseDto saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel) {
 		Map<String,Object> hashMap = new HashMap<>();
@@ -264,7 +267,7 @@ public class BranchRemittanceApplManager {
 		validateSaveApplRequest(requestApplModel);
 
 		// validation for Home Send SP
-		checkServiceProviderValidation(requestApplModel);
+		addToCartRequestValidator.checkServiceProviderValidation(requestApplModel);
 
 		/*To fetch customer details **/
 		Customer customer = custDao.getCustById(metaData.getCustomerId());
@@ -1048,54 +1051,6 @@ public class BranchRemittanceApplManager {
 		}
 
 		return remitApplSrvProv;
-	}
-
-	public void checkServiceProviderValidation(BranchRemittanceApplRequestModel requestApplModel) {
-		boolean errorStatus = Boolean.FALSE;
-		Boolean multipleTrnx = Boolean.FALSE;
-		int trnxCount = 0;
-		
-		if(requestApplModel != null) {
-			// fetch any shopping records available
-			List<ShoppingCartDetails> lstCustomerShopping = branchRemittancePaymentDao.fetchCustomerShoppingCart(metaData.getCustomerId());
-			if(lstCustomerShopping != null && !lstCustomerShopping.isEmpty() && lstCustomerShopping.size() != 0) {
-				// checking home send transaction
-				BankMasterMdlv1 bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
-				if(bankMaster == null) {
-					//throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found for bank code :"+PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name());
-					// not required to send error
-				}else {
-					for (ShoppingCartDetails shoppingCartDetails : lstCustomerShopping) {
-						if(shoppingCartDetails.getApplicationType() != null && !shoppingCartDetails.getApplicationType().equalsIgnoreCase("FS")) {
-							trnxCount++;
-							if(shoppingCartDetails.getRoutingBankId().compareTo(bankMaster.getBankId()) == 0) {
-								errorStatus = Boolean.TRUE;
-								break;
-							}
-						}
-					}
-				}
-				if(trnxCount > 1) {
-					multipleTrnx = Boolean.TRUE;
-				}
-
-				if(errorStatus) {
-					if(multipleTrnx) {
-						throw new GlobalException(JaxError.SINGLE_TRANSACTION_SERVICE_PROVIDER,"You cannot create the next application as HomeSend application is created as the last application.");
-					}else {
-						throw new GlobalException(JaxError.SINGLE_TRANSACTION_SERVICE_PROVIDER,"You cannot create the next application as HomeSend application is created.");
-					}
-				}
-			}
-			
-			if(requestApplModel.getDynamicRroutingPricingBreakup() != null && requestApplModel.getDynamicRroutingPricingBreakup().getServiceProviderDto() != null) {
-				BankMasterMdlv1 bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
-				// home send related validation check
-				if(bankMaster != null && requestApplModel.getRoutingBankId()!=null && requestApplModel.getRoutingBankId().compareTo(bankMaster.getBankId()) == 0) {
-					partnerTransactionManager.validateServiceProvider(requestApplModel.getAdditionalFields(),requestApplModel.getBeneId());
-				}
-			}
-		}
 	}
 
 
