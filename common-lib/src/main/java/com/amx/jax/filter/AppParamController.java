@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,7 +136,8 @@ public class AppParamController {
 
 	@RequestMapping(value = "/pub/amx/device", method = { RequestMethod.GET, RequestMethod.POST })
 	public AmxApiResponse<UserDevice, Map<String, Object>> userDevice(@RequestParam(required = false) String key,
-			@RequestParam(required = false) String vendor) {
+			@RequestParam(required = false) String vendor,HttpSession httpSession,
+			HttpServletRequest request) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("getAppSpecifcDecryptedProp", appConfig.getAppSpecifcDecryptedProp());
 		map.put("getTenantSpecifcDecryptedProp2", appTenantConfig.getTenantSpecifcDecryptedProp2());
@@ -145,8 +149,17 @@ public class AppParamController {
 
 		map.put("getBasicAuthPassword", appVendorConfigForAuth.getBasicAuthPassword());
 		map.put("getBasicAuthUser", appVendorConfigForAuth.getBasicAuthUser());
-		map.put("commonHttpRequest.getIPAddress", commonHttpRequest.getIPAddress());
-
+		map.put("commonHttpRequest.getIPAddress()", commonHttpRequest.getIPAddress());
+		
+		map.put("httpSession.getId", httpSession.getId());
+		map.put("request.getRequestURL", request.getRequestURL().toString());
+		map.put("request.getServerName", request.getServerName());
+		map.put("request.getRequestURI()", request.getRequestURI());
+		map.put("request.getRemoteHost()", request.getRemoteHost());
+		map.put("request.getRemoteAddr()", request.getRemoteAddr());
+		map.put("request.getLocalAddr()", request.getLocalAddr());
+		map.put("request.getScheme()", request.getScheme());
+		
 		if (!ArgUtil.isEmpty(key)) {
 			map.put(key, prop(key));
 		}
