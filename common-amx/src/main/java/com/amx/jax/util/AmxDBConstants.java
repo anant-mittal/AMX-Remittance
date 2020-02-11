@@ -9,7 +9,7 @@ public class AmxDBConstants {
 	/**
 	 * Maximum value possible for language id, in according to DB;
 	 */
-	public static final BigDecimal MAX_LANG_ID = new BigDecimal(10);
+	public static final BigDecimal MAX_LANG_ID = new BigDecimal(11);
 	public static final BigDecimal MAX_LANG_ID_META = new BigDecimal(2);
 	public static final BigDecimal DEFAULT_LANG_ID = new BigDecimal(1);
 	
