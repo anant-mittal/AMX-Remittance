@@ -119,8 +119,10 @@ public class VentajaFlexFieldManager extends AbstractFlexFieldManager {
 				Collections.sort(possibleValues, (o1, o2) -> {
 					FlexFieldDto dto1 = (FlexFieldDto) o1.getValue();
 					FlexFieldDto dto2 = (FlexFieldDto) o2.getValue();
+					log.info("dto1.getAmieceCode() : {}", dto1.getAmieceCode());
+					log.info("dto2.getAmieceCode() : {}", dto2.getAmieceCode());
 					BigDecimal amount1 = new BigDecimal(dto1.getAmieceCode().replace(INDIC_16_VOLUNTEERCONTRIBUTION_SYMBOL, ""));
-					BigDecimal amount2 = new BigDecimal(dto2.getAmieceCode());
+					BigDecimal amount2 = new BigDecimal(dto2.getAmieceCode().replace(INDIC_16_VOLUNTEERCONTRIBUTION_SYMBOL, ""));
 					return amount1.compareTo(amount2);
 				});
 			}
