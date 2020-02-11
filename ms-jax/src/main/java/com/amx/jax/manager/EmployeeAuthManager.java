@@ -53,7 +53,7 @@ public class EmployeeAuthManager {
 	private void validateNopt(BigDecimal employeeId, String notp) {
 		AmxApiResponse<BoolRespModel, Object> validateOtpResp = rbaacServiceClient.validateOfflineOtp(employeeId, notp);
 		if (!validateOtpResp.getResult().isSuccess()) {
-			throw new GlobalException(JaxError.INVALID_OTP, "Otp is not valid or expired");
+			throw new GlobalException(JaxError.INVALID_OTP, "Please enter valid OTP");
 		}
 	}
 
