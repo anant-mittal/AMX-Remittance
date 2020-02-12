@@ -1150,6 +1150,25 @@ public class Customer implements java.io.Serializable, Communicatable {
 		return !(Status.D.equals(this.mobileVerified) || Status.N.equals(this.mobileVerified) || ArgUtil.isEmpty(this.mobile));
 	}*/
 	
+	@SuppressWarnings("deprecation")
+	@Override
+	public boolean hasPresent(ContactType contactType) {
+		switch (contactType) {
+		case SMS:
+		case MOBILE:
+			return ArgUtil.is(this.mobile);
+		case EMAIL:
+			return ArgUtil.is(this.email);
+		case WHATSAPP:
+			return ArgUtil.is(this.whatsapp);
+		default:
+			break;
+		}
+		return false;
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Override
 	public boolean hasVerified(ContactType contactType) {
 		switch (contactType) {
 		case SMS:
@@ -1239,4 +1258,5 @@ public class Customer implements java.io.Serializable, Communicatable {
 	public void setPassportExpiryDate(Date passportExpiryDate) {
 		this.passportExpiryDate = passportExpiryDate;
 	}
+
 }
