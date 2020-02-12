@@ -30,6 +30,7 @@ import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.BanksView;
 import com.amx.jax.dbmodel.CountryBranchMdlv1;
+import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.CurrencyWiseDenominationMdlv1;
 import com.amx.jax.dbmodel.Customer;
@@ -237,15 +238,17 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 					boolean canAddtoCart = canAddtoCart(bankMasterView);
 					if (!canAddtoCart && addtoCart == true) {
 						cartList.setAddToCart(false);
-						addtoCart = false;
+						addtoCart =false;
 						Iterator<PaymentModesDTO> iter = paymentModeDtoList.iterator();
-						while (iter.hasNext()) {
+						while(iter.hasNext()) {
 							PaymentModesDTO paymentModesDTO = iter.next();
-							if (ConstantDocument.PB_PAYMENT.equals(paymentModesDTO.getPaymentModeCode())) {
+							if(ConstantDocument.PB_PAYMENT.equals(paymentModesDTO.getPaymentModeCode())) {
 								iter.remove();
 								break;
 							}
 						}
+						
+						
 					}
 					
 					cartList.setPaymentModeList(paymentModeDtoList);
@@ -648,10 +651,10 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 				CustomerBank customerBankDt = new CustomerBank();
 				customerBankDt.setBankCode(customerBankRequest.getBankCode());
 				if(JaxUtil.isNullZeroBigDecimalCheck(customerBankRequest.getBankId())) {
-	 				customerBankDt.setBankId(customerBankRequest.getBankId());
+				customerBankDt.setBankId(customerBankRequest.getBankId());
 				}else {
-						throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "Cuctomer Bank id is required");	
-					}
+					throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "Cuctomer Bank id is required");	
+				}
 				customerBankDt.setCollectionMode(customerBankRequest.getCollectionMode());
 				customerBankDt.setCreatedBy(empDet.getUserName());
 				customerBankDt.setCreatedDate(new Date());
