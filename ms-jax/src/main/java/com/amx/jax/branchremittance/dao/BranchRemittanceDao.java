@@ -508,7 +508,7 @@ public class BranchRemittanceDao {
 				sql = "UPDATE EX_REMIT_TRNX set SIGNATURE_SPECIMEN='"+signature+"' where  REMITTANCE_TRANSACTION_ID ="+trnxDetails.getRemittanceTransactionId();
 				if(!StringUtils.isBlank(sql)) {
 					jdbcTemplate.update(sql);
-				}
+			}
 				//remit.setCustomerSignature(signature);
 				//remitTrnxRepository.save(remit);
 			}

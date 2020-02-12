@@ -59,7 +59,7 @@ public abstract class AuditEvent<T extends AuditEvent<T>> extends AbstractEvent 
 	protected Map<String, String> details;
 
 	public static enum Result {
-		DEFAULT, DONE, REJECTED, FAIL,CANCELLED, ERROR, PASS;
+		DEFAULT, DONE, REJECTED, FAIL, CANCELLED, ERROR, PASS, ALERT;
 	}
 
 	public AuditEvent() {
