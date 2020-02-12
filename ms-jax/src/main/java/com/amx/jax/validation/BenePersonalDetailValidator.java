@@ -81,7 +81,26 @@ public class BenePersonalDetailValidator implements Validator {
 		}
 		validateBeneBlacklist(benePersonalDetailModel);
 		validateBeneArabicBlacklist(benePersonalDetailModel);
+		validateBeneBlackListInstitutional(benePersonalDetailModel);
+		validateBeneBlackListInstitutional(benePersonalDetailModel);
 		validateInstitutionalBeneForUpdate(request, benificiaryListView);
+	}
+
+	private void validateBeneBlackListInstitutional(BenePersonalDetailModel benePersonalDetailModel) {
+		if (StringUtils.isNotBlank(benePersonalDetailModel.getInstitutionName())) {
+			List<BlackListModel> blist = blackListDao.getBlackByName(benePersonalDetailModel.getInstitutionName().trim());
+			if (blist != null && !blist.isEmpty()) {
+				throw new GlobalException(JaxError.BLACK_LISTED_BENEFICIARY.getStatusKey(),
+						"The beneficiary you have selected has been black-listed by CBK ");
+			}
+		}
+		if (StringUtils.isNotBlank(benePersonalDetailModel.getInstitutionNameLocal())) {
+			List<BlackListModel> blist = blackListDao.getBlackByLocalName(benePersonalDetailModel.getInstitutionNameLocal());
+			if (blist != null && !blist.isEmpty()) {
+				throw new GlobalException(JaxError.BLACK_LISTED_ARABIC_BENEFICIARY.getStatusKey(),
+						"Beneficiary Arabic name found matching with black list ");
+			}
+		}
 	}
 
 	private void validateBeneBlacklist(BenePersonalDetailModel benePersonalDetailModel) {
