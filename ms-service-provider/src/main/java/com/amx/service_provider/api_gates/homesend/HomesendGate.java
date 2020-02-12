@@ -608,7 +608,7 @@ public class HomesendGate
 						local_api_response.setResponse_code("CONERR");// CONERR -- connection error
 						local_api_response.setResponse_description("Issue with connection. " + timerException);
 
-						if (timerException.contains("Connection timed out") || timerException.contains("timeout") || timerException.contains("Bad Gateway"))
+						if (timerException != null && timerException.contains("Connection timed out") || timerException.contains("timeout") || timerException.contains("Bad Gateway"))
 						{
 							local_api_response.setResponse_code("TIMOUT");
 							local_api_response.setResponse_description("Connection Timed Out. " + timerException);

@@ -951,6 +951,8 @@ public class PartnerDataManager {
 			if(serviceProviderCallRequestDto.getTransactionDto() != null) {
 				if(serviceProviderCallRequestDto.getTransactionDto().getPartner_transaction_reference() != null) {
 					partnerReference = serviceProviderCallRequestDto.getTransactionDto().getPartner_transaction_reference();
+				}else if(srvPrvResp.getResult().getPartner_transaction_reference() != null) {
+					partnerReference = srvPrvResp.getResult().getPartner_transaction_reference();
 				}
 				if(serviceProviderCallRequestDto.getTransactionDto().getRoutting_bank_code() != null) {
 					bankCode = serviceProviderCallRequestDto.getTransactionDto().getRoutting_bank_code();

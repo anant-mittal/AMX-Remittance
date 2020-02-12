@@ -75,6 +75,7 @@ import com.amx.jax.repository.remittance.ILoyaltyPointRepository;
 import com.amx.jax.services.RemittanceTransactionService;
 import com.amx.jax.util.JaxUtil;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.JsonUtil;
 
 @Component
  @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode =
@@ -213,12 +214,10 @@ public class BranchRemittanceDao {
 		if (saveApplSrvProv != null) {
 			saveApplSrvProv.setRemittanceApplicationId(saveApplTrnx.getRemittanceApplicationId());
 			remitApplSrvProvRepository.save(saveApplSrvProv);
+		}else {
+			logger.info(" EX_APPL_TRNX_SRV_PROV no record to save "+saveApplTrnx.getRemittanceApplicationId());
 		}
 		
-		
-		
-		
-
 	}
 
 	@Transactional
@@ -347,12 +346,15 @@ public class BranchRemittanceDao {
 					}
 					
 					if(remitSprProvList != null && !remitSprProvList.isEmpty()) {
-						logger.debug("remit service provider Repository.save ApplicationId :"+applicationId);
+						logger.info(" EX_REMIT_TRNX_SRV_PROV save service provider child table " + JsonUtil.toJson(remitSprProvList.get(applicationId)));
+						logger.info("remit service provider Repository.save ApplicationId :"+applicationId);
 						RemitTrnxSrvProv remitTrnxSrvProv = remitSprProvList.get(applicationId);
 						if(remitTrnxSrvProv != null) {
 							remitTrnxSrvProv.setRemittanceTransactionId(remitTrnx1.getRemittanceTransactionId());
 							remitTrnxSrvProvRepository.save(remitTrnxSrvProv);
 						}
+					}else {
+						logger.info(" EX_REMIT_TRNX_SRV_PROV no record to save "+applicationId);
 					}
 				}
 

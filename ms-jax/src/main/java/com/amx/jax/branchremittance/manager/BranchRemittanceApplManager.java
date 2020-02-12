@@ -36,6 +36,7 @@ import com.amx.jax.dao.BranchRemittancePaymentDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.BankMasterMdlv1;
+import com.amx.jax.dbmodel.BanksView;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.CompanyMaster;
@@ -96,6 +97,7 @@ import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.DeviceStateRepository;
 import com.amx.jax.repository.IAmiecAndBankMappingRepository;
 import com.amx.jax.repository.IApplicationCountryRepository;
+import com.amx.jax.repository.IBankMasterFromViewDao;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IBizComponentDataRepository;
 import com.amx.jax.repository.ICurrencyDao;
@@ -259,6 +261,9 @@ public class BranchRemittanceApplManager {
 	CustomerCartManager customerCartManager;
 	@Autowired
 	AddToCartRequestValidator addToCartRequestValidator;
+	
+	@Autowired
+	IBankMasterFromViewDao bankMasterDao;
 	
 	public BranchRemittanceApplResponseDto saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel) {
 		Map<String,Object> hashMap = new HashMap<>();
@@ -988,16 +993,34 @@ public class BranchRemittanceApplManager {
 		RemittanceApplication saveApplTrnx = (RemittanceApplication) mapAllDetailApplSave.get("EX_APPL_TRNX");
 		RemittanceAppBenificiary saveApplBene = (RemittanceAppBenificiary) mapAllDetailApplSave.get("EX_APPL_BENE");
 		List<AdditionalInstructionData> saveApplAddlData = (List<AdditionalInstructionData>)mapAllDetailApplSave.get("EX_APPL_ADDL");
+		RemitApplSrvProv saveApplSrvProv = (RemitApplSrvProv) mapAllDetailApplSave.get("EX_APPL_SRV_PROV");
+		
 
 		if(saveApplTrnx==null) {
 			throw new GlobalException(JaxError.APPL_CREATION_ERROR,"Application details not found");
 		}
+		
 		if(saveApplBene==null) {
 			throw new GlobalException(JaxError.APPL_BENE_CREATION_ERROR,"Application bene details not found");
 		}
 
 		if(saveApplAddlData==null || saveApplAddlData.isEmpty()) {
 			throw new GlobalException(JaxError.APPL_ADD_INSTRUCTION_ERROR,"Application additional details is missing ");
+		}
+		
+		// validation to check service provider table is inserted or not
+		if(saveApplTrnx.getExBankMaster() != null && saveApplTrnx.getExBankMaster().getBankId() != null) {
+			List<BanksView> bankList = bankMasterDao.getBankListByBankId(saveApplTrnx.getExBankMaster().getBankId());
+			if(bankList != null && !bankList.isEmpty()) {
+				BanksView banksView = bankList.get(0);
+				if(banksView.getBankInd() != null && banksView.getBankInd().equalsIgnoreCase(PricerServiceConstants.SERVICE_PROVIDER_INDICATOR)) {
+					if(saveApplSrvProv == null) {
+						throw new GlobalException(JaxError.APPL_SERVICE_PROVIDER_ERROR,"Application service provider details is missing ");
+					}else {
+						logger.info(" EX_APPL_TRNX_SRV_PROV save service provider child table " + JsonUtil.toJson(saveApplSrvProv));
+					}
+				}
+			}
 		}
 
 	}
@@ -1046,8 +1069,9 @@ public class BranchRemittanceApplManager {
 			if(serviceProviderDto.getOfferStartingDate() != null) {
 				remitApplSrvProv.setOfferStartingDate(serviceProviderDto.getOfferStartingDate().getTime());
 			}
+			remitApplSrvProv.setPartnerExchangeRate(serviceProviderDto.getPartnerExchangeRate());
 
-			logger.warn("RemitApplSrvProv : " + JsonUtil.toJson(remitApplSrvProv));
+			logger.info("RemitApplSrvProv : " + JsonUtil.toJson(remitApplSrvProv));
 		}
 
 		return remitApplSrvProv;

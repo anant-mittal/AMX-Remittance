@@ -132,4 +132,9 @@ public class PartnerTransactionDao {
 		remitTrnxSrvProvRepository.updateServiceProviderDetails(partnerSessionId, partnerReferenceNo, remittanceTransactionId);
 	}
 	
+	@Transactional
+	public void saveRemittanceRemarksDeliveryIndTrnxStatus(String deliveryInd, String remarks, BigDecimal remittanceTransactionId,String bankReference,String transactionStatus) {
+		remittanceTransactionRepository.updateDeliveryIndRemarksTrnxStatusBySP(deliveryInd, remarks, remittanceTransactionId,bankReference,transactionStatus);
+	}
+	
 }
