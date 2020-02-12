@@ -12,9 +12,6 @@ public interface RoutingProdStatusRepo extends CrudRepository<VwExRoutingProduct
 
 	List<VwExRoutingProduct> findByCurrencyId(BigDecimal currencyId);
 	
-	@Query(value = "SELECT * FROM VW_EX_ROUTING_PRODUCT WHERE CURRENCY_ID=?1 AND ROUTING='ACTIVE' ", nativeQuery = true)
-	List<VwExRoutingProduct> findByCurrencyIdAndrouting(BigDecimal currencyId);
-	
 	List<VwExRoutingProduct> findByCurrencyIdAndCountryId(BigDecimal currencyId, BigDecimal countryId);
 
 	List<VwExRoutingProduct> findByCurrencyIdAndDestinationCountryId(BigDecimal currencyId,

@@ -573,20 +573,15 @@ public class ExchangeRateManager {
 
 	}
 
-	public RoutingCountryBankInfo getRoutingCountryBanksForCurrency(BigDecimal currencyId,Boolean isActive) {
+	public RoutingCountryBankInfo getRoutingCountryBanksForCurrency(BigDecimal currencyId) {
 
 		List<VwExRoutingProduct> routingProdStatusList;
 		if (currencyId == null) {
 			throw new PricerServiceException(PricerServiceError.INVALID_CURRENCY, "Invalid Currency");
 		}
-		
-		if(isActive!=true || isActive==null) {
 
 		routingProdStatusList = routingProdStatusDao.getByCurrencyId(currencyId);
-		}
-		else {
-			routingProdStatusList = routingProdStatusDao.findByCurrencyIdAndrouting(currencyId);
-		}
+		
 		RoutingCountryBankInfo routingCountryBankInfo = new RoutingCountryBankInfo();
 
 		if (routingProdStatusList == null || routingProdStatusList.isEmpty()) {

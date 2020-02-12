@@ -78,8 +78,8 @@ public class ExchRateMgmtController {
 	}
 
 	@RequestMapping(value = "/api/exch/country_bank/get", method = { RequestMethod.POST })
-	public AmxApiResponse<RoutingCountryBankInfo, Object> getCountryBankFromCurrency(BigDecimal currencyId,Boolean isActive) {
-		return exchRateMgmtClient.getRoutingCountryBanksForCurrency(currencyId,isActive);
+	public AmxApiResponse<RoutingCountryBankInfo, Object> getCountryBankFromCurrency(BigDecimal currencyId) {
+		return exchRateMgmtClient.getRoutingCountryBanksForCurrency(currencyId);
 	}
 
 	@PreAuthorize("hasPermission('RATE_MGMT.CHECKER', 'VIEW') or hasPermission('RATE_MGMT.MAKER', 'VIEW')")
