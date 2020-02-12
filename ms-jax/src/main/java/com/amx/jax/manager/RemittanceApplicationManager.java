@@ -22,6 +22,7 @@ import com.amx.jax.branchremittance.manager.BranchRemittanceManager;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDynamicField;
 import com.amx.jax.dao.ApplicationProcedureDao;
+import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CompanyMaster;
@@ -57,6 +58,7 @@ import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
+import com.amx.jax.service.ParameterService;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.LoyalityPointService;
@@ -111,6 +113,10 @@ public class RemittanceApplicationManager {
 
 	@Autowired
 	BranchRemittanceManager branchRemittanceManager;
+	
+	
+	@Autowired
+	private ParameterService parameterService;
 	
 	/**
 	 * @param remitApplParametersMap2
@@ -457,11 +463,20 @@ public class RemittanceApplicationManager {
 	private void validateDailyBeneficiaryTransactionLimit(BenificiaryListView beneDetails) {
 		Integer todaysTxns = beneficiaryService.getTodaysTransactionForBene(metaData.getCustomerId(),
 				beneDetails.getBeneficaryMasterSeqId());
-		if (todaysTxns > 0) {
-			throw new GlobalException(JaxError.NO_OF_TRANSACTION_LIMIT_EXCEEDED,
-					"Dear Customer, you have already done 1 application to this beneficiary within the last 24"
+		AuthenticationLimitCheckView beneficiaryPerDayLimit = parameterService.getPerCustomerPerBeneTrnxLimit();
+		
+		if(beneficiaryPerDayLimit==null) {
+			throw new GlobalException(JaxError.NO_RECORDS_FOUND,"Dear Customer, we cannot proceed with the payment due to unavailability of transaction settings. Please contact support team @ +965-1840123 to resolve this issue");
+		}else if(beneficiaryPerDayLimit!=null && !JaxUtil.isNullZeroBigDecimalCheck(beneficiaryPerDayLimit.getAuthLimit())) {
+			throw new GlobalException(JaxError.NO_RECORDS_FOUND,"Dear Customer, we cannot proceed with the payment due to unavailability of transaction settings. Please contact support team @ +965-1840123 to resolve this issue.\"");
+		}
+		
+		if (beneficiaryPerDayLimit!=null && todaysTxns >=beneficiaryPerDayLimit.getAuthLimit().intValue()) {
+			throw new GlobalException(JaxError.NO_OF_TRANSACTION_LIMIT_EXCEEDED,beneficiaryPerDayLimit.getAuthMessage());
+				/*	
+					"Dear Customer, you have already done "+ todaysTxns.toString() +" application to this beneficiary within the last 24"
 							+ " hours. In the interest of safety, we do not allow a customer to repeat the same"
-							+ " transaction to the same beneficiary more than once in 24 hours.");
+							+ " transaction to the same beneficiary more than the allowed limit  in 24 hours.");*/
 		}
 	}
 
