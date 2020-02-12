@@ -253,7 +253,7 @@
           "range": {
             "@timestamp": {
               "format": "epoch_millis",
-              "gte": "now-1M",
+              "gte": "now-3M",
               "lte": "now"
             }
           }
