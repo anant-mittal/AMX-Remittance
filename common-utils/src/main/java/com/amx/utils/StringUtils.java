@@ -1,6 +1,7 @@
 package com.amx.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -259,6 +260,11 @@ public final class StringUtils {
 
 	public static boolean isEmpty(String str) {
 		return ArgUtil.isEmptyString(str);
+	}
+
+	public static String maskIpAddress(String ipAddress) {
+		String[] slots = ipAddress.split(":|\\.");
+		return String.join("-", Arrays.copyOfRange(slots, 0, slots.length / 4 * 3));
 	}
 
 }

@@ -25,6 +25,7 @@ import com.amx.jax.util.CommunicationPrefsUtil;
 import com.amx.jax.util.CommunicationPrefsUtil.CommunicationPrefsResult;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
+import com.amx.utils.StringUtils;
 
 @Component
 @HandlerMapping("LOGIN:COMPLETED:DONE")
@@ -94,20 +95,20 @@ public class LoginAuditHandler implements AuditHandler {
 
 		Map<String, Object> bulkItemThis = null;
 		Map<String, Boolean> mapFP = new HashMap<String, Boolean>();
-		Map<String, Boolean> mapIP = new HashMap<String, Boolean>();
-		Map<String, Boolean> mapCountry = new HashMap<String, Boolean>();
-		Map<String, Boolean> mapRegion = new HashMap<String, Boolean>();
-		Map<String, Boolean> mapCity = new HashMap<String, Boolean>();
 
 		for (Map<String, Object> bulkItem : bulk) {
 			if ("this".equals(bulkItem.get("traceid"))) {
 				bulkItemThis = bulkItem;
 			} else {
-				mapFP.put(ArgUtil.parseAsString(bulkItem.get("fp"), Constants.BLANK), true);
-				mapIP.put(ArgUtil.parseAsString(bulkItem.get("ip"), Constants.BLANK), true);
-				mapIP.put(ArgUtil.parseAsString(bulkItem.get("country"), Constants.BLANK), true);
-				mapIP.put(ArgUtil.parseAsString(bulkItem.get("region"), Constants.BLANK), true);
-				mapIP.put(ArgUtil.parseAsString(bulkItem.get("city"), Constants.BLANK), true);
+				String ipAdddress = ArgUtil.parseAsString(bulkItem.get("fp"), Constants.BLANK);
+				if (ArgUtil.is(ipAdddress)) {
+					mapFP.put(ipAdddress, true);
+					mapFP.put(StringUtils.maskIpAddress(ipAdddress), true);
+				}
+				mapFP.put(ArgUtil.parseAsString(bulkItem.get("ip"), Constants.BLANK), true);
+				mapFP.put(ArgUtil.parseAsString(bulkItem.get("country"), Constants.BLANK), true);
+				mapFP.put(ArgUtil.parseAsString(bulkItem.get("region"), Constants.BLANK), true);
+				mapFP.put(ArgUtil.parseAsString(bulkItem.get("city"), Constants.BLANK), true);
 			}
 		}
 
@@ -120,9 +121,9 @@ public class LoginAuditHandler implements AuditHandler {
 			params.toMap().put("region", region);
 			params.toMap().put("city", city);
 
-			if (mapCountry.containsKey(country)
-					&& mapRegion.containsKey(region)
-					&& mapCity.containsKey(city) && !UNKNOWN.equals(city)) {
+			if (mapFP.containsKey(country)
+					&& mapFP.containsKey(region)
+					&& mapFP.containsKey(city) && !UNKNOWN.equals(city)) {
 				newLocation = false;
 			}
 		} else {
@@ -134,9 +135,15 @@ public class LoginAuditHandler implements AuditHandler {
 
 		if (mapFP.containsKey(event.getClientFp())) {
 			newDevice = false;
+			return true;
 		}
 
-		if (mapIP.containsKey(event.getClientIp())) {
+		if (mapFP.containsKey(event.getClientIp())) {
+			newIP = false;
+			return true;
+		}
+
+		if (mapFP.containsKey(StringUtils.maskIpAddress(event.getClientIp()))) {
 			newIP = false;
 		}
 
