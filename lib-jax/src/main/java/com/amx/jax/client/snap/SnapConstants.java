@@ -114,6 +114,7 @@ public class SnapConstants {
 					"traceid:D1F06B23-0001-4B62-BB2C-3D17F2F74964;logmap.client.fp:D1F06B23-0001-4B62-BB2C-3D17F2F74964;"
 							+ "logmap.client.ip:188.236.139.6;customerId:513;logmap.agent.browser:CFNETWORK;logmap.agent.operatingSystem:MAC_OS_X;"
 							+ "logmap.client.ct:ONLINE_WEB");
+			CUSTOMER_VERIFICATION_REPORT_DB.setQueryParams("From:2020-02-01 00:00:00;To:2020-02-10 23:59:59");
 		}
 
 		public GridView getGridView() {
