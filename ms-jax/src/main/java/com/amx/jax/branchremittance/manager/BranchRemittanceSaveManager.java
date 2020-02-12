@@ -34,6 +34,7 @@ import com.amx.jax.dao.JaxEmployeeDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.BankMasterMdlv1;
+import com.amx.jax.dbmodel.BanksView;
 import com.amx.jax.dbmodel.CollectDetailMdlv1;
 import com.amx.jax.dbmodel.CollectionMdlv1;
 import com.amx.jax.dbmodel.CountryBranchMdlv1;
@@ -90,10 +91,12 @@ import com.amx.jax.partner.dao.PartnerTransactionDao;
 import com.amx.jax.partner.dto.RemitTrnxSPDTO;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.payg.PaymentResponseDto;
+import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE;
 import com.amx.jax.repository.AdditionalInstructionDataRepository;
 import com.amx.jax.repository.AuthenticationLimitCheckDAO;
 import com.amx.jax.repository.BankMasterRepository;
+import com.amx.jax.repository.IBankMasterFromViewDao;
 import com.amx.jax.repository.IBeneBankBlackCheckDao;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.IDocumentDao;
@@ -273,6 +276,9 @@ public class BranchRemittanceSaveManager {
 
 	@Autowired
 	CurrencyMasterDao currencyMasterDao;
+	
+	@Autowired
+	IBankMasterFromViewDao bankMasterDao;
 	
 	List<LoyaltyPointsModel> loyaltyPoints 	 = new ArrayList<>();
 	Map<BigDecimal,RemittanceBenificiary> remitBeneList = new HashMap<>();
@@ -1421,6 +1427,8 @@ public void validateSaveTrnxDetails(HashMap<String, Object> mapAllDetailRemitSav
 	Map<BigDecimal,RemittanceTransaction> remitTrnxList = (Map<BigDecimal,RemittanceTransaction>) mapAllDetailRemitSave.get("EX_REMIT_TRNX");
 	Map<BigDecimal,RemittanceBenificiary> remitBeneList = (Map<BigDecimal,RemittanceBenificiary>) mapAllDetailRemitSave.get("EX_REMIT_BENE");
 	Map<BigDecimal,List<RemittanceAdditionalInstructionData>> addlTrnxList = (Map<BigDecimal,List<RemittanceAdditionalInstructionData>>) mapAllDetailRemitSave.get("EX_REMIT_ADDL");
+	Map<BigDecimal, RemitTrnxSrvProv> remitSprProvList = (Map<BigDecimal, RemitTrnxSrvProv>) mapAllDetailRemitSave.get("EX_REMIT_SRV_PROV");
+	
 	if(collectModel==null) {
 		throw new GlobalException(JaxError.NO_RECORD_FOUND, "Collection data not found");
 	}	
@@ -1436,6 +1444,28 @@ public void validateSaveTrnxDetails(HashMap<String, Object> mapAllDetailRemitSav
 	if(addlTrnxList.isEmpty()) {
 		throw new GlobalException(JaxError.NO_RECORD_FOUND, "Remittance additional instruction details not found");
 	}
+	
+	// validation to check service provider table is inserted or not
+	if (remitTrnxList != null && !remitTrnxList.isEmpty()) {
+		for (Map.Entry<BigDecimal,RemittanceTransaction> entry : remitTrnxList.entrySet()) {
+			RemittanceTransaction remitTrnx = entry.getValue();
+			if(remitTrnx != null && remitTrnx.getBankId() != null && remitTrnx.getBankId().getBankId() != null) {
+				List<BanksView> bankList = bankMasterDao.getBankListByBankId(remitTrnx.getBankId().getBankId());
+				if(bankList != null && !bankList.isEmpty()) {
+					BanksView banksView = bankList.get(0);
+					if(banksView.getBankInd() != null && banksView.getBankInd().equalsIgnoreCase(PricerServiceConstants.SERVICE_PROVIDER_INDICATOR)) {
+						if(remitSprProvList == null || (remitSprProvList != null && remitSprProvList.get(entry.getKey()) == null)) {
+							throw new GlobalException(JaxError.NO_RECORD_FOUND,"Remittance service provider details not found");
+						}else {
+							logger.info(" EX_REMIT_TRNX_SRV_PROV save service provider child table " + JsonUtil.toJson(remitSprProvList.get(entry.getKey())));
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	
 }
 	
 	public Map<BigDecimal,RemitTrnxSrvProv> saveRemitTrnxSrvProv(BigDecimal remittanceApplicationId,String createdBy) {
@@ -1460,6 +1490,7 @@ public void validateSaveTrnxDetails(HashMap<String, Object> mapAllDetailRemitSav
 			remitTrnxSrvProv.setCreatedDate(new Date());
 			remitTrnxSrvProv.setOfferExpirationDate(applSrvProv.getOfferExpirationDate());
 			remitTrnxSrvProv.setOfferStartingDate(applSrvProv.getOfferStartingDate());
+			remitTrnxSrvProv.setPartnerExchangeRate(applSrvProv.getPartnerExchangeRate());
 			
 			mapRemitTrnxSrvProv.put(remittanceApplicationId, remitTrnxSrvProv);
 		}

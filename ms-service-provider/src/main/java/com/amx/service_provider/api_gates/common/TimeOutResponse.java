@@ -35,7 +35,7 @@ public class TimeOutResponse implements Callable<Object>{
 			String bankCode = (String) getRequest().get("RoutingBankCode");
 			if(bankCode.equalsIgnoreCase(SERVICE_PROVIDER_BANK_CODE.HOME.name())){
 				RemittanceResponse remittanceResponse = null;
-				HWSBinding_2_3Stub hwsBinding_2_3Stub = (HWSBinding_2_3Stub) getRequest().get("HWSBinding_2_3Stub");
+				HWSBinding_2_3Stub hwsBinding_2_3Stub = (HWSBinding_2_3Stub) getRequest().get("HomeSend_BindingStub");
 				RemittanceRequest remittanceRequest = (RemittanceRequest) getRequest().get("RemittanceRequest");
 				while (i < callRespone) {
 					remittanceResponse = hwsBinding_2_3Stub.remittance(remittanceRequest);

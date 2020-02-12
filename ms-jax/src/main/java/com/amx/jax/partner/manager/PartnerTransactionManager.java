@@ -414,7 +414,7 @@ public class PartnerTransactionManager extends AbstractModel {
 			beneficiaryDto.setState(removeSpaces(beneficiaryDetailsDTO.getStateName())); 
 			//beneficiaryDto.setStreet(removeSpaces(beneficiaryDetailsDTO.getStreetNo()));
 			
-			StringBuffer streetDetails = new StringBuffer();
+			/*StringBuffer streetDetails = new StringBuffer();
 			if(beneficiaryDetailsDTO.getBuildingNo() != null){
 				streetDetails.append("House No "+ beneficiaryDetailsDTO.getBuildingNo());
 			}
@@ -423,6 +423,17 @@ public class PartnerTransactionManager extends AbstractModel {
 			}
 			if(beneficiaryDetailsDTO.getStreetNo() != null){
 				streetDetails.append(" Street "+ beneficiaryDetailsDTO.getStreetNo());
+			}*/
+			
+			StringBuffer streetDetails = new StringBuffer();
+			if(beneficiaryDetailsDTO.getBuildingNo() != null){
+				streetDetails.append(beneficiaryDetailsDTO.getBuildingNo());
+			}
+			if(beneficiaryDetailsDTO.getFlatNo() != null){
+				streetDetails.append(" "+ beneficiaryDetailsDTO.getFlatNo());
+			}
+			if(beneficiaryDetailsDTO.getStreetNo() != null){
+				streetDetails.append(" "+ beneficiaryDetailsDTO.getStreetNo());
 			}
 			
 			beneficiaryDto.setStreet(removeSpaces(streetDetails.toString()));
@@ -843,9 +854,9 @@ public class PartnerTransactionManager extends AbstractModel {
 			if(customerDto != null) {
 				customerReference = customerDto.getCustomerReference();
 			}
-			if(srvPrvResp.getResult() != null &&  srvPrvResp.getResult().getOut_going_transaction_reference() != null) {
+			/*if(srvPrvResp.getResult() != null &&  srvPrvResp.getResult().getOut_going_transaction_reference() != null) {
 				referenceNo = srvPrvResp.getResult().getOut_going_transaction_reference();
-			}
+			}*/
 			if(serviceProviderCallRequestDto.getTransactionDto() != null) {
 				if(serviceProviderCallRequestDto.getTransactionDto().getPartner_transaction_reference() != null) {
 					partnerReference = serviceProviderCallRequestDto.getTransactionDto().getPartner_transaction_reference();
@@ -853,6 +864,7 @@ public class PartnerTransactionManager extends AbstractModel {
 				if(serviceProviderCallRequestDto.getTransactionDto().getRoutting_bank_code() != null) {
 					bankCode = serviceProviderCallRequestDto.getTransactionDto().getRoutting_bank_code();
 				}
+				referenceNo = serviceProviderCallRequestDto.getTransactionDto().getRequest_sequence_id();
 			}
 			if(srvPrvResp.getResult().getRequest_XML() != null) {
 				requestXml = srvPrvResp.getResult().getRequest_XML();
@@ -993,8 +1005,12 @@ public class PartnerTransactionManager extends AbstractModel {
 					
 					logger.info("actionInd : " + actionInd + " responseDescription : "+ responseDescription + " transaction Id " + remittanceTransactionView.getRemittanceTransactionId() + " partner transaction id : "  + partnerTransactionId);
 					// save remit trnx
-					partnerTransactionDao.saveRemittanceRemarksDeliveryInd(actionInd, responseDescription, remittanceTransactionView.getRemittanceTransactionId(),bankReference);
-					//remittanceTransactionRepository.updateDeliveryIndRemarksBySP(remitTrnxSPDTO.getActionInd(), remitTrnxSPDTO.getResponseDescription(), remittanceTransactionView.getRemittanceTransactionId());
+					if(actionInd != null && actionInd.equalsIgnoreCase(PricerServiceConstants.ACTION_IND_P)) {
+						partnerTransactionDao.saveRemittanceRemarksDeliveryIndTrnxStatus(actionInd, responseDescription, remittanceTransactionView.getRemittanceTransactionId(),bankReference,actionInd);
+					}else {
+						partnerTransactionDao.saveRemittanceRemarksDeliveryInd(actionInd, responseDescription, remittanceTransactionView.getRemittanceTransactionId(),bankReference);
+					}
+					
 					if(emailStatus) {
 						logger.error("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
 						auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_SERVICE_PROVIDER_FAIL).result(Result.DONE));

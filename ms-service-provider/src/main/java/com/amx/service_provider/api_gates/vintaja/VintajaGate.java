@@ -199,7 +199,7 @@ public class VintajaGate
 					response.setResponse_code("CONERR");// CONERR -- connection error
 					response.setResponse_description("Issue with connection. " + timerException);
 
-					if (timerException.contains("Connection timed out") || timerException.contains("timeout") || timerException.contains("Bad Gateway"))
+					if (timerException != null && timerException.contains("Connection timed out") || timerException.contains("timeout") || timerException.contains("Bad Gateway"))
 					{
 						response.setResponse_code("TIMOUT");
 						response.setResponse_description("Connection Timed Out. " + timerException);
