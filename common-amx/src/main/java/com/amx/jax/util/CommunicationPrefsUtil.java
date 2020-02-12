@@ -22,11 +22,11 @@ public class CommunicationPrefsUtil {
 	}
 
 	private static boolean isSkipVerify(String prefString) {
-		return prefString.contains(ALWAYSLONG) || prefString.contains(ALWAYSCHAR);
+		return prefString.contains("-");
 	}
 
 	private static String readOrder(String prefString) {
-		return prefString.replace(prefString, Constants.BLANK);
+		return prefString.replace("-", Constants.BLANK);
 	}
 
 	public static class CommunicationPrefsResult {
