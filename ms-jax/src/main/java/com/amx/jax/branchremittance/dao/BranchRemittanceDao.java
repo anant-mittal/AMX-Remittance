@@ -498,16 +498,24 @@ public class BranchRemittanceDao {
 		return responseModel;
 	}
 	
-
+	@Transactional
 	public void updateSignatureHash(RemittanceTransactionView trnxDetails,String signature) {
+		String sql = null;
+		try {
 		if(trnxDetails!=null && !StringUtils.isBlank(signature) && JaxUtil.isNullZeroBigDecimalCheck(trnxDetails.getRemittanceTransactionId())) {
 			RemittanceTransaction remit = remitTrnxRepository.findOne(trnxDetails.getRemittanceTransactionId());
 			if(remit!=null) {
-				String sql = "UPDATE EX_REMIT_TRNX set SIGNATURE_SPECIMEN='"+signature+"' where  REMITTANCE_TRANSACTION_ID ="+trnxDetails.getRemittanceTransactionId();
-				jdbcTemplate.update(sql);
+				sql = "UPDATE EX_REMIT_TRNX set SIGNATURE_SPECIMEN='"+signature+"' where  REMITTANCE_TRANSACTION_ID ="+trnxDetails.getRemittanceTransactionId();
+				if(!StringUtils.isBlank(sql)) {
+					jdbcTemplate.update(sql);
+				}
 				//remit.setCustomerSignature(signature);
 				//remitTrnxRepository.save(remit);
 			}
+		}
+		}catch(Exception e) {
+			logger.info("updateSignatureHash sql :"+sql);
+			logger.error("updateSignatureHash catch block ",e);
 		}
 	
 	}
