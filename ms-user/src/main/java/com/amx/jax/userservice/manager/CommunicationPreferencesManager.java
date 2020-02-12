@@ -34,9 +34,9 @@ import com.amx.utils.JsonUtil;
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CommunicationPreferencesManager {
-	
+
 	Logger logger = LoggerFactory.getLogger(CommunicationPreferencesManager.class);
-	
+
 	@Autowired
 	MetaData metaData;
 
@@ -45,39 +45,39 @@ public class CommunicationPreferencesManager {
 
 	@Autowired
 	CommunicationPrefsUtil communicationPrefsUtil;
-	
+
 	@Autowired
 	CustomerRepository customerRepository;
-	
+
 	@Autowired
 	PushNotifyClient pushNotifyClient;
-	
+
 	public void validateCommunicationPreferences(List<ContactType> channelList,
 			CommunicationEvents communicationEvent, String identityInt) {
 		Customer cust = null;
-		
-		if(ArgUtil.isEmpty(identityInt)) {
+
+		if (ArgUtil.isEmpty(identityInt)) {
 			cust = custDao.getActiveCustomerDetailsByCustomerId(metaData.getCustomerId());
-		}else {
+		} else {
 			cust = customerRepository.getActiveCustomerDetails(identityInt);
 		}
-		
-		logger.debug("Customer object value is "+cust.toString());
+
+		logger.debug("Customer object value is " + cust.toString());
 		CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(communicationEvent,
 				cust);
-		logger.debug("Communication result for sms is "+communicationPrefsResult.isSms());
-		
-		if(ArgUtil.isEmpty(channelList)) {
+		logger.debug("Communication result for sms is " + communicationPrefsResult.isSms());
+
+		if (ArgUtil.isEmpty(channelList)) {
 			boolean isSmsVerified = cust.canSendMobile();
 			if (!isSmsVerified && metaData.getChannel().equals(JaxChannel.ONLINE)) {
 				throw new GlobalException(JaxError.SMS_NOT_VERIFIED,
 						"Your registered mobile number is not verified. Please visit the branch to complete verification.");
-			}else if(!isSmsVerified && metaData.getChannel().equals(JaxChannel.BRANCH)) {
+			} else if (!isSmsVerified && metaData.getChannel().equals(JaxChannel.BRANCH)) {
 				throw new GlobalException(JaxError.SMS_NOT_VERIFIED,
 						"Please call customer to verify his registered mobile number.");
 			}
 		} else {
-			if(channelList.contains(ContactType.SMS_EMAIL)) {
+			if (channelList.contains(ContactType.SMS_EMAIL)) {
 				channelList.add(ContactType.EMAIL);
 				channelList.add(ContactType.SMS);
 			}
@@ -87,48 +87,48 @@ public class CommunicationPreferencesManager {
 					if (!isEmailVerified && metaData.getChannel().equals(JaxChannel.ONLINE)) {
 						throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED,
 								"Your registered email  is not verified. Please complete verification steps for successful verification.");
-					}else if(!isEmailVerified && metaData.getChannel().equals(JaxChannel.BRANCH)){
-						sendPushNotification(channel);
+					} else if (!isEmailVerified && metaData.getChannel().equals(JaxChannel.BRANCH)) {
+						sendPushNotification(channel, cust);
 						throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED,
 								"Please call customer to verify his registered email.");
 					}
-						
-				} 
-				
+
+				}
+
 				else if (ContactType.SMS.equals(channel)) {
 					boolean isSmsVerified = cust.canSendMobile();
 					if (!isSmsVerified && metaData.getChannel().equals(JaxChannel.ONLINE)) {
 						throw new GlobalException(JaxError.SMS_NOT_VERIFIED,
 								"Your registered mobile number is not verified. Please visit the branch to complete verification.");
-					}else if(!isSmsVerified && metaData.getChannel().equals(JaxChannel.BRANCH)) {
-						sendPushNotification(channel);
+					} else if (!isSmsVerified && metaData.getChannel().equals(JaxChannel.BRANCH)) {
+						sendPushNotification(channel, cust);
 						throw new GlobalException(JaxError.SMS_NOT_VERIFIED,
 								"Please call customer to verify his registered mobile number.");
 					}
-					
+
 				} else if (ContactType.WHATSAPP.equals(channel)) {
 					boolean isWhatsAppVerified = cust.canSendWhatsApp();
 					if (!isWhatsAppVerified && metaData.getChannel().equals(JaxChannel.ONLINE)) {
 						throw new GlobalException(JaxError.WHATSAPP_NOT_VERIFIED,
 								"Your registered whatsapp number is not verified. Please visit the branch to complete verification.");
-					}else if(!isWhatsAppVerified && metaData.getChannel().equals(JaxChannel.BRANCH)) {
-						sendPushNotification(channel);
+					} else if (!isWhatsAppVerified && metaData.getChannel().equals(JaxChannel.BRANCH)) {
+						sendPushNotification(channel, cust);
 						throw new GlobalException(JaxError.WHATSAPP_NOT_VERIFIED,
 								"Please call customer to verify his registered whatsapp number.");
 					}
 				}
 			}
 		}
-		
+
 	}
 
-	private void sendPushNotification(ContactType channel) {
+	private void sendPushNotification(ContactType channel, Customer cust) {
 		logger.debug("PushNotify for fx order");
 		PushMessage pushMessage = new PushMessage();
 		pushMessage.setITemplate(TemplatesMX.VERIFICATION_NOTIFY);
-		pushMessage.addToUser(metaData.getCustomerId());
+		pushMessage.addToUser(cust.getCustomerId());
 		pushMessage.getModel().put(RESP_DATA_KEY, channel);
-		logger.debug("Data for push notif "+JsonUtil.toJson(pushMessage));
+		logger.debug("Data for push notif " + JsonUtil.toJson(pushMessage));
 		pushNotifyClient.send(pushMessage);
 	}
 
