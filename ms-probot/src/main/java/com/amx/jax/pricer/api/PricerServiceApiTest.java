@@ -572,8 +572,8 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 	@Override
 	@RequestMapping(value = ApiEndPoints.GET_ROUTE_COUNTRY_BANKS, method = RequestMethod.POST)
 	public AmxApiResponse<RoutingCountryBankInfo, Object> getRoutingCountryBanksForCurrency(
-			@RequestParam(required = true) BigDecimal currencyId,@RequestParam(value = "isActive", required = false, defaultValue = "false") Boolean isActive) {
-		return pricerServiceClient.getRoutingCountryBanksForCurrency(currencyId,isActive);
+			@RequestParam(required = true) BigDecimal currencyId) {
+		return pricerServiceClient.getRoutingCountryBanksForCurrency(currencyId);
 	}
 
 }

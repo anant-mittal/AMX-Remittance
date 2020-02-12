@@ -195,7 +195,7 @@ public class PartnerDataManager {
 										amxRateWithMarginWithPips = amxRateWithMargin.subtract(settlementTotalDiscountPips);
 									}else {
 										//amxRateWithMargin = settlementExchangeRate.add(marginAmount);
-										amxRateWithMarginWithPips = amxRateWithMargin;
+										amxRateWithMarginWithPips = amxRateWithMargin.subtract(marginAmount);
 									}
 									//settlementAmtwithDecimal = new BigDecimal(srvPrvFeeInqReqDTO.getAmount().doubleValue()/amxRateWithMargin.doubleValue());
 									settlementAmtwithDecimal = new BigDecimal(srvPrvFeeInqReqDTO.getAmount().doubleValue()/amxRateWithMarginWithPips.doubleValue());

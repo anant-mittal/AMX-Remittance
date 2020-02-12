@@ -324,12 +324,11 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 	}
 
 	@Override
-	public AmxApiResponse<RoutingCountryBankInfo, Object> getRoutingCountryBanksForCurrency(BigDecimal currencyId,Boolean isActive) {
+	public AmxApiResponse<RoutingCountryBankInfo, Object> getRoutingCountryBanksForCurrency(BigDecimal currencyId) {
 
 		LOGGER.info("Received Probot API Service Request for Get Routing Country Banks for Currency Client");
 
 		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_ROUTE_COUNTRY_BANKS)
-				.queryParam("isActive", isActive)
 				.queryParam("currencyId", currencyId).post()
 				.as(new ParameterizedTypeReference<AmxApiResponse<RoutingCountryBankInfo, Object>>() {
 				});
