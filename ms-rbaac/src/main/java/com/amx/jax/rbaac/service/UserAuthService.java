@@ -77,10 +77,10 @@ public class UserAuthService {
 
 	@Autowired
 	private AppConfig appConfig;
-	
+
 	@Autowired
 	RbaacTenantProperties rbaacTenantProperties;
-	
+
 	@Autowired
 	OfflineOtpCache offlineOtpCache;
 
@@ -422,18 +422,18 @@ public class UserAuthService {
 		RoleResponseDTO roleResponseDTO = getRoleForUser(employee.getEmployeeId());
 
 		empDetail.setUserRole(roleResponseDTO);
-		
-		//Tenant base value set
-		if(rbaacTenantProperties.getTenant() != null) {
+
+		// Tenant base value set
+		if (rbaacTenantProperties.getTenant() != null) {
 			empDetail.setTenant(rbaacTenantProperties.getTenant());
 		}
-		if(rbaacTenantProperties.getCurrencyQuote() != null) {
+		if (rbaacTenantProperties.getCurrencyQuote() != null) {
 			empDetail.setCurrencyQuote(rbaacTenantProperties.getCurrencyQuote());
 		}
-		if(rbaacTenantProperties.getCurrencyId() != null) {
+		if (rbaacTenantProperties.getCurrencyId() != null) {
 			empDetail.setCurrencyId(rbaacTenantProperties.getCurrencyId());
 		}
-		
+
 		// Set Last Successful Login Date as Current Date
 		updateLastLogin(employee);
 
@@ -463,9 +463,9 @@ public class UserAuthService {
 				.secret(otpDevice.getClientSecreteKey()).message(sac).length(AmxConstants.OTP_LENGTH);
 
 		// Added Complex Password
-		if (builder.validateComplexHMAC(otp) 
-			//	|| builder.validateNumHMAC(otp)
-				) {
+		if (builder.validateComplexHMAC(otp)
+		// || builder.validateNumHMAC(otp)
+		) {
 			return Boolean.TRUE;
 		}
 
@@ -531,6 +531,19 @@ public class UserAuthService {
 					"The mobile number is invalid for the user");
 		}
 
+		/**
+		 * Check for the branch Details of the Employee
+		 * 
+		 * Bug Id: 11425 : An Employee from Inactive Branch should not be allowed to
+		 * login.
+		 */
+
+		if (validEmployee.getCountryBranch() == null || validEmployee.getCountryBranch().getIsActive() == null
+				|| !"Y".equalsIgnoreCase(validEmployee.getCountryBranch().getIsActive())) {
+			throw new AuthServiceException(RbaacServiceError.INACTIVE_BRANCH,
+					"The branch is currently inactive - Please contact admin/support.");
+		}
+
 		return validEmployee;
 	}
 
@@ -542,8 +555,8 @@ public class UserAuthService {
 			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_FOUND, "User Client Info Is Null");
 		}
 
-		DeviceType deviceType = userClientDto.getDeviceType();
-		
+		//DeviceType deviceType = userClientDto.getDeviceType();
+
 		// Check for Employee System Assignment
 		if (UserClient.isAuthSystem(userClientDto.getClientType(), AuthSystem.TERMINAL)) {
 
@@ -583,9 +596,9 @@ public class UserAuthService {
 
 				throw new AuthServiceException(RbaacServiceError.INVALID_OR_MISSING_DEVICE_ID,
 						"The device is not mapped to the Civil ID entered. Please map the device to successfully login.")
-				.put("deviceId", userClientDto.getDeviceId())
-				.put("deviceRegId", userClientDto.getDeviceRegId())
-				.put("deviceRegToken", userClientDto.getDeviceRegToken());
+								.put("deviceId", userClientDto.getDeviceId())
+								.put("deviceRegId", userClientDto.getDeviceRegId())
+								.put("deviceRegToken", userClientDto.getDeviceRegToken());
 
 			}
 
@@ -660,8 +673,9 @@ public class UserAuthService {
 		// send otp to slack
 		if (!appConfig.isProdMode()) {
 			if (!ArgUtil.isEmpty(otpDevice)) {
-				HashBuilder builder = new HashBuilder().currentTime(System.currentTimeMillis()).interval(AmxConstants.OFFLINE_OTP_TTL)
-						.tolerance(AmxConstants.OFFLINE_OTP_TOLERANCE).secret(otpDevice.getClientSecreteKey()).message(otpData.getOtpPrefix());
+				HashBuilder builder = new HashBuilder().currentTime(System.currentTimeMillis())
+						.interval(AmxConstants.OFFLINE_OTP_TTL).tolerance(AmxConstants.OFFLINE_OTP_TOLERANCE)
+						.secret(otpDevice.getClientSecreteKey()).message(otpData.getOtpPrefix());
 				userOtpManager.sendToSlack("Offline OTP for Emp: " + employeeNumber, " Self ", otpData.getOtpPrefix(),
 						builder.toHMAC().toComplex(AmxConstants.OTP_LENGTH).output());
 
@@ -687,7 +701,8 @@ public class UserAuthService {
 		}
 		OfflineOtpData otpData = offlineOtpCache.get(getOfflineOtpCacheBoxKey(employeeId));
 		if (otpData == null) {
-			throw new AuthServiceException(RbaacServiceError.INVALID_OTP, "Invalid OTP: OTP is not generated for the user or timedOut");
+			throw new AuthServiceException(RbaacServiceError.INVALID_OTP,
+					"Invalid OTP: OTP is not generated for the user or timedOut");
 		}
 		String sac = otpData.getOtpPrefix();
 		boolean validationResult = validateOfflineOtp(otp, employeeId, sac);
@@ -698,4 +713,3 @@ public class UserAuthService {
 		return "OFFLINE_OTP_" + employeId.toString();
 	}
 }
-
