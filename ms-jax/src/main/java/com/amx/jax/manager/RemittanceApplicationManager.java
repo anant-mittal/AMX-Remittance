@@ -468,10 +468,9 @@ public class RemittanceApplicationManager {
 		
 		if(beneficiaryPerDayLimit==null) {
 			throw new GlobalException(JaxError.NO_RECORDS_FOUND,"Dear Customer, we cannot proceed with the payment due to unavailability of transaction settings. Please contact support team @ +965-1840123 to resolve this issue");
-		}else if(beneficiaryPerDayLimit!=null && !JaxUtil.isNullZeroBigDecimalCheck(beneficiaryPerDayLimit.getAuthLimit())) {
+		}else if(beneficiaryPerDayLimit!=null && (beneficiaryPerDayLimit.getAuthLimit()==null ||  beneficiaryPerDayLimit.getAuthLimit().compareTo(BigDecimal.ZERO)==0)) {
 			throw new GlobalException(JaxError.NO_RECORDS_FOUND,"Dear Customer, we cannot proceed with the payment due to unavailability of transaction settings. Please contact support team @ +965-1840123 to resolve this issue.");
 		}
-		
 		
 		if (beneficiaryPerDayLimit!=null && todaysTxns >=beneficiaryPerDayLimit.getAuthLimit().intValue()) {
 			throw new GlobalException(JaxError.NO_OF_TRANSACTION_LIMIT_EXCEEDED,beneficiaryPerDayLimit.getAuthMessage());
