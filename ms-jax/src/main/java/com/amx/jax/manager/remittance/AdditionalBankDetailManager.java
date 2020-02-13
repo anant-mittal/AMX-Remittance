@@ -89,9 +89,11 @@ public class AdditionalBankDetailManager {
 
 		if (valueMap != null && valueMap.size() != 0) {
 			requiredFlexFields.forEach(i -> {
-				AdditionalBankDetailData data = valueMap.get(i.getField().getDtoPath().replaceAll("flexFields.", ""));
-				if (data != null) {
-					i.getField().setDefaultValue(data.getValue());
+				if (i.getField().getDtoPath() != null) {
+					AdditionalBankDetailData data = valueMap.get(i.getField().getDtoPath().replaceAll("flexFields.", ""));
+					if (data != null) {
+						i.getField().setDefaultValue(data.getValue());
+					}
 				}
 			});
 		}
