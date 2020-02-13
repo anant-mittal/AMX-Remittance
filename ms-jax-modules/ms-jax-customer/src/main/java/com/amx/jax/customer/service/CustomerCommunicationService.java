@@ -1,42 +1,46 @@
-package com.amx.jax.userservice.manager;
+package com.amx.jax.customer.service;
 
 import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dict.AmxEnums.CommunicationEvents;
-import com.amx.jax.dict.Communicatable;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.client.PushNotifyClient;
+import com.amx.jax.postman.client.WhatsAppClient;
+import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.PushMessage;
+import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.util.CommunicationPrefsUtil;
 import com.amx.jax.util.CommunicationPrefsUtil.CommunicationPrefsResult;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.CollectionUtil;
 import com.amx.utils.JsonUtil;
 
 @Component
-@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class CommunicationPreferencesManager {
-	
-	Logger logger = LoggerFactory.getLogger(CommunicationPreferencesManager.class);
-	
+public class CustomerCommunicationService {
+
+	Logger logger = LoggerFactory.getLogger(CustomerCommunicationService.class);
+
 	@Autowired
 	MetaData metaData;
 
@@ -45,39 +49,45 @@ public class CommunicationPreferencesManager {
 
 	@Autowired
 	CommunicationPrefsUtil communicationPrefsUtil;
-	
+
 	@Autowired
 	CustomerRepository customerRepository;
-	
+
 	@Autowired
-	PushNotifyClient pushNotifyClient;
-	
-	public void validateCommunicationPreferences(List<ContactType> channelList, CommunicationEvents communicationEvent,
-			String identityInt) {
+	private PostManService postManService;
+
+	@Autowired
+	private PushNotifyClient pushNotifyClient;
+
+	@Autowired
+	private WhatsAppClient whatsAppClient;
+
+	public void validateCommunicationPreferences(List<ContactType> channelList,
+			CommunicationEvents communicationEvent, String identityInt) {
 		Customer cust = null;
-		
-		if(ArgUtil.isEmpty(identityInt)) {
+
+		if (ArgUtil.isEmpty(identityInt)) {
 			cust = custDao.getActiveCustomerDetailsByCustomerId(metaData.getCustomerId());
-		}else {
+		} else {
 			cust = customerRepository.getActiveCustomerDetails(identityInt);
 		}
-		
-		logger.debug("Customer object value is "+cust.toString());
+
+		logger.debug("Customer object value is " + cust.toString());
 		CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(communicationEvent,
 				cust);
-		logger.debug("Communication result for sms is "+communicationPrefsResult.isSms());
-		
-		if(ArgUtil.isEmpty(channelList)) {
+		logger.debug("Communication result for sms is " + communicationPrefsResult.isSms());
+
+		if (ArgUtil.isEmpty(channelList)) {
 			boolean isSmsVerified = cust.canSendMobile();
 			if (!isSmsVerified && metaData.getChannel().equals(JaxChannel.ONLINE)) {
 				throw new GlobalException(JaxError.SMS_NOT_VERIFIED,
 						"Your registered mobile number is not verified. Please visit the branch to complete verification.");
-			}else if(!isSmsVerified && metaData.getChannel().equals(JaxChannel.BRANCH)) {
+			} else if (!isSmsVerified && metaData.getChannel().equals(JaxChannel.BRANCH)) {
 				throw new GlobalException(JaxError.SMS_NOT_VERIFIED,
 						"Please call customer to verify his registered mobile number.");
 			}
 		} else {
-			if(channelList.contains(ContactType.SMS_EMAIL)) {
+			if (channelList.contains(ContactType.SMS_EMAIL)) {
 				channelList.add(ContactType.EMAIL);
 				channelList.add(ContactType.SMS);
 			}
@@ -87,31 +97,31 @@ public class CommunicationPreferencesManager {
 					if (!isEmailVerified && metaData.getChannel().equals(JaxChannel.ONLINE)) {
 						throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED,
 								"Your registered email  is not verified. Please complete verification steps for successful verification.");
-					}else if(!isEmailVerified && metaData.getChannel().equals(JaxChannel.BRANCH)){
+					} else if (!isEmailVerified && metaData.getChannel().equals(JaxChannel.BRANCH)) {
 						sendPushNotification(channel, cust);
 						throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED,
 								"Please call customer to verify his registered email.");
 					}
-						
-				} 
-				
+
+				}
+
 				else if (ContactType.SMS.equals(channel)) {
 					boolean isSmsVerified = cust.canSendMobile();
 					if (!isSmsVerified && metaData.getChannel().equals(JaxChannel.ONLINE)) {
 						throw new GlobalException(JaxError.SMS_NOT_VERIFIED,
 								"Your registered mobile number is not verified. Please visit the branch to complete verification.");
-					}else if(!isSmsVerified && metaData.getChannel().equals(JaxChannel.BRANCH)) {
+					} else if (!isSmsVerified && metaData.getChannel().equals(JaxChannel.BRANCH)) {
 						sendPushNotification(channel, cust);
 						throw new GlobalException(JaxError.SMS_NOT_VERIFIED,
 								"Please call customer to verify his registered mobile number.");
 					}
-					
+
 				} else if (ContactType.WHATSAPP.equals(channel)) {
 					boolean isWhatsAppVerified = cust.canSendWhatsApp();
 					if (!isWhatsAppVerified && metaData.getChannel().equals(JaxChannel.ONLINE)) {
 						throw new GlobalException(JaxError.WHATSAPP_NOT_VERIFIED,
 								"Your registered whatsapp number is not verified. Please visit the branch to complete verification.");
-					}else if(!isWhatsAppVerified && metaData.getChannel().equals(JaxChannel.BRANCH)) {
+					} else if (!isWhatsAppVerified && metaData.getChannel().equals(JaxChannel.BRANCH)) {
 						sendPushNotification(channel, cust);
 						throw new GlobalException(JaxError.WHATSAPP_NOT_VERIFIED,
 								"Please call customer to verify his registered whatsapp number.");
@@ -119,24 +129,88 @@ public class CommunicationPreferencesManager {
 				}
 			}
 		}
-		
+
 	}
 
-	private void sendPushNotification(ContactType channel,Customer customer) {
+	private void sendPushNotification(ContactType channel, Customer cust) {
 		logger.debug("PushNotify for fx order");
 		PushMessage pushMessage = new PushMessage();
 		pushMessage.setITemplate(TemplatesMX.VERIFICATION_NOTIFY);
-		pushMessage.addToUser(customer.getCustomerId());
+		pushMessage.addToUser(cust.getCustomerId());
 		pushMessage.getModel().put(RESP_DATA_KEY, channel);
-		logger.debug("Data for push notif "+JsonUtil.toJson(pushMessage));
+		logger.debug("Data for push notif " + JsonUtil.toJson(pushMessage));
 		pushNotifyClient.send(pushMessage);
 	}
 
+	private ContactType[] getContactTypes(CommunicationEvents communicationEvent) {
+		switch (communicationEvent) {
+		case REMITTANCE:
+			return CollectionUtil.getArray(ContactType.SMS);
+		default:
+			return CollectionUtil.getArray(ContactType.EMAIL,
+					ContactType.SMS,
+					ContactType.WHATSAPP,
+					ContactType.FBPUSH);
+
+		}
+	}
+
 	// TODO:- @Anant to implement these methods
+	public boolean sendMessage(Customer commCustomer, Object model, CommunicationEvents communicationEvent,
+			TemplatesMX templateMX, ContactType... contactTypes) {
+		if (contactTypes.length == 0) {
+			contactTypes = getContactTypes(communicationEvent);
+		}
+
+		Set<ContactType> contactTypesLists = CollectionUtil.getSet(contactTypes);
+		if (contactTypesLists.contains(ContactType.SMS_EMAIL)) {
+			contactTypesLists.add(ContactType.EMAIL);
+			contactTypesLists.add(ContactType.SMS);
+		}
+
+		CommunicationPrefsResult communicationFlowPrefs = communicationPrefsUtil.forCustomer(communicationEvent,
+				commCustomer);
+
+		Map<String, Object> wrapper = new HashMap<String, Object>();
+		wrapper.put("data", model);
+
+		if (contactTypesLists.contains(ContactType.EMAIL) && communicationFlowPrefs.isEmail()) {
+			Email email = new Email();
+			email.setModel(wrapper);
+			email.addTo(commCustomer.getEmail());
+			email.setHtml(true);
+			email.setITemplate(templateMX);
+			postManService.sendEmailAsync(email);
+		}
+
+		if (contactTypesLists.contains(ContactType.WHATSAPP) && communicationFlowPrefs.isWhatsApp()) {
+			WAMessage waMessage = new WAMessage();
+			waMessage.setITemplate(templateMX);
+			waMessage.setModel(wrapper);
+			waMessage.addTo(commCustomer.getWhatsappPrefix() + commCustomer.getWhatsapp());
+			whatsAppClient.send(waMessage);
+		}
+
+		if (contactTypesLists.contains(ContactType.SMS) && communicationFlowPrefs.isSms()) {
+			SMS smsMessage = new SMS();
+			smsMessage.setITemplate(templateMX);
+			smsMessage.setModel(wrapper);
+			smsMessage.addTo(commCustomer.getMobile());
+			postManService.sendSMSAsync(smsMessage);
+		}
+
+		if (contactTypesLists.contains(ContactType.FBPUSH) && communicationFlowPrefs.isPushNotify()) {
+			PushMessage pushMessage = new PushMessage();
+			pushMessage.setITemplate(templateMX);
+			pushMessage.setModel(wrapper);
+			pushMessage.addToUser(commCustomer.getCustomerId());
+			pushNotifyClient.send(pushMessage);
+		}
+
+		return false;
+	}
 
 	/**
-	 * 
-	 * 
 	 * 
 	 * @param customerId
 	 * @param model
@@ -148,19 +222,28 @@ public class CommunicationPreferencesManager {
 	 */
 	public boolean sendMessage(BigDecimal customerId, Object model, CommunicationEvents communicationEvent,
 			TemplatesMX templateMX, ContactType... contactTypes) {
+		if (!ArgUtil.isEmpty(customerId)) {
+			Customer cust = custDao.getActiveCustomerDetailsByCustomerId(metaData.getCustomerId());
+			return sendMessage(cust, model, communicationEvent, templateMX, contactTypes);
+		}
 		return false;
 	}
 
-	// TODO:- @Anant to implement these methods
 	public boolean sendMessage(String indetnityInt, Object model, CommunicationEvents communicationEvent,
 			TemplatesMX templateMX, ContactType... contactTypes) {
+		if (!ArgUtil.isEmpty(indetnityInt)) {
+			Customer cust = customerRepository.getActiveCustomerDetails(indetnityInt);
+			return sendMessage(cust, model, communicationEvent, templateMX, contactTypes);
+		}
 		return false;
 	}
 
-	// TODO:- @Anant to implement these methods
-	public boolean sendMessage(Communicatable commCustomer, Object model, CommunicationEvents communicationEvent,
+	public boolean sendMessage(Object model, CommunicationEvents communicationEvent,
 			TemplatesMX templateMX, ContactType... contactTypes) {
+		if (!ArgUtil.isEmpty(metaData.getCustomerId())) {
+			Customer cust = custDao.getActiveCustomerDetailsByCustomerId(metaData.getCustomerId());
+			return sendMessage(cust, model, communicationEvent, templateMX, contactTypes);
+		}
 		return false;
 	}
-
 }
