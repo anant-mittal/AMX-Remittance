@@ -20,7 +20,6 @@ import com.amx.jax.repository.IExEmailNotificationDao;
 @Component
 public class NotificationManager {
 
-	public static final String ROUTING_STATUS_CHANGE_SUB = "Routing Product Status Update";
 	public static final String RESP_DATA_KEY = "data";
 
 	@Autowired
@@ -41,7 +40,6 @@ public class NotificationManager {
 			for (ExEmailNotification eNotification : emailNotifications) {
 
 				Email email = new Email();
-				email.setSubject(ROUTING_STATUS_CHANGE_SUB);
 				email.addTo(eNotification.getEmailId());
 				email.setITemplate(TemplatesMX.ROUTING_PRODUCT_STATUS_CHANGE);
 				email.setHtml(true);
