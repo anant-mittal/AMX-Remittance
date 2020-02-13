@@ -206,7 +206,9 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			ConfigDto config = getLimitCheck(metaData.getCustomerId());
 			config = partnerTransactionManager.paymentModeServiceProviderLimit(config,lstCustomerShopping,customer.getIdentityTypeId());
 			cartList.setConfigDto(config);
-			
+			List<PaymentModesDTO> paymentModeDtoList = new ArrayList<>();
+			fetchPaymentModes(paymentModeDtoList);
+			cartList.setPaymentModeList(paymentModeDtoList);
 			if(lstCustomerShopping != null && !lstCustomerShopping.isEmpty() && lstCustomerShopping.size() != 0) {
 				clearCartForPB(lstCustomerShopping);
 				for (ShoppingCartDetails customerApplDto : lstCustomerShopping) {
@@ -229,12 +231,11 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 					cartList.setTotalLyltyPointAmt(totalLyltyPointAmt);
 					cartList.setTotalLoyaltyPointAvaliable(totalCustomerLoyaltyPoits);
 					cartList.setTotalNetCollectionAmount(totalNetAmount.subtract(totalLyltyPointAmt==null?BigDecimal.ZERO:totalLyltyPointAmt));
-					List<PaymentModesDTO> paymentModeDtoList = new ArrayList<>();
-					fetchPaymentModes(paymentModeDtoList);
 					
 					
 					BankMasterMdlv1 bankMasterView = bankService.getBankById(customerApplDto.getRoutingBankId());
 					boolean canAddtoCart = canAddtoCart(bankMasterView);
+					
 					if (!canAddtoCart && addtoCart == true) {
 						cartList.setAddToCart(false);
 						addtoCart = false;
@@ -246,9 +247,9 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 								break;
 							}
 						}
+						cartList.setPaymentModeList(paymentModeDtoList);
 					}
 					
-					cartList.setPaymentModeList(paymentModeDtoList);
 					
 					if(fcCurrencyId == null || fcCurrencyId.compareTo(BigDecimal.ZERO) == 0){
 						throw new GlobalException(JaxError.NULL_CURRENCY_ID, "Null foreign currency id passed");
