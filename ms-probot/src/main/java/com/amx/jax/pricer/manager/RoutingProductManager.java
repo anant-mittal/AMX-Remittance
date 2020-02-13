@@ -1,5 +1,6 @@
 package com.amx.jax.pricer.manager;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +44,7 @@ import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.pricer.var.PricerServiceConstants.ROUTING_STATUS;
 import com.amx.jax.pricer.var.PricerServiceConstants.TREASURY_FUND_STATUS;
+import com.amx.jax.probot.notifications.RoutingStatusChangeNotification;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
@@ -77,6 +80,9 @@ public class RoutingProductManager {
 
 	@Autowired
 	BankServiceRuleDao bankServiceRuleDao;
+
+	@Autowired
+	NotificationManager notificationManager;
 
 	public RoutingProductStatusDetails getRoutingProductStatus(BigDecimal beneCountryId, BigDecimal currencyId) {
 
@@ -433,6 +439,23 @@ public class RoutingProductManager {
 					request.getBankId(), request.getRemitModeId(), request.getDeliveryModeId(),
 					request.getUpdated().getIsActive(), request.getUpdatedBy(), new Date());
 
+		}
+
+		// Trigger : Send Notification of the change
+
+		if (updateCount > 0) {
+			RoutingStatusChangeNotification notificationData = new RoutingStatusChangeNotification();
+
+			try {
+				BeanUtils.copyProperties(notificationData, oldStatus);
+			} catch (IllegalAccessException | InvocationTargetException e) {
+				// Ignore
+			}
+
+			notificationData.setProductStatus(request.getUpdated());
+
+			// Async Call
+			notificationManager.sendRoutingStatusUpdateNotification(notificationData);
 		}
 
 		return updateCount;
