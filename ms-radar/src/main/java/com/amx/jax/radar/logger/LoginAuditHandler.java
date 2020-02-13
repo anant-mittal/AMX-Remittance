@@ -88,7 +88,7 @@ public class LoginAuditHandler implements AuditHandler {
 		params.toMap().put("newDevice", newDevice);
 		params.toMap().put("newLocation", newLocation);
 		params.toMap().put("newIP", newIP);
-		if (ArgUtil.is(bulk) && bulk.size() == 0) {
+		if (ArgUtil.isEmpty(bulk) || bulk.size() == 0) {
 			return false;
 		}
 

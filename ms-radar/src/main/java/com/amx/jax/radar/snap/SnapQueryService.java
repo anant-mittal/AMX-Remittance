@@ -184,7 +184,8 @@ public class SnapQueryService {
 		Object pivot = query.remove("pivot");
 		try {
 			x.put("bulk",
-					JsonUtil.getListFromJsonString(JsonUtil.toJson(gridService.view(gridView, sqlQuery).get().getResults())));
+					JsonUtil.getListFromJsonString(
+							JsonUtil.toJson(gridService.view(gridView, sqlQuery).get().getResults())));
 		} catch (Exception e) {
 			log.error(e);
 		}
@@ -228,7 +229,7 @@ public class SnapQueryService {
 			}
 		}
 
-		if (level >= 0 && ArgUtil.is(inputBulk)) {
+		if (level >= 0 && inputBulk != null) {
 			List<Map<String, List<String>>> p = x.getPivot();
 			Object cols = null;
 			for (Map<String, List<String>> pivot : p) {
