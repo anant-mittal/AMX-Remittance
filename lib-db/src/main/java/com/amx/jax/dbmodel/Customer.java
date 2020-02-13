@@ -1105,12 +1105,12 @@ public class Customer implements java.io.Serializable, Communicatable {
 	public void setWhatsAppVerified(Status whatsAppVerified) {
 		this.whatsAppVerified = whatsAppVerified;
 	}
-	public boolean canSendWhatsApp() {
-		return !(ArgUtil.isEmpty(this.whatsapp));
-	}
 	/*public boolean canSendWhatsApp() {
-		return !(Status.D.equals(this.whatsAppVerified) || Status.N.equals(this.whatsAppVerified) || ArgUtil.isEmpty(this.whatsapp));
+		return !(ArgUtil.isEmpty(this.whatsapp));
 	}*/
+	public boolean canSendWhatsApp() {
+		return !(Status.D.equals(this.whatsAppVerified) || Status.N.equals(this.whatsAppVerified) || ArgUtil.isEmpty(this.whatsapp));
+	}
 
 	private Status emailVerified;
 
@@ -1124,13 +1124,13 @@ public class Customer implements java.io.Serializable, Communicatable {
 		this.emailVerified = emailVerified;
 	}
 	
-	public boolean canSendEmail() {
-		return !(ArgUtil.isEmpty(this.email));
-	}
-	
 	/*public boolean canSendEmail() {
-		return !(Status.D.equals(this.emailVerified) || Status.N.equals(this.emailVerified) || ArgUtil.isEmpty(this.email));
+		return !(ArgUtil.isEmpty(this.email));
 	}*/
+	
+	public boolean canSendEmail() {
+		return !(Status.D.equals(this.emailVerified) || Status.N.equals(this.emailVerified) || ArgUtil.isEmpty(this.email));
+	}
 
 	private Status mobileVerified;
 
@@ -1143,12 +1143,12 @@ public class Customer implements java.io.Serializable, Communicatable {
 	public void setMobileVerified(Status mobileVerified) {
 		this.mobileVerified = mobileVerified;
 	}
-	public boolean canSendMobile() {
-		return !(ArgUtil.isEmpty(this.mobile));
-	}
 	/*public boolean canSendMobile() {
-		return !(Status.D.equals(this.mobileVerified) || Status.N.equals(this.mobileVerified) || ArgUtil.isEmpty(this.mobile));
+		return !(ArgUtil.isEmpty(this.mobile));
 	}*/
+	public boolean canSendMobile() {
+		return !(Status.D.equals(this.mobileVerified) || Status.N.equals(this.mobileVerified) || ArgUtil.isEmpty(this.mobile));
+	}
 	
 	public boolean hasVerified(ContactType contactType) {
 		switch (contactType) {

@@ -281,7 +281,7 @@ public class CustomerController implements ICustomerService {
 		if (contactType != null) {
 			contactTypes.add(contactType);
 		}
-		communicationPreferencesManager.validateCommunicationPreferences(contactTypes,CommunicationEvents.SIGNUP_ONLINE,civilId);
+		//communicationPreferencesManager.validateCommunicationPreferences(contactTypes,CommunicationEvents.SIGNUP_ONLINE,civilId);
 		ApiResponse response = userService.sendOtpForCivilId(civilId, contactTypes, null, init);
 		return response;
 	}

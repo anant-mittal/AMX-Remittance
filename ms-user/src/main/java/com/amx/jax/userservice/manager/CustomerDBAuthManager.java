@@ -113,13 +113,13 @@ public class CustomerDBAuthManager {
 		List<ContactType> contactList = new ArrayList<ContactType>();
 		contactList.add(contactType);
 		
-		if(AppContextUtil.getFlow().equalsIgnoreCase(AmxDBConstants.FORGOT_PASSWORD_FLOW)) {
+		/*if(AppContextUtil.getFlow().equalsIgnoreCase(AmxDBConstants.FORGOT_PASSWORD_FLOW)) {
 			communicationPreferencesManager.validateCommunicationPreferences(contactList,CommunicationEvents.FORGOT_PASSWORD,identityInt);
 		}else if(AppContextUtil.getFlow().equalsIgnoreCase(AmxDBConstants.BENEFICIARY_ADDITION_FLOW)) {
 			communicationPreferencesManager.validateCommunicationPreferences(contactList,CommunicationEvents.ADD_BENEFICIARY,identityInt);
 		}else if(AppContextUtil.getFlow().equalsIgnoreCase(AmxDBConstants.REMIT_CART_ADD)) {
 			communicationPreferencesManager.validateCommunicationPreferences(contactList, CommunicationEvents.REMITTANCE, identityInt);
-		}
+		}*/
 		if (contactType == null) {
 
 			// send list of contact types available for customer

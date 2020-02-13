@@ -77,7 +77,7 @@ public class OnlineCustomerManager {
 				// signifies that it is send otp flow
 				if (JaxAuthContext.getMotp() == null) {
 					userValidationService.validateCustomerContactForSendOtp(Arrays.asList(ContactType.SMS), customer);
-					communicationPreferencesManager.validateCommunicationPreferences(null,CommunicationEvents.UPDATE_SECQUE,null);
+					//communicationPreferencesManager.validateCommunicationPreferences(null,CommunicationEvents.UPDATE_SECQUE,null);
 					userService.validateTokenExpiryTime(customerOnlineRegistration);
 					userValidationService.validateTokenSentCount(customerOnlineRegistration);
 					userService.incrementTokenSentCount(customerOnlineRegistration);
