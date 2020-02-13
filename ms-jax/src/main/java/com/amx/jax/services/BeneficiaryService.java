@@ -714,7 +714,7 @@ public class BeneficiaryService extends AbstractService {
 	public ApiResponse sendOtp(List<ContactType> channels) {
 		logger.info("Flow is "+AppContextUtil.getFlow());
 		//if()
-		communicationPreferencesManager.validateCommunicationPreferences(channels,CommunicationEvents.DISABLE_BENEFICIARY,null);
+		//communicationPreferencesManager.validateCommunicationPreferences(channels,CommunicationEvents.DISABLE_BENEFICIARY,null);
 		Customer customer = null;
 		String civilId = null;
 		BigDecimal customerId = null;
