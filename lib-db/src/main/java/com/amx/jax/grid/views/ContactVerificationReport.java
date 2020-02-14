@@ -50,7 +50,7 @@ public class ContactVerificationReport implements java.io.Serializable {
 	private ContactType contactType;
 
 	@Column(name = "SENT_COUNT")
-	private BigDecimal count;
+	private BigDecimal sent;
 
 	@Column(name = "CUSTOMER_COUNT")
 	private BigDecimal customers;
@@ -64,14 +64,6 @@ public class ContactVerificationReport implements java.io.Serializable {
 
 	public void setContactType(ContactType contactType) {
 		this.contactType = contactType;
-	}
-
-	public BigDecimal getCount() {
-		return count;
-	}
-
-	public void setCount(BigDecimal count) {
-		this.count = count;
 	}
 
 	public BigDecimal getCustomers() {
@@ -120,6 +112,14 @@ public class ContactVerificationReport implements java.io.Serializable {
 
 	public void setBranchName(String branchName) {
 		this.branchName = branchName;
+	}
+
+	public BigDecimal getSent() {
+		return sent;
+	}
+
+	public void setSent(BigDecimal sent) {
+		this.sent = sent;
 	}
 
 }
