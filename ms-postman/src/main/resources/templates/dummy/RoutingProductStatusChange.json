@@ -1,0 +1,9 @@
+{
+    "data": {
+        "countryName": "countryName",
+        "currencyName":"currencyName",
+        "bankName":"bankName",
+        "productName":"productName",
+        "productStatus":"productStatus"
+    }
+}

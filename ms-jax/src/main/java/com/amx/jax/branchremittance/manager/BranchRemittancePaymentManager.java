@@ -207,7 +207,9 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			ConfigDto config = getLimitCheck(metaData.getCustomerId());
 			config = partnerTransactionManager.paymentModeServiceProviderLimit(config,lstCustomerShopping,customer.getIdentityTypeId());
 			cartList.setConfigDto(config);
-			
+			List<PaymentModesDTO> paymentModeDtoList = new ArrayList<>();
+			fetchPaymentModes(paymentModeDtoList);
+			cartList.setPaymentModeList(paymentModeDtoList);
 			if(lstCustomerShopping != null && !lstCustomerShopping.isEmpty() && lstCustomerShopping.size() != 0) {
 				clearCartForPB(lstCustomerShopping);
 				for (ShoppingCartDetails customerApplDto : lstCustomerShopping) {
@@ -230,28 +232,22 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 					cartList.setTotalLyltyPointAmt(totalLyltyPointAmt);
 					cartList.setTotalLoyaltyPointAvaliable(totalCustomerLoyaltyPoits);
 					cartList.setTotalNetCollectionAmount(totalNetAmount.subtract(totalLyltyPointAmt==null?BigDecimal.ZERO:totalLyltyPointAmt));
-					List<PaymentModesDTO> paymentModeDtoList = new ArrayList<>();
-					fetchPaymentModes(paymentModeDtoList);
-					
-					
 					BankMasterMdlv1 bankMasterView = bankService.getBankById(customerApplDto.getRoutingBankId());
 					boolean canAddtoCart = canAddtoCart(bankMasterView);
 					if (!canAddtoCart && addtoCart == true) {
 						cartList.setAddToCart(false);
-						addtoCart =false;
+						addtoCart = false;
 						Iterator<PaymentModesDTO> iter = paymentModeDtoList.iterator();
-						while(iter.hasNext()) {
+						while (iter.hasNext()) {
 							PaymentModesDTO paymentModesDTO = iter.next();
-							if(ConstantDocument.PB_PAYMENT.equals(paymentModesDTO.getPaymentModeCode())) {
+							if (ConstantDocument.PB_PAYMENT.equals(paymentModesDTO.getPaymentModeCode())) {
 								iter.remove();
 								break;
 							}
 						}
-						
-						
+						cartList.setPaymentModeList(paymentModeDtoList);
 					}
 					
-					cartList.setPaymentModeList(paymentModeDtoList);
 					
 					if(fcCurrencyId == null || fcCurrencyId.compareTo(BigDecimal.ZERO) == 0){
 						throw new GlobalException(JaxError.NULL_CURRENCY_ID, "Null foreign currency id passed");
@@ -651,10 +647,10 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 				CustomerBank customerBankDt = new CustomerBank();
 				customerBankDt.setBankCode(customerBankRequest.getBankCode());
 				if(JaxUtil.isNullZeroBigDecimalCheck(customerBankRequest.getBankId())) {
-				customerBankDt.setBankId(customerBankRequest.getBankId());
+	 				customerBankDt.setBankId(customerBankRequest.getBankId());
 				}else {
-					throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "Cuctomer Bank id is required");	
-				}
+						throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "Cuctomer Bank id is required");	
+					}
 				customerBankDt.setCollectionMode(customerBankRequest.getCollectionMode());
 				customerBankDt.setCreatedBy(empDet.getUserName());
 				customerBankDt.setCreatedDate(new Date());

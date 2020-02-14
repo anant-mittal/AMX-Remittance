@@ -110,6 +110,9 @@ public enum TemplatesMX implements ITemplate {
 	PEP_FORM_JASPER("PepForm_jasper", PDFConverter.JASPER, "PepForm.json"),
 	
 	VERIFICATION_NOTIFY("VerificationNotify"),
+	
+	// Routing Product Status Change
+	ROUTING_PRODUCT_STATUS_CHANGE("RoutingProductStatusChange"),
 
 	// Default add enums above this
 	DEFAULT("default");
