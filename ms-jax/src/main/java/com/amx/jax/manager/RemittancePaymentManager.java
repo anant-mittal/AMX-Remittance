@@ -493,7 +493,7 @@ public class RemittancePaymentManager extends AbstractService{
 							BeanUtils.copyProperties(personinfo, customer);
 						} catch (Exception e) {
 						}
-						if(personInfo!=null && !StringUtils.isBlank(personInfo.getEmail())&&customer.canSendEmail()) {
+						if(personInfo!=null && !StringUtils.isBlank(personInfo.getEmail())/*&&customer.canSendEmail()*/) {
 							notificationService.sendTransactionNotification(rrsrl.get(0), personinfo,jaxNotificationDataManager.getTransactionSuccessEmailData());
 						}
 					} catch (Exception e) {

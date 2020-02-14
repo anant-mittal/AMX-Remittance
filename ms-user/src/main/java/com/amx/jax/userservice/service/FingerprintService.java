@@ -192,7 +192,7 @@ public class FingerprintService {
 		custDao.saveOnlineCustomer(customerOnlineRegistration);
 		
 		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
-		if(customer.canSendEmail()) {
+		//if(customer.canSendEmail()) {
 			PersonInfo personinfo = new PersonInfo();
 			personinfo.setFirstName(customer.getFirstName());
 			personinfo.setMiddleName(customer.getMiddleName());
@@ -210,7 +210,7 @@ public class FingerprintService {
 
 			logger.info("Email to - " + customerOnlineRegistration.getEmail());
 			sendEmail(email);
-		}
+		//}
 		
 		return userFingerprintResponsemodel;
 	}
@@ -287,7 +287,7 @@ public class FingerprintService {
 		BoolRespModel boolRespModel = new BoolRespModel();
 		boolRespModel.setSuccess(Boolean.TRUE);
 		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
-		if(customer.canSendEmail()) {
+		//if(customer.canSendEmail()) {
 			PersonInfo personinfo = new PersonInfo();
 			personinfo.setFirstName(customer.getFirstName());
 			personinfo.setMiddleName(customer.getMiddleName());
@@ -300,7 +300,7 @@ public class FingerprintService {
 			email.getModel().put(RESP_DATA_KEY, personinfo);
 			logger.info("Email to delink fingerprint- " + customerOnlineRegistration.getEmail());
 			sendEmail(email);
-		}
+		//}
 		
 		return boolRespModel;
 	}
@@ -315,7 +315,7 @@ public class FingerprintService {
 		BoolRespModel boolRespModel = new BoolRespModel();
 		boolRespModel.setSuccess(Boolean.TRUE);
 		Customer customer = custDao.getActiveCustomerByIndentityIntAndType(identity,identityType);
-		if(customer.canSendEmail()) {
+		//if(customer.canSendEmail()) {
 			PersonInfo personinfo = new PersonInfo();
 			personinfo.setFirstName(customer.getFirstName());
 			personinfo.setMiddleName(customer.getMiddleName());
@@ -328,7 +328,7 @@ public class FingerprintService {
 			email.getModel().put(RESP_DATA_KEY, personinfo);
 			logger.info("Email to reset fingerprint- " + customerOnlineRegistration.getEmail());
 			sendEmail(email);
-		}
+		//}
 		
 		return boolRespModel;
 	
