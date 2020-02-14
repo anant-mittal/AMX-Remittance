@@ -1,11 +1,11 @@
-SELECT k.emp_name, 
+SELECT max(k.id) id, k.emp_name, 
        k.area_name, 
        k.branch_name, 
        k.contact_type, 
        Sum(k.sent_count) AS SENT_COUNT, 
        Sum(k.customer_count) AS customer_count, 
        Sum(k.verified_count) AS verified_count 
-FROM   (SELECT x.user_name AS emp_name, 
+FROM   (SELECT max(id) id, x.user_name AS emp_name, 
                e.fudesc AS area_name, 
                d.branch_name, 
                c.contact_type, 
@@ -43,8 +43,12 @@ FROM   (SELECT x.user_name AS emp_name,
         WHERE  x.employee_id = c.created_by_id 
                AND d.country_branch_id = x.country_branch_id 
                AND d.area_code = e.area_loccod                
-               AND c.created_date > To_date('[[${gte}]]', 'YYYY-MM-DD HH24:MI:SS')
-               AND c.created_date < To_date('[[${lte}]]', 'YYYY-MM-DD HH24:MI:SS') 
+               AND c.created_date > TO_TIMESTAMP('1970-01-01 00:00:00.0'
+                   					,'YYYY-MM-DD HH24:MI:SS.FF'
+       								) + NUMTODSINTERVAL([[${gte}]]/1000, 'SECOND')
+               AND c.created_date < TO_TIMESTAMP('1970-01-01 00:00:00.0'
+                   					,'YYYY-MM-DD HH24:MI:SS.FF'
+       								) + NUMTODSINTERVAL([[${lte}]]/1000, 'SECOND')
         GROUP  BY x.user_name, 
                   e.fudesc, 
                   d.branch_name, 
