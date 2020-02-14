@@ -59,6 +59,9 @@ public class AddToCartRequestValidator {
 				});
 				for (SERVICE_PROVIDER_BANK_CODE bankCode : SINGLE_APPLICATION_SERVICE_PROVIDERS) {
 					BankMasterMdlv1 bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(bankCode.name(), PricerServiceConstants.Yes);
+					if(bankMaster == null) {
+						continue;
+					}
 					Integer count = bankIdVsNoOfApplicationMap.get(bankMaster.getBankId());
 					String errorMessage = null;
 					if (count != null) {
