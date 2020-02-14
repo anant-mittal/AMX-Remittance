@@ -382,7 +382,6 @@ public class PlaceOrderManager implements Serializable{
 			for(ViewPlaceOnOrderInquiry ratePlaceOrder :viewPOderInqList) {
 				
 				RatePlaceOrderInquiryDto lstPlaceOrder = new RatePlaceOrderInquiryDto();
-				
 				lstPlaceOrder.setBeneficiaryAccountNumber(ratePlaceOrder.getBeneficiaryAccountNumber());
 				lstPlaceOrder.setBeneficiaryBankBranchName(ratePlaceOrder.getBeneficiaryBankBranchName());
 				lstPlaceOrder.setBeneficiaryBankName(ratePlaceOrder.getBeneficiaryBankName());
@@ -414,10 +413,12 @@ public class PlaceOrderManager implements Serializable{
 				
 				EmployeeDetailsView createdDetails =null;
 				if(!StringUtils.isBlank(ratePlaceOrder.getCreatedBy())) {		
-					createdDetails = employeeDetailsRepository.findByUserName(ratePlaceOrder.getCreatedBy());
+					createdDetails = employeeDetailsRepository.findByUserNameAndIsActive(ratePlaceOrder.getCreatedBy(),ConstantDocument.Yes);
 				}
 				
-				lstPlaceOrder.setCreatedByName(createdDetails.getEmployeeName());
+				if(createdDetails!=null) {
+					lstPlaceOrder.setCreatedByName(createdDetails.getEmployeeName());
+				}
 				
 				if(ratePlaceOrder.getNegotiate() != null && ratePlaceOrder.getNegotiate().equalsIgnoreCase(ConstantDocument.Yes)){
 					if(ratePlaceOrder.getIsActive() != null && ratePlaceOrder.getIsActive().equalsIgnoreCase(ConstantDocument.Yes)){
@@ -608,12 +609,12 @@ public List<PlaceOrderApplDto>  convertGsmDto(List<RatePlaceOrder> placeOrderLsi
 		
 		EmployeeDetailsView createdDetails =null;
 		if(!StringUtils.isBlank(placeOrder.getCreatedBy())) {		
-			createdDetails = employeeDetailsRepository.findByUserName(placeOrder.getCreatedBy());
+			createdDetails = employeeDetailsRepository.findByUserNameAndIsActive(placeOrder.getCreatedBy(),ConstantDocument.Yes);
 		}
 		
 		EmployeeDetailsView approvedByDetails = null; 
 		if(!StringUtils.isBlank(placeOrder.getApprovedBy())) {
-			approvedByDetails=employeeDetailsRepository.findByUserName(placeOrder.getApprovedBy());
+			approvedByDetails=employeeDetailsRepository.findByUserNameAndIsActive(placeOrder.getApprovedBy(),ConstantDocument.Yes);
 		}
 		
 		
