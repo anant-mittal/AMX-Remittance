@@ -9,7 +9,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.Id;
 
 import com.amx.jax.dict.ContactType;
-import com.amx.jax.util.AmxDBConstants.Status;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -21,11 +20,17 @@ public class ContactVerificationReport implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name = "id")
+	@Column(name = "ID")
 	private String id;
 
-	@Column(name = "EMPLOYEE_ID")
-	private BigDecimal employeeId;
+	@Column(name = "EMP_NAME")
+	private String employeeName;
+
+	@Column(name = "AREA_NAME")
+	private String areaName;
+
+	@Column(name = "BRANCH_NAME")
+	private String branchName;
 
 	/*
 	 * @Column(name = "EMPLOYEE_NAME") private String employeeName;
@@ -34,32 +39,24 @@ public class ContactVerificationReport implements java.io.Serializable {
 	 * 
 	 * @Column(name = "AREA_NAME") private String areaName;
 	 * 
+	 * @Column(name = "ISACTIVE")
+	 * 
+	 * @Enumerated(value = EnumType.STRING) private Status isActive;
+	 * 
 	 */
 
 	@Column(name = "CONTACT_TYPE")
 	@Enumerated(value = EnumType.STRING)
 	private ContactType contactType;
 
-	@Column(name = "ISACTIVE")
-	@Enumerated(value = EnumType.STRING)
-	private Status isActive;
-
-	@Column(name = "SENT")
+	@Column(name = "SENT_COUNT")
 	private BigDecimal count;
 
-	@Column(name = "CUSTOMERS")
+	@Column(name = "CUSTOMER_COUNT")
 	private BigDecimal customers;
 
-	@Column(name = "VERIFIED")
+	@Column(name = "VERIFIED_COUNT")
 	private BigDecimal verified;
-
-	public BigDecimal getEmployeeId() {
-		return employeeId;
-	}
-
-	public void setEmployeeId(BigDecimal employeeId) {
-		this.employeeId = employeeId;
-	}
 
 	public ContactType getContactType() {
 		return contactType;
@@ -67,14 +64,6 @@ public class ContactVerificationReport implements java.io.Serializable {
 
 	public void setContactType(ContactType contactType) {
 		this.contactType = contactType;
-	}
-
-	public Status getIsActive() {
-		return isActive;
-	}
-
-	public void setIsActive(Status isActive) {
-		this.isActive = isActive;
 	}
 
 	public BigDecimal getCount() {
@@ -107,6 +96,30 @@ public class ContactVerificationReport implements java.io.Serializable {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getEmployeeName() {
+		return employeeName;
+	}
+
+	public void setEmployeeName(String employeeName) {
+		this.employeeName = employeeName;
+	}
+
+	public String getAreaName() {
+		return areaName;
+	}
+
+	public void setAreaName(String areaName) {
+		this.areaName = areaName;
+	}
+
+	public String getBranchName() {
+		return branchName;
+	}
+
+	public void setBranchName(String branchName) {
+		this.branchName = branchName;
 	}
 
 }

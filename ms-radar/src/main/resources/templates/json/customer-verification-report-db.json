@@ -1,9 +1,9 @@
 {
   "pivot" : [
   	{
-	 "rows" : ["area_name", "branch_name", "emp_name"],
+	 "rows" : ["areaName", "branchName", "empName"],
 	 "cols" : ["contactType"],
-	 "vals" : ["sum SENT_COUNT AS count DEFAULT 0", "sum customer_count AS customers DEFAULT 0", "sum verified_count AS verified DEFAULT 0"],
+	 "vals" : ["sum SENT AS count DEFAULT 0", "sum customer AS customers DEFAULT 0", "sum verified AS verified DEFAULT 0"],
 	 "defaults" : [
  		"SMS_count 0","EMAIL_count 0","WHATSAPP_count 0",
  		"SMS_customers 0","EMAIL_customers 0","WHATSAPP_customers 0",
