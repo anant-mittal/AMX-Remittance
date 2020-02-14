@@ -3,7 +3,7 @@
   	{
 	 "rows" : ["areaName", "branchName", "employeeName"],
 	 "cols" : ["contactType"],
-	 "vals" : ["sum sent AS VERIFICATION DEFAULT 0", "sum customes AS CUSTOMERS DEFAULT 0", "sum verified AS CONFIRMED DEFAULT 0"],
+	 "vals" : ["sum sent AS VERIFICATION DEFAULT 0", "sum customers AS CUSTOMERS DEFAULT 0", "sum verified AS CONFIRMED DEFAULT 0"],
 	 "defaults" : [
  		"SMS_VERIFICATION 0","EMAIL_VERIFICATION 0","WHATSAPP_VERIFICATION 0",
  		"SMS_CUSTOMERS 0","EMAIL_CUSTOMERS 0","WHATSAPP_CUSTOMERS 0",
