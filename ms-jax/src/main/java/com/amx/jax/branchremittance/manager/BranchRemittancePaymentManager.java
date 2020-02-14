@@ -232,10 +232,6 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 					cartList.setTotalLyltyPointAmt(totalLyltyPointAmt);
 					cartList.setTotalLoyaltyPointAvaliable(totalCustomerLoyaltyPoits);
 					cartList.setTotalNetCollectionAmount(totalNetAmount.subtract(totalLyltyPointAmt==null?BigDecimal.ZERO:totalLyltyPointAmt));
-					List<PaymentModesDTO> paymentModeDtoList = new ArrayList<>();
-					fetchPaymentModes(paymentModeDtoList);
-					
-					
 					BankMasterMdlv1 bankMasterView = bankService.getBankById(customerApplDto.getRoutingBankId());
 					boolean canAddtoCart = canAddtoCart(bankMasterView);
 					if (!canAddtoCart && addtoCart == true) {
@@ -252,7 +248,6 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 						cartList.setPaymentModeList(paymentModeDtoList);
 					}
 					
-					cartList.setPaymentModeList(paymentModeDtoList);
 					
 					if(fcCurrencyId == null || fcCurrencyId.compareTo(BigDecimal.ZERO) == 0){
 						throw new GlobalException(JaxError.NULL_CURRENCY_ID, "Null foreign currency id passed");
