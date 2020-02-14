@@ -232,8 +232,6 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 					cartList.setTotalLyltyPointAmt(totalLyltyPointAmt);
 					cartList.setTotalLoyaltyPointAvaliable(totalCustomerLoyaltyPoits);
 					cartList.setTotalNetCollectionAmount(totalNetAmount.subtract(totalLyltyPointAmt==null?BigDecimal.ZERO:totalLyltyPointAmt));
-					List<PaymentModesDTO> paymentModeDtoList = new ArrayList<>();
-					fetchPaymentModes(paymentModeDtoList);
 					
 					
 					BankMasterMdlv1 bankMasterView = bankService.getBankById(customerApplDto.getRoutingBankId());
