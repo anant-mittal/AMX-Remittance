@@ -522,8 +522,8 @@ public class DiscountManager {
 				return true;
 
 			}
-		} catch (PricerServiceException e) {
-			LOGGER.info("ErrorKey : - " + e.getErrorKey() + " ErrorMessage : - " + e.getErrorMessage());
+		} catch (Exception e) {
+			LOGGER.error("Exception in save margin markup",e);
 			throw new PricerServiceException(PricerServiceError.INVALID_MARKUP,
 					"The markup value entered is not valid for the selected country,currency and bank.");
 		}
