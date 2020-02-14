@@ -56,13 +56,11 @@ import com.amx.jax.dbmodel.remittance.AmiecAndBankMapping;
 import com.amx.jax.dbmodel.remittance.BankBranch;
 import com.amx.jax.dbmodel.remittance.DeliveryMode;
 import com.amx.jax.dbmodel.remittance.Document;
-import com.amx.jax.dbmodel.remittance.RatePlaceOrder;
 import com.amx.jax.dbmodel.remittance.RemitApplAmlModel;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceApplicationSplitting;
 import com.amx.jax.dbmodel.remittance.RemittanceModeMaster;
-import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditEvent.Result;
@@ -327,8 +325,8 @@ public class BranchRemittanceApplManager {
 			logger.debug("branchExchangeRate :"+exchangeRateBreakup+" commission : "+commission);
 		}
 
-		remittanceTransactionRequestValidator.validateFlexFields(requestApplModel, remitApplParametersMap);
 		remittanceAdditionalFieldManager.validateAdditionalFields(requestApplModel, remitApplParametersMap);
+		remittanceTransactionRequestValidator.validateFlexFields(requestApplModel, remitApplParametersMap);
 		// bank api validations
 		additionalBankDetailManager.validateAdditionalBankFields(requestApplModel, remitApplParametersMap);
 		remittanceAdditionalFieldManager.processAdditionalFields(requestApplModel); 
