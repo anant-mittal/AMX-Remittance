@@ -58,6 +58,7 @@ import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
+import com.amx.jax.service.ParameterService;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.LoyalityPointService;
@@ -472,12 +473,14 @@ public class RemittanceApplicationManager {
 		
 		if (beneficiaryPerDayLimit!=null && todaysTxns >=beneficiaryPerDayLimit.getAuthLimit().intValue()) {
 			throw new GlobalException(JaxError.NO_OF_TRANSACTION_LIMIT_EXCEEDED,beneficiaryPerDayLimit.getAuthMessage());
+		}
+	}
 				/*	
 					"Dear Customer, you have already done "+ todaysTxns.toString() +" application to this beneficiary within the last 24"
 							+ " hours. In the interest of safety, we do not allow a customer to repeat the same"
 							+ " transaction to the same beneficiary more than once in 24 hours.");
 		}
-	}
+	}*/
 
 	private void validateBannedBank(BigDecimal beneRelaId) {
 		
