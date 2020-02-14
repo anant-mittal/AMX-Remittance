@@ -15,7 +15,10 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.pricer.dao.BankMasterDao;
 import com.amx.jax.pricer.dao.BankServiceRuleDao;
@@ -48,6 +51,7 @@ import com.amx.jax.probot.notifications.RoutingStatusChangeNotification;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
+@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
 public class RoutingProductManager {
 

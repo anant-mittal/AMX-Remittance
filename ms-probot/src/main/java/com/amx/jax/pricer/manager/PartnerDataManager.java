@@ -15,7 +15,10 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.serviceprovider.ServiceProviderClientWrapper;
@@ -74,6 +77,7 @@ import com.amx.utils.IoUtils;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.RoundUtil;
 
+@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
 public class PartnerDataManager {
 
