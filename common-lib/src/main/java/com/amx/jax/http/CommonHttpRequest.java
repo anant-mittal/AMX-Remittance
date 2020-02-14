@@ -1,5 +1,6 @@
 package com.amx.jax.http;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +41,7 @@ import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.HttpUtils;
 import com.amx.utils.StringUtils;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import eu.bitwalker.useragentutils.Browser;
 import eu.bitwalker.useragentutils.OperatingSystem;
@@ -135,8 +137,8 @@ public class CommonHttpRequest {
 
 	public String getDeviceId() {
 		return this.getRequestParam(AppConstants.DEVICE_ID_XKEY, AppConstants.DEVICE_ID_KEY);
-				}
-	
+	}
+
 	private String readDeviceId() {
 		String deviceId = this.getRequestParam(AppConstants.DEVICE_ID_XKEY, AppConstants.DEVICE_ID_KEY);
 		this.setCookie(AppConstants.DEVICE_ID_KEY, deviceId);
@@ -203,11 +205,11 @@ public class CommonHttpRequest {
 		for (String contextKey : contextKeys) {
 			String value = request.getParameter(contextKey);
 			if (ArgUtil.isEmpty(value)) {
-				value =  ArgUtil.parseAsString(request.getHeader(contextKey), null);
+				value = ArgUtil.parseAsString(request.getHeader(contextKey), null);
 				if (ArgUtil.isEmpty(value)) {
 					Cookie cookie = WebUtils.getCookie(request, contextKey);
 					if (cookie != null) {
-						value =  ArgUtil.parseAsString(cookie.getValue(), null);
+						value = ArgUtil.parseAsString(cookie.getValue(), null);
 					}
 				}
 			}
@@ -473,7 +475,9 @@ public class CommonHttpRequest {
 		return false;
 	}
 
-	public static class ApiRequestDetail {
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public static class ApiRequestDetail implements Serializable {
+		private static final long serialVersionUID = 4723780864549272004L;
 		RequestType type;
 		ResponeError responeError;
 		boolean useAuthToken;

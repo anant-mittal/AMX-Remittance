@@ -332,7 +332,7 @@ public class AppContextUtil {
 		appContext.setTraceTime(getTraceTime());
 		appContext.setClient(getUserClient());
 		appContext.setParams(getParams());
-		appContext.setApiRequestDetail(getApiRequestDetail());
+		appContext.apiRequestDetail(getApiRequestDetail());
 		return appContext;
 	}
 
@@ -357,8 +357,8 @@ public class AppContextUtil {
 			setUserClient(context.getClient());
 		}
 
-		setApiRequestDetail(context.getApiRequestDetail());
-		
+		setApiRequestDetail(context.apiRequestDetail());
+
 		setTraceTime(context.getTraceTime());
 
 		return context;
