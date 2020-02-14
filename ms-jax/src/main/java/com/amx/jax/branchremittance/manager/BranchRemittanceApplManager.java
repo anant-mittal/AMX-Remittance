@@ -325,6 +325,7 @@ public class BranchRemittanceApplManager {
 			logger.debug("branchExchangeRate :"+exchangeRateBreakup+" commission : "+commission);
 		}
 
+		remittanceTransactionRequestValidator.validatePurposeOfTransaction(requestApplModel, remitApplParametersMap);
 		remittanceAdditionalFieldManager.validateAdditionalFields(requestApplModel, remitApplParametersMap);
 		remittanceTransactionRequestValidator.validateFlexFields(requestApplModel, remitApplParametersMap);
 		// bank api validations
