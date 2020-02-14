@@ -19,8 +19,8 @@ public interface IRatePlaceOrderRepository  extends CrudRepository<RatePlaceOrde
 	public List<RatePlaceOrder> fetchPlaceOrderForCustomer(BigDecimal customerId);
 	
 	@Query("select rv from RatePlaceOrder rv where rv.beneficiaryCountryId =?1 and trunc(valueDate)=trunc(sysdate) and NVL(rv.isActive,' ') <>'D' "
-			+ "and applDocumentNumber is null and applDocumentFinanceYear is null and approvedBy is null and approvedDate is null "
-			+ "and branchSupportIndicator is null order by createdDate desc")
+			+ "and NVL(applDocumentNumber,0)=0 and nvl(applDocumentFinanceYear,0)=0 and nvl(approvedBy,' ')=' '  and approvedDate is null "
+			+ "and nvl(branchSupportIndicator,' ')=' ' and NVL(beneficiaryRelationId,0)>0 order by createdDate desc")
 	public List<RatePlaceOrder> fetchByBeneficiaryCountryId(BigDecimal beneficiaryCountryId);
 	
 	

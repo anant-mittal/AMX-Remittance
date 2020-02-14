@@ -65,7 +65,7 @@ public interface ITransactionHistroyDAO extends JpaRepository<CustomerRemittance
 			+ "              WHERE A.CUSTOMER_ID  = ?1"
 			+ "              AND   TRUNC(A.DOCUMENT_DATE)      =  TRUNC(SYSDATE)"
 			+ "              AND   A.REMITTANCE_APPLICATION_ID =  B.REMITTANCE_APPLICATION_ID"
-			+ "              AND   A.TRANSACTION_DOCUMENT_NO   IS  NULL"
+			//+ "              AND   A.TRANSACTION_DOCUMENT_NO   IS  NULL"
 			+ "              AND   NVL(A.ISACTIVE,' ')         =  'Y'"
 			+ "              AND   B.BENEFICIARY_ID            =  ?2", nativeQuery=true)
 	public Integer getTodaysTransactionForBeneficiary(BigDecimal customerId, BigDecimal benRelationId);
