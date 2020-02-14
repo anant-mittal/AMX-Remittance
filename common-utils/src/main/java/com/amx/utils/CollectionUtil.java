@@ -23,7 +23,7 @@ public final class CollectionUtil {
 	/**
 	 * Gets the array.
 	 *
-	 * @param       <T> the generic type
+	 * @param <T>   the generic type
 	 * @param list  the list
 	 * @param index the index
 	 * @return the array
@@ -38,7 +38,7 @@ public final class CollectionUtil {
 	/**
 	 * Gets the array.
 	 *
-	 * @param       <T> the generic type
+	 * @param <T>   the generic type
 	 * @param array the array
 	 * @param index the index
 	 * @return the array
@@ -53,7 +53,7 @@ public final class CollectionUtil {
 	/**
 	 * Gets the array.
 	 *
-	 * @param              <T> the generic type
+	 * @param <T>          the generic type
 	 * @param list         the list
 	 * @param index        the index
 	 * @param defaultValue the default value
@@ -67,7 +67,7 @@ public final class CollectionUtil {
 	/**
 	 * Gets the array.
 	 *
-	 * @param              <T> the generic type
+	 * @param <T>          the generic type
 	 * @param array        the array
 	 * @param index        the index
 	 * @param defaultValue the default value
@@ -81,7 +81,7 @@ public final class CollectionUtil {
 	/**
 	 * Gets the array.
 	 *
-	 * @param        <T> the generic type
+	 * @param <T>    the generic type
 	 * @param list   the list
 	 * @param index1 the index1
 	 * @param index2 the index2
@@ -100,8 +100,8 @@ public final class CollectionUtil {
 	/**
 	 * As sorted list.
 	 *
-	 * @param   <T> the generic type
-	 * @param c the c
+	 * @param <T> the generic type
+	 * @param c   the c
 	 * @return the list
 	 */
 	public static <T extends Comparable<? super T>> List<T> asSortedList(Collection<T> c) {
@@ -113,8 +113,8 @@ public final class CollectionUtil {
 	/**
 	 * As sorted set.
 	 *
-	 * @param   <T> the generic type
-	 * @param c the c
+	 * @param <T> the generic type
+	 * @param c   the c
 	 * @return the sets the
 	 */
 	public static <T extends Comparable<? super T>> Set<T> asSortedSet(Collection<T> c) {
@@ -127,7 +127,7 @@ public final class CollectionUtil {
 	/**
 	 * Put array.
 	 *
-	 * @param       <E> the element type
+	 * @param <E>   the element type
 	 * @param list  the list
 	 * @param index the index
 	 * @param value the value
@@ -163,7 +163,7 @@ public final class CollectionUtil {
 	/**
 	 * Exists.
 	 *
-	 * @param            <T> the generic type
+	 * @param <T>        the generic type
 	 * @param value      the value
 	 * @param collection the collection
 	 * @return true, if successful
@@ -200,7 +200,7 @@ public final class CollectionUtil {
 	/**
 	 * Gets the list.
 	 *
-	 * @param          <T> the generic type
+	 * @param <T>      the generic type
 	 * @param elements the elements
 	 * @return the list
 	 */
@@ -213,10 +213,14 @@ public final class CollectionUtil {
 		return list;
 	}
 
+	public static <T> T[] getArray(T... elements) {
+		return elements;
+	}
+
 	/**
 	 * Gets the sets the.
 	 *
-	 * @param          <T> the generic type
+	 * @param <T>      the generic type
 	 * @param elements the elements
 	 * @return the sets the
 	 */

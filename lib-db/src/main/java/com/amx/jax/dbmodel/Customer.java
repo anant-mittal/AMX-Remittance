@@ -1105,12 +1105,12 @@ public class Customer implements java.io.Serializable, Communicatable {
 	public void setWhatsAppVerified(Status whatsAppVerified) {
 		this.whatsAppVerified = whatsAppVerified;
 	}
-	/*public boolean canSendWhatsApp() {
-		return !(ArgUtil.isEmpty(this.whatsapp));
-	}*/
 	public boolean canSendWhatsApp() {
 		return !(Status.D.equals(this.whatsAppVerified) || Status.N.equals(this.whatsAppVerified) || ArgUtil.isEmpty(this.whatsapp));
 	}
+	/*public boolean canSendWhatsApp() {
+		return !(Status.D.equals(this.whatsAppVerified) || Status.N.equals(this.whatsAppVerified) || ArgUtil.isEmpty(this.whatsapp));
+	}*/
 
 	private Status emailVerified;
 
@@ -1143,13 +1143,32 @@ public class Customer implements java.io.Serializable, Communicatable {
 	public void setMobileVerified(Status mobileVerified) {
 		this.mobileVerified = mobileVerified;
 	}
-	/*public boolean canSendMobile() {
-		return !(ArgUtil.isEmpty(this.mobile));
-	}*/
 	public boolean canSendMobile() {
 		return !(Status.D.equals(this.mobileVerified) || Status.N.equals(this.mobileVerified) || ArgUtil.isEmpty(this.mobile));
 	}
+	/*public boolean canSendMobile() {
+		return !(Status.D.equals(this.mobileVerified) || Status.N.equals(this.mobileVerified) || ArgUtil.isEmpty(this.mobile));
+	}*/
 	
+	@SuppressWarnings("deprecation")
+	@Override
+	public boolean hasPresent(ContactType contactType) {
+		switch (contactType) {
+		case SMS:
+		case MOBILE:
+			return ArgUtil.is(this.mobile);
+		case EMAIL:
+			return ArgUtil.is(this.email);
+		case WHATSAPP:
+			return ArgUtil.is(this.whatsapp);
+		default:
+			break;
+		}
+		return false;
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Override
 	public boolean hasVerified(ContactType contactType) {
 		switch (contactType) {
 		case SMS:

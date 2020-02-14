@@ -8,4 +8,7 @@ public interface Communicatable {
 
 	public boolean canSendMobile();
 
+	boolean hasVerified(ContactType contactType);
+
+	boolean hasPresent(ContactType contactType);
 }

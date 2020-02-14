@@ -73,7 +73,6 @@ public class MetaConfigController implements AmxSharedConfig {
 			@RequestParam String identityInt) {
 		Customer x = customerRepository.getCustomerOneByIdentityInt(identityInt);
 		return communicationPrefsUtil.forCustomer(event, x);
-
 	}
 
 }

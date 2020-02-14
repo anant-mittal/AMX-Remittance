@@ -39,6 +39,9 @@ public class PostManConfig {
 	@TenantValue("${slack.channel.genral.tnt}")
 	private String channelGenral;
 
+	@Value("${app.telegram.enabled}")
+	private boolean telegramEnabled;
+
 	@Autowired
 	TenantProperties tenantProperties;
 	private Map<Channel, String> channelMap = null;
@@ -238,6 +241,10 @@ public class PostManConfig {
 
 	public void setEmailRetryPoll(Integer emailRetryPoll) {
 		this.emailRetryPoll = emailRetryPoll;
+	}
+
+	public boolean isTelegramEnabled() {
+		return telegramEnabled;
 	}
 
 }

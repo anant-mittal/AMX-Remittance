@@ -30,6 +30,7 @@ import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.BanksView;
 import com.amx.jax.dbmodel.CountryBranchMdlv1;
+import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.CurrencyWiseDenominationMdlv1;
 import com.amx.jax.dbmodel.Customer;
@@ -231,11 +232,12 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 					cartList.setTotalLyltyPointAmt(totalLyltyPointAmt);
 					cartList.setTotalLoyaltyPointAvaliable(totalCustomerLoyaltyPoits);
 					cartList.setTotalNetCollectionAmount(totalNetAmount.subtract(totalLyltyPointAmt==null?BigDecimal.ZERO:totalLyltyPointAmt));
+					List<PaymentModesDTO> paymentModeDtoList = new ArrayList<>();
+					fetchPaymentModes(paymentModeDtoList);
 					
 					
 					BankMasterMdlv1 bankMasterView = bankService.getBankById(customerApplDto.getRoutingBankId());
 					boolean canAddtoCart = canAddtoCart(bankMasterView);
-					
 					if (!canAddtoCart && addtoCart == true) {
 						cartList.setAddToCart(false);
 						addtoCart = false;
@@ -250,6 +252,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 						cartList.setPaymentModeList(paymentModeDtoList);
 					}
 					
+					cartList.setPaymentModeList(paymentModeDtoList);
 					
 					if(fcCurrencyId == null || fcCurrencyId.compareTo(BigDecimal.ZERO) == 0){
 						throw new GlobalException(JaxError.NULL_CURRENCY_ID, "Null foreign currency id passed");

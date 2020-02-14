@@ -218,6 +218,10 @@ public class BranchRemittanceDao {
 			logger.info(" EX_APPL_TRNX_SRV_PROV no record to save "+saveApplTrnx.getRemittanceApplicationId());
 		}
 		
+		
+		
+		
+
 	}
 
 	@Transactional
