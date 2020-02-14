@@ -232,15 +232,19 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 					cartList.setTotalLyltyPointAmt(totalLyltyPointAmt);
 					cartList.setTotalLoyaltyPointAvaliable(totalCustomerLoyaltyPoits);
 					cartList.setTotalNetCollectionAmount(totalNetAmount.subtract(totalLyltyPointAmt==null?BigDecimal.ZERO:totalLyltyPointAmt));
+					List<PaymentModesDTO> paymentModeDtoList = new ArrayList<>();
+					fetchPaymentModes(paymentModeDtoList);
+					
+					
 					BankMasterMdlv1 bankMasterView = bankService.getBankById(customerApplDto.getRoutingBankId());
 					boolean canAddtoCart = canAddtoCart(bankMasterView);
 					if (!canAddtoCart && addtoCart == true) {
 						cartList.setAddToCart(false);
-						addtoCart = false;
+						addtoCart =false;
 						Iterator<PaymentModesDTO> iter = paymentModeDtoList.iterator();
-						while (iter.hasNext()) {
+						while(iter.hasNext()) {
 							PaymentModesDTO paymentModesDTO = iter.next();
-							if (ConstantDocument.PB_PAYMENT.equals(paymentModesDTO.getPaymentModeCode())) {
+							if(ConstantDocument.PB_PAYMENT.equals(paymentModesDTO.getPaymentModeCode())) {
 								iter.remove();
 								break;
 							}
@@ -647,7 +651,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 				CustomerBank customerBankDt = new CustomerBank();
 				customerBankDt.setBankCode(customerBankRequest.getBankCode());
 				if(JaxUtil.isNullZeroBigDecimalCheck(customerBankRequest.getBankId())) {
-	 				customerBankDt.setBankId(customerBankRequest.getBankId());
+				customerBankDt.setBankId(customerBankRequest.getBankId());
 				}else {
 						throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "Cuctomer Bank id is required");	
 					}

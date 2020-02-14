@@ -12,7 +12,7 @@ public interface EmployeeDetailsRepository extends CrudRepository<EmployeeDetail
 	public EmployeeDetailsView findByEmployeeId(BigDecimal employeeId);
 	
 	
-	public EmployeeDetailsView findByUserName(String userName);
+	public EmployeeDetailsView findByUserNameAndIsActive(String userName,String isactive);
 	
 	
 

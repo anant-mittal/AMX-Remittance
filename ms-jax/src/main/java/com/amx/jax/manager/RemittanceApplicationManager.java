@@ -58,7 +58,6 @@ import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
-import com.amx.jax.service.ParameterService;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.LoyalityPointService;
@@ -114,9 +113,9 @@ public class RemittanceApplicationManager {
 	@Autowired
 	BranchRemittanceManager branchRemittanceManager;
 	
-	
 	@Autowired
 	private ParameterService parameterService;
+	
 	
 	/**
 	 * @param remitApplParametersMap2
@@ -476,7 +475,7 @@ public class RemittanceApplicationManager {
 				/*	
 					"Dear Customer, you have already done "+ todaysTxns.toString() +" application to this beneficiary within the last 24"
 							+ " hours. In the interest of safety, we do not allow a customer to repeat the same"
-							+ " transaction to the same beneficiary more than the allowed limit  in 24 hours.");*/
+							+ " transaction to the same beneficiary more than once in 24 hours.");
 		}
 	}
 
