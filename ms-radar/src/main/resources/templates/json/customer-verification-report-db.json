@@ -1,7 +1,7 @@
 {
   "pivot" : [
   	{
-	 "rows" : ["areaName", "branchName", "empName"],
+	 "rows" : ["areaName", "branchName", "employeeName"],
 	 "cols" : ["contactType"],
 	 "vals" : ["sum sent AS VERIFICATION DEFAULT 0", "sum customes AS CUSTOMERS DEFAULT 0", "sum verified AS CONFIRMED DEFAULT 0"],
 	 "defaults" : [
