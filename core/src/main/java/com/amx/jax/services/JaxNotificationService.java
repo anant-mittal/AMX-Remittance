@@ -161,7 +161,7 @@ public class JaxNotificationService {
 		//CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(CommunicationEvents.MY_PROFILE, customer);
 		
 		logger.info("Sending Profile change notification to customer : " + pinfo.getFirstName());
-		if(customer.canSendEmail()) {
+		//if(customer.canSendEmail()) {
 			Email email = new Email();
 			Email emailToOld = null;
 
@@ -215,7 +215,7 @@ public class JaxNotificationService {
 			email.getModel().put(RESP_DATA_KEY, pinfo);
 			logger.info("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
 			sendEmail(email);
-		}
+		//}
 		
 	} // end of sendProfileChangeNotificationEmail
 
