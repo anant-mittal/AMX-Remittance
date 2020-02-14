@@ -3,9 +3,9 @@ package com.amx.jax.services;
 import static com.amx.amxlib.constant.NotificationConstants.BRANCH_SEARCH;
 import static com.amx.amxlib.constant.NotificationConstants.REG_SUC;
 import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
+import static com.amx.amxlib.constant.NotificationConstants.RESP_TRANSACTION_DATA_KEY;
 import static com.amx.amxlib.constant.NotificationConstants.SERVICE_PROVIDER_RESPONSE;
 import static com.amx.amxlib.constant.NotificationConstants.TRANSACTION_FAIL;
-import static com.amx.amxlib.constant.NotificationConstants.RESP_TRANSACTION_DATA_KEY;
 
 import java.util.List;
 import java.util.Map;
@@ -31,7 +31,6 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dict.ContactType;
-import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.CivilIdOtpModel;
@@ -68,8 +67,6 @@ public class JaxNotificationService {
 	@Autowired
 	private WhatsAppClient whatsAppClient;
 
-	@Autowired
-	JaxNotificationService jaxNotificationService;
 	@Autowired
 	JaxEmailNotificationService jaxEmailNotificationService;
 	
