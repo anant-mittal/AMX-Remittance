@@ -5,8 +5,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.dbmodel.ExEmailNotification;
@@ -17,6 +20,7 @@ import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.probot.notifications.RoutingStatusChangeNotification;
 import com.amx.jax.repository.IExEmailNotificationDao;
 
+@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
 public class NotificationManager {
 
