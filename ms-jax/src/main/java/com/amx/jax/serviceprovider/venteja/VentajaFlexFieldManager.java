@@ -93,7 +93,7 @@ public class VentajaFlexFieldManager extends AbstractFlexFieldManager {
 				requiredFlexFields.add(jaxConditionalFieldDto);
 			}
 		}
-		addMinMaxValueForVoluteerContri(volunteerJaxConditionalFieldDto, volunteerParameter);
+		addMinMaxValueForVoluteerContri(volunteerJaxConditionalFieldDto, volunteerParameter, beneficaryDetails);
 		outputVariables.put("volunteerContributionIndic", volunteerContributionIndic);
 		if (volunteerContributionIndic) {
 			log.debug("volunteer Contribution Selected");
@@ -129,10 +129,12 @@ public class VentajaFlexFieldManager extends AbstractFlexFieldManager {
 		}
 	}
 
-	private void addMinMaxValueForVoluteerContri(JaxConditionalFieldDto jaxConditionalFieldDto, ParameterDetailsDto volunteerParameter) {
+	private void addMinMaxValueForVoluteerContri(JaxConditionalFieldDto jaxConditionalFieldDto, ParameterDetailsDto volunteerParameter,
+			BenificiaryListView beneficaryDetails) {
 		if (jaxConditionalFieldDto != null && volunteerParameter != null) {
 			jaxConditionalFieldDto.getField().setMinValue(volunteerParameter.getNumericUdf3());
 			jaxConditionalFieldDto.getField().setMaxValue(volunteerParameter.getNumericUdf4());
+			jaxConditionalFieldDto.getField().setValueUnit(beneficaryDetails.getCurrencyQuoteName());
 		}
 	}
 
