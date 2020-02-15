@@ -355,9 +355,6 @@ public class BranchRemittanceApplManager {
 		hashMap.put("AML_CHECK", amlList);
 		branchRemitManager.validateAdditionalErrorMessages(hashMap);
 
-		// save flex fields and addtional fields in db only after all validations are successful
-		remittanceAdditionalFieldManager.processAdditionalFields(requestApplModel); 
-		remittanceTransactionRequestValidator.saveFlexFields(requestApplModel, remitApplParametersMap);
 		/* create applciation */
 		RemittanceApplication remittanceApplication = this.createRemittanceApplication(hashMap);
 		RemittanceAppBenificiary remittanceAppBeneficairy = this.createRemittanceAppBeneficiary(remittanceApplication,hashMap);
@@ -372,7 +369,10 @@ public class BranchRemittanceApplManager {
 		//RemittanceTransactionRequestModel
 		List<RemitApplAmlModel> amlData = this.saveRemittanceAppAML(remittanceApplication,hashMap);
 
-		ventajaManager.validateApiforVentaja(requestApplModel, remitApplParametersMap);
+		// save flex fields and addtional fields in db only after all validations are
+		// successful
+		remittanceAdditionalFieldManager.processAdditionalFields(requestApplModel);
+		remittanceTransactionRequestValidator.saveFlexFields(requestApplModel, remitApplParametersMap);
 		
 		// Remittance srv prov details
 		RemitApplSrvProv remitApplSrvProv = createRemitApplSrvProv(requestApplModel.getDynamicRroutingPricingBreakup(),remittanceApplication.getCreatedBy());
