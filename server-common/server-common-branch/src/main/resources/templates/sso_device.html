@@ -20,11 +20,12 @@ table, table table {
 }
 .table td {
 	border: 1px solid #636363;
-	padding: 3px;
+	padding: 5px;
 }
 th{
 	font-size: 20px;
-	text-align: left;
+    text-align: left;
+    padding: 12px 3px 3px;
 }
 button{
 	text-decoration: none;
@@ -304,6 +305,7 @@ window.CONST = {
 			localStorage.removeItem("deviceRegToken");
 			deviceRegId = null;
 			deviceRegToken = null;
+			window.location.href = window.location.href;
 		});
 	});
 </script>
