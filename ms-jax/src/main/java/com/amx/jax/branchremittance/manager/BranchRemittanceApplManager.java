@@ -330,8 +330,6 @@ public class BranchRemittanceApplManager {
 		remittanceTransactionRequestValidator.validateFlexFields(requestApplModel, remitApplParametersMap);
 		// bank api validations
 		additionalBankDetailManager.validateAdditionalBankFields(requestApplModel, remitApplParametersMap);
-		remittanceAdditionalFieldManager.processAdditionalFields(requestApplModel); 
-		remittanceTransactionRequestValidator.saveFlexFields(requestApplModel, remitApplParametersMap);
 
 		//logger.debug("branchExchangeRate :"+exchangeRateResposne);
 		/* get aml cehck   details **/
@@ -357,6 +355,9 @@ public class BranchRemittanceApplManager {
 		hashMap.put("AML_CHECK", amlList);
 		branchRemitManager.validateAdditionalErrorMessages(hashMap);
 
+		// save flex fields and addtional fields in db only after all validations are successful
+		remittanceAdditionalFieldManager.processAdditionalFields(requestApplModel); 
+		remittanceTransactionRequestValidator.saveFlexFields(requestApplModel, remitApplParametersMap);
 		/* create applciation */
 		RemittanceApplication remittanceApplication = this.createRemittanceApplication(hashMap);
 		RemittanceAppBenificiary remittanceAppBeneficairy = this.createRemittanceAppBeneficiary(remittanceApplication,hashMap);
