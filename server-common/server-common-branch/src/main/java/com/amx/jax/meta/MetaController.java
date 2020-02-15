@@ -122,6 +122,12 @@ public class MetaController {
 		return metaClient.getCurrencyByCountryId(countryId);
 	}
 
+	@RequestMapping(value = "/pub/meta/bene_currency/list", method = RequestMethod.POST)
+	public AmxApiResponse<CurrencyMasterDTO, Object> getBeneCurrencyList(
+			@RequestParam(value = "countryId", required = true) BigDecimal countryId) {
+		return metaClient.getBeneficiaryCurrency(countryId);
+	}
+
 	@RequestMapping(value = "/pub/meta/branch/list", method = RequestMethod.GET)
 	public AmxApiResponse<CountryBranchDTO, Object> getBranchList() {
 		return metaClient.getCountryBranchList();
