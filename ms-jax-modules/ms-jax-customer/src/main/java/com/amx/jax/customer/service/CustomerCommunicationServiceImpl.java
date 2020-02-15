@@ -37,9 +37,9 @@ import com.amx.utils.CollectionUtil;
 import com.amx.utils.JsonUtil;
 
 @Component
-public class CustomerCommunicationService {
+public class CustomerCommunicationServiceImpl implements CustomerCommunicationService {
 
-	Logger logger = LoggerFactory.getLogger(CustomerCommunicationService.class);
+	Logger logger = LoggerFactory.getLogger(CustomerCommunicationServiceImpl.class);
 
 	@Autowired
 	MetaData metaData;
@@ -144,7 +144,7 @@ public class CustomerCommunicationService {
 
 	private ContactType[] getContactTypes(CommunicationEvents communicationEvent) {
 		switch (communicationEvent) {
-		case REMITTANCE:
+		case TRNX_CREATION_NOTIFY:
 			return CollectionUtil.getArray(ContactType.SMS);
 		default:
 			return CollectionUtil.getArray(ContactType.EMAIL,
@@ -155,8 +155,69 @@ public class CustomerCommunicationService {
 		}
 	}
 
-	// TODO:- @Anant to implement these methods
-	public boolean sendMessage(Customer commCustomer, Object model, CommunicationEvents communicationEvent,
+	public CommunicationPrefsResult getCommunicationPrefResult(
+			CommunicationEvents communicationEvent, Customer commCustomer, ContactType... contactTypes) {
+		if (contactTypes.length == 0) {
+			contactTypes = getContactTypes(communicationEvent);
+		}
+
+		Set<ContactType> contactTypesLists = CollectionUtil.getSet(contactTypes);
+		if (contactTypesLists.contains(ContactType.SMS_EMAIL)) {
+			contactTypesLists.add(ContactType.EMAIL);
+			contactTypesLists.add(ContactType.SMS);
+		}
+
+		CommunicationPrefsResult communicationFlowPrefs = communicationPrefsUtil.forCustomer(communicationEvent,
+				commCustomer);
+
+		communicationFlowPrefs
+				.setEmail(contactTypesLists.contains(ContactType.EMAIL) && communicationFlowPrefs.isEmail());
+
+		communicationFlowPrefs
+				.setSms(contactTypesLists.contains(ContactType.SMS) && communicationFlowPrefs.isSms());
+
+		communicationFlowPrefs
+				.setWhatsApp(contactTypesLists.contains(ContactType.WHATSAPP) && communicationFlowPrefs.isWhatsApp());
+
+		communicationFlowPrefs
+				.setPushNotify(contactTypesLists.contains(ContactType.FBPUSH) && communicationFlowPrefs.isPushNotify());
+
+		return communicationFlowPrefs;
+	}
+
+	public CommunicationPrefsResult getCommunicationPrefResult(BigDecimal customerId,
+			CommunicationEvents communicationEvent, ContactType... contactTypes) {
+		if (!ArgUtil.isEmpty(customerId)) {
+			Customer cust = custDao.getActiveCustomerDetailsByCustomerId(metaData.getCustomerId());
+			return getCommunicationPrefResult(communicationEvent, cust, contactTypes);
+		}
+		return getCommunicationPrefResult(communicationEvent, null, contactTypes);
+	}
+
+	@Override
+	public boolean sendMessage(CommunicationEvents communicationEvent, Customer commCustomer, Email email) {
+		CommunicationPrefsResult communicationFlowPrefs = communicationPrefsUtil.forCustomer(communicationEvent,
+				commCustomer);
+		if (communicationFlowPrefs.isEmail()) {
+			postManService.sendEmailAsync(email);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 
+	 * @param communicationEvent
+	 * @param model
+	 * @param templateMX
+	 * @param contactTypes       - channels to try for notifications, if null/empty
+	 *                           attempt will be made on all channels
+	 * @param customerId
+	 * @return - if notification has been sent to specified contact or not
+	 */
+
+	@Override
+	public boolean sendMessage(CommunicationEvents communicationEvent, Customer commCustomer, Object model,
 			TemplatesMX templateMX, ContactType... contactTypes) {
 		if (contactTypes.length == 0) {
 			contactTypes = getContactTypes(communicationEvent);
@@ -210,40 +271,4 @@ public class CustomerCommunicationService {
 		return false;
 	}
 
-	/**
-	 * 
-	 * @param customerId
-	 * @param model
-	 * @param communicationEvent
-	 * @param templateMX
-	 * @param contactTypes       - channels to try for notifications, if null/empty
-	 *                           attempt will be made on all channels
-	 * @return - if notification has been sent to specified contact or not
-	 */
-	public boolean sendMessage(BigDecimal customerId, Object model, CommunicationEvents communicationEvent,
-			TemplatesMX templateMX, ContactType... contactTypes) {
-		if (!ArgUtil.isEmpty(customerId)) {
-			Customer cust = custDao.getActiveCustomerDetailsByCustomerId(metaData.getCustomerId());
-			return sendMessage(cust, model, communicationEvent, templateMX, contactTypes);
-		}
-		return false;
-	}
-
-	public boolean sendMessage(String indetnityInt, Object model, CommunicationEvents communicationEvent,
-			TemplatesMX templateMX, ContactType... contactTypes) {
-		if (!ArgUtil.isEmpty(indetnityInt)) {
-			Customer cust = customerRepository.getActiveCustomerDetails(indetnityInt);
-			return sendMessage(cust, model, communicationEvent, templateMX, contactTypes);
-		}
-		return false;
-	}
-
-	public boolean sendMessage(Object model, CommunicationEvents communicationEvent,
-			TemplatesMX templateMX, ContactType... contactTypes) {
-		if (!ArgUtil.isEmpty(metaData.getCustomerId())) {
-			Customer cust = custDao.getActiveCustomerDetailsByCustomerId(metaData.getCustomerId());
-			return sendMessage(cust, model, communicationEvent, templateMX, contactTypes);
-		}
-		return false;
-	}
 }

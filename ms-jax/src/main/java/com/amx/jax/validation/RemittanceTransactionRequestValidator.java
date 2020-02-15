@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -132,7 +133,7 @@ public class RemittanceTransactionRequestValidator {
 				flexiFields.toArray(new String[flexiFields.size()]), routingBankId, ConstantDocument.No);
 		if (CollectionUtils.isEmpty(additionalDataRequired)) {
 			additionalDataRequired = additionalDataDisplayDao.getAdditionalDataFromServiceApplicability(applicationCountryId, routingCountryId,
-					foreignCurrencyId, remittanceModeId, deliveryModeId, flexiFields.toArray(new String[flexiFields.size()]),ConstantDocument.No);
+					foreignCurrencyId, remittanceModeId, deliveryModeId, flexiFields.toArray(new String[flexiFields.size()]), ConstantDocument.No);
 		}
 		FlexFieldDto servicePackage = request.getServicePackage();
 		List<JaxConditionalFieldDto> requiredFlexFields = new ArrayList<>();
@@ -148,7 +149,33 @@ public class RemittanceTransactionRequestValidator {
 		jaxFieldService.updateDtoFromDb(jaxFieldDtos);
 		updateAdditionalValidations(jaxFieldDtos);
 
-		if (!JaxChannel.ONLINE.equals(metaData.getChannel()) && !JaxUtil.isNullZeroBigDecimalCheck(request.getPurposeOfTrnxId())) {
+		if (!JaxChannel.ONLINE.equals(metaData.getChannel())) {
+			addPurposeOfTransactionForBranch(request, requiredFlexFields, routingCountryId);
+		}
+
+		if (!requiredFlexFields.isEmpty()) {
+			AdditionalFlexRequiredException exp = new AdditionalFlexRequiredException("Addtional flex fields are required",
+					JaxError.ADDTIONAL_FLEX_FIELD_REQUIRED);
+			processFlexFields(requiredFlexFields);
+			additionalBankDetailManager.processMissingFlexFields(request, remitApplParametersMap, jaxFieldDtos);
+			additionalBankDetailManager.setDefaultValues(requiredFlexFields, request, remitApplParametersMap);
+			exp.setMeta(requiredFlexFields);
+			throw exp;
+		}
+	}
+
+	private void addPurposeOfTransactionForBranch(RemittanceAdditionalBeneFieldModel request, List<JaxConditionalFieldDto> requiredFlexFields,
+			BigDecimal routingCountryId) {
+		// remove indic1 value which is coming by default
+		Iterator<JaxConditionalFieldDto> jaxConditionalFieldDtoItr = requiredFlexFields.iterator();
+		while (jaxConditionalFieldDtoItr.hasNext()) {
+			JaxConditionalFieldDto jaxConditionalFieldDto = jaxConditionalFieldDtoItr.next();
+			if (ConstantDocument.INDIC1.equalsIgnoreCase(jaxConditionalFieldDto.getField().getName())) {
+				jaxConditionalFieldDtoItr.remove();
+			}
+		}
+		// check and add indic1 for branch
+		if (!JaxUtil.isNullZeroBigDecimalCheck(request.getPurposeOfTrnxId())) {
 			JaxConditionalFieldDto dto = new JaxConditionalFieldDto();
 			dto.setEntityName(JaxFieldEntity.PURPOSE_OF_TRNX);
 			JaxFieldDto field = new JaxFieldDto();
@@ -163,16 +190,6 @@ public class RemittanceTransactionRequestValidator {
 			}
 			dto.setField(field);
 			requiredFlexFields.add(dto);
-		}
-
-		if (!requiredFlexFields.isEmpty()) {
-			AdditionalFlexRequiredException exp = new AdditionalFlexRequiredException("Addtional flex fields are required",
-					JaxError.ADDTIONAL_FLEX_FIELD_REQUIRED);
-			processFlexFields(requiredFlexFields);
-			additionalBankDetailManager.processMissingFlexFields(request, remitApplParametersMap, jaxFieldDtos);
-			additionalBankDetailManager.setDefaultValues(requiredFlexFields, request, remitApplParametersMap);
-			exp.setMeta(requiredFlexFields);
-			throw exp;
 		}
 	}
 
