@@ -1,6 +1,7 @@
 package com.amx.jax.services;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.BankDao;
 import com.amx.jax.dbmodel.BankBranchView;
 import com.amx.jax.dbmodel.BankMasterMdlv1;
+import com.amx.jax.dbmodel.BankServiceRule;
 import com.amx.jax.dbmodel.ViewBankChannelModel;
 import com.amx.jax.dbmodel.bene.BankAccountLength;
 import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
@@ -33,13 +35,13 @@ public class BankService {
 
 	@Autowired
 	IAdditionalBankDetailsDao bankDetailsDao;
-	
+
 	@Autowired
 	IBankAccountLengthDao bankAccountLengthDao;
-	
+
 	@Autowired
 	IBankBranchView bankBranchViewRepo;
-	
+
 	@Autowired
 	BankMasterRepository bankMasterRepository;
 	@Autowired
@@ -54,18 +56,18 @@ public class BankService {
 		return swift;
 	}
 
-	public AdditionalBankDetailsViewx getAdditionalBankDetail(BigDecimal srlId, BigDecimal currencyId, BigDecimal bankId,
-			BigDecimal remittanceModeId, BigDecimal deleveryModeId) {
+	public AdditionalBankDetailsViewx getAdditionalBankDetail(BigDecimal srlId, BigDecimal currencyId,
+			BigDecimal bankId, BigDecimal remittanceModeId, BigDecimal deleveryModeId) {
 
 		List<AdditionalBankDetailsViewx> additionalBankDetails = bankDetailsDao.getAdditionalBankDetails(srlId,
 				currencyId, bankId, remittanceModeId, deleveryModeId);
 		return additionalBankDetails.get(0);
 	}
-	
+
 	public List<BankAccountLength> getBankAccountLength(BigDecimal bankId) {
 		return bankAccountLengthDao.getBankAccountLength(bankId);
 	}
-	
+
 	public BankBranchView getBankBranchView(BigDecimal bankId, BigDecimal bankBranchId) {
 		BankBranchView bankBranch = null;
 		List<BankBranchView> bankBranchList = bankBranchViewRepo.getBankBranch(bankId, bankBranchId);
@@ -74,22 +76,21 @@ public class BankService {
 		}
 		return bankBranch;
 	}
-	
+
 	public BankMasterMdlv1 getBankById(BigDecimal bankId) {
 		return bankMasterRepository.findOne(bankId);
 	}
-	
-	
-	public AdditionalBankDetailsViewx getBankAddDetails(BigDecimal countryId,String flexField,BigDecimal currencyId, BigDecimal bankId,
-			BigDecimal remittanceModeId, BigDecimal deleveryModeId, String amiecCode) {
-		return bankDetailsDao.findByCountryIdAndFlexFieldAndCurrencyIdAndBankIdAndRemittanceIdAndDeliveryIdAndAmiecCode(countryId, flexField, currencyId,  bankId,remittanceModeId,  deleveryModeId,  amiecCode);
+
+	public AdditionalBankDetailsViewx getBankAddDetails(BigDecimal countryId, String flexField, BigDecimal currencyId,
+			BigDecimal bankId, BigDecimal remittanceModeId, BigDecimal deleveryModeId, String amiecCode) {
+		return bankDetailsDao.findByCountryIdAndFlexFieldAndCurrencyIdAndBankIdAndRemittanceIdAndDeliveryIdAndAmiecCode(
+				countryId, flexField, currencyId, bankId, remittanceModeId, deleveryModeId, amiecCode);
 	}
-	
-	
+
 	public BankMasterMdlv1 getByBankCode(String BankCode) {
-		return bankMasterRepository.findByBankCodeAndRecordStatus(BankCode,ConstantDocument.Yes);
+		return bankMasterRepository.findByBankCodeAndRecordStatus(BankCode, ConstantDocument.Yes);
 	}
-	
+
 	public List<BankMasterDTO> getBankByCountryAndCurrency(BigDecimal countryId, BigDecimal currencyId) {
 		List<ViewBankChannelModel> list = bankMetaService.getBankViewByCountryIdAndCurrency(countryId, currencyId);
 		Collections.sort(list, (o1, o2) -> {
@@ -97,4 +98,17 @@ public class BankService {
 		});
 		return bankMetaService.convertBankView(list);
 	}
+
+	public List<BankServiceRule> getBankServiceRulesForCountry(BigDecimal countryId) {
+
+		List<BankServiceRule> rules = bankDao.getByCountryId(countryId);
+
+		if (rules == null || rules.isEmpty()) {
+			rules = new ArrayList<BankServiceRule>();
+		}
+
+		return rules;
+
+	}
+
 }
