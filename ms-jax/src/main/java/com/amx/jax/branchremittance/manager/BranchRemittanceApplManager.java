@@ -330,8 +330,6 @@ public class BranchRemittanceApplManager {
 		remittanceTransactionRequestValidator.validateFlexFields(requestApplModel, remitApplParametersMap);
 		// bank api validations
 		additionalBankDetailManager.validateAdditionalBankFields(requestApplModel, remitApplParametersMap);
-		remittanceAdditionalFieldManager.processAdditionalFields(requestApplModel); 
-		remittanceTransactionRequestValidator.saveFlexFields(requestApplModel, remitApplParametersMap);
 
 		//logger.debug("branchExchangeRate :"+exchangeRateResposne);
 		/* get aml cehck   details **/
@@ -371,7 +369,10 @@ public class BranchRemittanceApplManager {
 		//RemittanceTransactionRequestModel
 		List<RemitApplAmlModel> amlData = this.saveRemittanceAppAML(remittanceApplication,hashMap);
 
-		ventajaManager.validateApiforVentaja(requestApplModel, remitApplParametersMap);
+		// save flex fields and addtional fields in db only after all validations are
+		// successful
+		remittanceAdditionalFieldManager.processAdditionalFields(requestApplModel);
+		remittanceTransactionRequestValidator.saveFlexFields(requestApplModel, remitApplParametersMap);
 		
 		// Remittance srv prov details
 		RemitApplSrvProv remitApplSrvProv = createRemitApplSrvProv(requestApplModel.getDynamicRroutingPricingBreakup(),remittanceApplication.getCreatedBy());

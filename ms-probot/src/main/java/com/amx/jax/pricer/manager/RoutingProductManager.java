@@ -402,7 +402,7 @@ public class RoutingProductManager {
 							request.getServiceModeId(), request.getRemitModeId(), request.getDeliveryModeId());
 		}
 
-		if (oldStatusList == null) {
+		if (oldStatusList == null || oldStatusList.isEmpty()) {
 			LOGGER.error("No Such Routing Product available for Request:" + JsonUtil.toJson(request));
 
 			throw new PricerServiceException(PricerServiceError.INVALID_OR_MISSING_ROUTE,

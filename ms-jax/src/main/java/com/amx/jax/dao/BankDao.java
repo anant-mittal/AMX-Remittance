@@ -32,10 +32,16 @@ public class BankDao {
 
 	public BankBranchView getBankBranchById(BigDecimal bankId, BigDecimal bankBranchId) {
 		List<BankBranchView> branches = bankBranchRepo.getBankBranch(bankId, bankBranchId);
-		BankBranchView branch= null;
-		if(branches != null && !branches.isEmpty()) {
-			branch =  branches.get(0);
+		BankBranchView branch = null;
+		if (branches != null && !branches.isEmpty()) {
+			branch = branches.get(0);
 		}
 		return branch;
 	}
+
+	public List<BankServiceRule> getByCountryId(BigDecimal countryId) {
+		return bankServiceRuleRepo.findByCountryId(countryId);
+
+	}
+
 }
