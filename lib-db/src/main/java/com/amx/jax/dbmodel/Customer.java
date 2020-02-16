@@ -2,7 +2,10 @@ package com.amx.jax.dbmodel;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -12,6 +15,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.SequenceGenerator;
@@ -22,10 +27,13 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.Proxy;
 
 import com.amx.jax.constants.CustomerRegistrationType;
+import com.amx.jax.dbmodel.compliance.ComplianceBlockedCustomerDocMap;
+import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dict.Communicatable;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.utils.ArgUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "FS_CUSTOMER")
@@ -149,7 +157,7 @@ public class Customer implements java.io.Serializable, Communicatable {
 	private String isBusinessCardVerified;
 	private List<ComplianceBlockedCustomerDocMap> complianceBlockedDocuments;
 	
-
+		
 	private String customerVatNumber;
 	private String premInsurance;
 
@@ -158,7 +166,10 @@ public class Customer implements java.io.Serializable, Communicatable {
 	private BigDecimal annualTransactionLimitFrom;
 	private BigDecimal annualTransactionLimitTo;
 	private Date annualTransactionUpdatedDate;
-
+	private String passportNumber;
+	private Date passportIssueDate;
+	private Date passportExpiryDate;
+	
 	
 	
 	/** added by rabil on 09 Oc 2019 **/
@@ -981,6 +992,7 @@ public class Customer implements java.io.Serializable, Communicatable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ARTICLE_DETAIL_ID")
+	@JsonIgnore
 	public ArticleDetails getFsArticleDetails() {
 		return fsArticleDetails;
 	}
@@ -991,6 +1003,7 @@ public class Customer implements java.io.Serializable, Communicatable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "INCOME_RANGE_ID")
+	@JsonIgnore
 	public IncomeRangeMaster getFsIncomeRangeMaster() {
 		return fsIncomeRangeMaster;
 	}
@@ -1092,10 +1105,12 @@ public class Customer implements java.io.Serializable, Communicatable {
 	public void setWhatsAppVerified(Status whatsAppVerified) {
 		this.whatsAppVerified = whatsAppVerified;
 	}
-
 	public boolean canSendWhatsApp() {
-		return !(Status.D.equals(this.whatsAppVerified) || Status.N.equals(this.whatsAppVerified));
+		return !(Status.D.equals(this.whatsAppVerified) || Status.N.equals(this.whatsAppVerified) || ArgUtil.isEmpty(this.whatsapp));
 	}
+	/*public boolean canSendWhatsApp() {
+		return !(Status.D.equals(this.whatsAppVerified) || Status.N.equals(this.whatsAppVerified) || ArgUtil.isEmpty(this.whatsapp));
+	}*/
 
 	private Status emailVerified;
 
@@ -1108,7 +1123,11 @@ public class Customer implements java.io.Serializable, Communicatable {
 	public void setEmailVerified(Status emailVerified) {
 		this.emailVerified = emailVerified;
 	}
-
+	
+	/*public boolean canSendEmail() {
+		return !(ArgUtil.isEmpty(this.email));
+	}*/
+	
 	public boolean canSendEmail() {
 		return !(Status.D.equals(this.emailVerified) || Status.N.equals(this.emailVerified) || ArgUtil.isEmpty(this.email));
 	}
@@ -1124,11 +1143,32 @@ public class Customer implements java.io.Serializable, Communicatable {
 	public void setMobileVerified(Status mobileVerified) {
 		this.mobileVerified = mobileVerified;
 	}
-
 	public boolean canSendMobile() {
-		return !(Status.D.equals(this.mobileVerified) || Status.N.equals(this.mobileVerified));
+		return !(Status.D.equals(this.mobileVerified) || Status.N.equals(this.mobileVerified) || ArgUtil.isEmpty(this.mobile));
+	}
+	/*public boolean canSendMobile() {
+		return !(Status.D.equals(this.mobileVerified) || Status.N.equals(this.mobileVerified) || ArgUtil.isEmpty(this.mobile));
+	}*/
+	
+	@SuppressWarnings("deprecation")
+	@Override
+	public boolean hasPresent(ContactType contactType) {
+		switch (contactType) {
+		case SMS:
+		case MOBILE:
+			return ArgUtil.is(this.mobile);
+		case EMAIL:
+			return ArgUtil.is(this.email);
+		case WHATSAPP:
+			return ArgUtil.is(this.whatsapp);
+		default:
+			break;
+		}
+		return false;
 	}
 	
+	@SuppressWarnings("deprecation")
+	@Override
 	public boolean hasVerified(ContactType contactType) {
 		switch (contactType) {
 		case SMS:
@@ -1148,10 +1188,11 @@ public class Customer implements java.io.Serializable, Communicatable {
 	public String getCustomerVatNumber() {
 		return customerVatNumber;
 	}
-
+	
 	@ManyToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
 	@JoinTable(  name = "JAX_COMPLIANCE_BLOCKED_DOC_MAP", joinColumns = @JoinColumn(name = "CUSTOMER_ID", referencedColumnName="CUSTOMER_ID"), inverseJoinColumns = @JoinColumn(name = "COMP_BLOCKED_CUST_DOC_MAP_ID",
 			referencedColumnName="ID"))
+	@JsonIgnore
 	public List<ComplianceBlockedCustomerDocMap> getComplianceBlockedDocuments() {
 		return complianceBlockedDocuments;
 	}
@@ -1176,7 +1217,6 @@ public class Customer implements java.io.Serializable, Communicatable {
 	public void setCustomerVatNumber(String customerVatNumber) {
 		this.customerVatNumber = customerVatNumber;
 	}
-
 	
 	
 	@Column(name="LANGUAGE_CHANGE_COUNT")
@@ -1187,8 +1227,35 @@ public class Customer implements java.io.Serializable, Communicatable {
 	public void setOnlineLanguageChangeCount(BigDecimal onlineLanguageChangeCount) {
 		this.onlineLanguageChangeCount = onlineLanguageChangeCount;
 	}
+
 	public void setComplianceBlockedDocuments(List<ComplianceBlockedCustomerDocMap> complianceBlockedDocuments) {
 		this.complianceBlockedDocuments = complianceBlockedDocuments;
 	}
 
+	@Column(name="PASSPORT_NO")
+	public String getPassportNumber() {
+		return passportNumber;
+	}
+
+	public void setPassportNumber(String passportNumber) {
+		this.passportNumber = passportNumber;
+	}
+
+	@Column(name="PASSPORT_ISSUE_DATE")
+	public Date getPassportIssueDate() {
+		return passportIssueDate;
+	}
+
+	public void setPassportIssueDate(Date passportIssueDate) {
+		this.passportIssueDate = passportIssueDate;
+	}
+
+	@Column(name="PASSPORT_EXPIRY_DATE")
+	public Date getPassportExpiryDate() {
+		return passportExpiryDate;
+	}
+
+	public void setPassportExpiryDate(Date passportExpiryDate) {
+		this.passportExpiryDate = passportExpiryDate;
+	}
 }

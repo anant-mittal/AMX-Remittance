@@ -2,7 +2,6 @@ package com.amx.jax.grid.views;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -39,9 +38,8 @@ public class OneViewTrnxRecordByBene implements Serializable {
 	@Column(name = "BENE_BANK_NAME")
 	private String beneBankName;
 
-	// Branch
-	@Column(name = "BRANCH_NAME")
-	private String branchName;
+	@Column(name = "BENE_BANK_BRANCH_NAME")
+	private String beneBranchName;
 
 	@Column(name = "FOREIGN_CURRENCY")
 	private String foreignCurrency;
@@ -121,14 +119,7 @@ public class OneViewTrnxRecordByBene implements Serializable {
 		this.totalLocalTranxAmount = totalLocalTranxAmount;
 	}
 
-	public String getBranchName() {
-		return branchName;
-	}
-
-	public void setBranchName(String branchName) {
-		this.branchName = branchName;
-	}
-
+	
 	public String getForeignCurrency() {
 		return foreignCurrency;
 	}
@@ -144,6 +135,16 @@ public class OneViewTrnxRecordByBene implements Serializable {
 	public void setLocalTrnxCount(BigDecimal localTrnxCount) {
 		this.localTrnxCount = localTrnxCount;
 	}
+
+	public String getBeneBranchName() {
+		return beneBranchName;
+	}
+
+	public void setBeneBranchName(String beneBranchName) {
+		this.beneBranchName = beneBranchName;
+	}
+	
+	
 
 	/*public Date getTrnxDate() {
 		return trnxDate;

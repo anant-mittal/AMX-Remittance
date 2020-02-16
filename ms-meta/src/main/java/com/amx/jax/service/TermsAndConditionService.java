@@ -28,7 +28,13 @@ public class TermsAndConditionService extends AbstractService{
 	ITermsAndConditionRepository termsAndCondition;
 	
 	public AmxApiResponse<TermsAndConditionDTO, Object> getTermsAndCondition(BigDecimal languageId) {
+		BigDecimal defaultLaguageId = new BigDecimal("1");
 		List<TermsAndCondition> termsConditionList = termsAndCondition.getTermsAndCondition(languageId,ConstantDocument.PR,ConstantDocument.Yes);
+		
+		if(termsConditionList.isEmpty()) {
+			termsConditionList = termsAndCondition.getTermsAndCondition(defaultLaguageId,ConstantDocument.PR,ConstantDocument.Yes);
+		}
+		
 		if(termsConditionList.isEmpty()) {
 			throw new GlobalException("Terms and Condition is not abaliable");
 		}

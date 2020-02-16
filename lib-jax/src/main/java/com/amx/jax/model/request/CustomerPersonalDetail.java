@@ -3,6 +3,7 @@ package com.amx.jax.model.request;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -13,6 +14,8 @@ import org.springframework.format.annotation.NumberFormat;
 import com.amx.jax.AbstractModel;
 import com.amx.jax.constants.CustomerRegistrationType;
 import com.amx.jax.model.ResourceDTO;
+import com.amx.jax.model.request.customer.CustomerPassportData;
+import com.amx.jax.model.request.customer.ICustomerContactData;
 import com.amx.jax.swagger.ApiMockModelProperty;
 import com.amx.jax.util.AmxDBConstants;
 
@@ -22,7 +25,7 @@ import com.amx.jax.util.AmxDBConstants;
  * @author Prashant
  * @since 2018-04-30
  */
-public class CustomerPersonalDetail extends AbstractModel {
+public class CustomerPersonalDetail extends AbstractModel implements ICustomerContactData {
 
 	/**
 	 * 
@@ -138,6 +141,9 @@ public class CustomerPersonalDetail extends AbstractModel {
 	private BigDecimal annualTxnLimitFrom;
 	private BigDecimal annualTxnLimitTo;
 	private String premiumInsurance;
+	@Valid
+	//@NotNull
+	private CustomerPassportData customerPassportData;
 
 
 	public CustomerRegistrationType getRegistrationType() {
@@ -273,9 +279,6 @@ public class CustomerPersonalDetail extends AbstractModel {
 	}
 
 	public void setInsurance(String insurance) {
-		if (insurance == null) {
-			insurance = AmxDBConstants.No;
-		}
 		this.insurance = insurance;
 	}
 
@@ -382,6 +385,14 @@ public class CustomerPersonalDetail extends AbstractModel {
 
 	public void setNationality(String nationality) {
 		this.nationality = nationality;
+	}
+
+	public CustomerPassportData getCustomerPassportData() {
+		return customerPassportData;
+	}
+
+	public void setCustomerPassportData(CustomerPassportData customerPassportData) {
+		this.customerPassportData = customerPassportData;
 	}
 
 	

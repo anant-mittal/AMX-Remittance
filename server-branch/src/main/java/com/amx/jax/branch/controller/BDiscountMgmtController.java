@@ -67,9 +67,9 @@ public class BDiscountMgmtController {
 	}
 
 	@RequestMapping(value = "/api/discount/countrybranch/list", method = { RequestMethod.GET })
-	public AmxApiResponse<CountryBranchDTO, Object> getCountryBranchList() {
+	public AmxApiResponse<CountryBranchDTO, Object> getCountryBranchList(@RequestParam(value = "isActive", required = false, defaultValue = "false") Boolean isActive) {
 
-		return discountMgmtClient.getCountryBranchList();
+		return discountMgmtClient.getCountryBranchList(isActive);
 	}
 
 	@RequestMapping(value = "/api/discount/RbanksAndServices/list", method = { RequestMethod.POST })
@@ -99,9 +99,9 @@ public class BDiscountMgmtController {
 	}
 	
 	@RequestMapping(value = "/api/discount/exchange_rate_currency/list", method = { RequestMethod.GET })
-	public AmxApiResponse<CurrencyMasterDTO, Object> getAllExchangeRateCurrencyList() {
+	public AmxApiResponse<CurrencyMasterDTO, Object> getAllExchangeRateCurrencyList(Boolean isActive) {
 
-		return metaClient.getAllExchangeRateCurrencyList();
+		return metaClient.getAllExchangeRateCurrencyList(isActive);
 	}
 
 
@@ -135,7 +135,7 @@ public class BDiscountMgmtController {
 	@RequestMapping(value = "/api/save-markup/details", method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> saveOnlineMarginMarkupData(@RequestBody OnlineMarginMarkupInfo onlineMarginMarkupInfo) {
 		 LOGGER.debug("ssoUser.getUserDetails().getEmployeeName()",ssoUser.getUserDetails().getEmployeeName());
-		 String username=ssoUser.getUserDetails().getEmployeeName()!= null ? ssoUser.getUserDetails().getEmployeeName(): "";
+		 String username=ssoUser.getUserDetails().getUserName()!= null ? ssoUser.getUserDetails().getUserName(): "";
 		onlineMarginMarkupInfo.setEmpName(username);
 		return discountMgmtClient.saveOnlineMarginMarkupData(onlineMarginMarkupInfo);
 	}

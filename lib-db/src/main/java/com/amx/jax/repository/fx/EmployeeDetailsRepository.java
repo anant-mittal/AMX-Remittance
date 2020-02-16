@@ -10,5 +10,10 @@ import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 public interface EmployeeDetailsRepository extends CrudRepository<EmployeeDetailsView, Serializable>{
 	
 	public EmployeeDetailsView findByEmployeeId(BigDecimal employeeId);
+	
+	
+	public EmployeeDetailsView findByUserNameAndIsActive(String userName,String isactive);
+	
+	
 
 }

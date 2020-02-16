@@ -38,7 +38,6 @@ import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.utils.Constants;
 import com.amx.utils.JsonUtil;
-import com.jax.amxlib.exception.jax.GlobaLException;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -75,7 +74,7 @@ public class CustomerKycManager {
 
 	public void uploadAndCreateKyc(Customer customer, CustomerDocumentUploadReferenceTemp upload) throws ParseException {
 		log.debug("in uploadAndCreateKyc");
-		createIdProofForActivateCustomers(customer, upload);
+		createNewKycIdProof(customer, upload);
 		switch (upload.getScanIndic()) {
 		case DB_SCAN:
 		default:
@@ -85,16 +84,8 @@ public class CustomerKycManager {
 
 	}
 
-	private void createIdProofForActivateCustomers(Customer customer, CustomerDocumentUploadReferenceTemp upload) {
-		log.debug("in createIdProofForActivateCustomers");
-
-		if (!ConstantDocument.Yes.equals(customer.getIsActive())) {
-			return;
-		}
-		CustomerIdProof existingIdProof = customerIdProofManager.getCustomerIdProofByCustomerId(customer.getCustomerId());
-		if (existingIdProof == null) {
-			throw new GlobaLException("No active id proof record found.");
-		}
+	private void createNewKycIdProof(Customer customer, CustomerDocumentUploadReferenceTemp upload) {
+		log.debug("in createNewKycIdProof");
 		if (!customer.getIdentityTypeId().equals(upload.getIdentityTypeId())) {
 			log.info("creating id proof for duplication customer id type, current id type {}, uploaded id type {}", customer.getIdentityTypeId(),
 					upload.getIdentityTypeId());

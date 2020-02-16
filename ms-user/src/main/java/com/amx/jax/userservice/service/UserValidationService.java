@@ -67,6 +67,7 @@ import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.validation.CustomerValidationService;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 
 @Service
@@ -203,18 +204,18 @@ public class UserValidationService {
 	}
 
 	protected void validatePassword(CustomerOnlineRegistration customer, String password, boolean validateCaptcha) {
-		if(validateCaptcha) {
+		if (validateCaptcha) {
 			validateCaptcha(customer);
 		}
 		String dbPwd = customer.getPassword();
 		String passwordhashed = cryptoUtil.getHash(customer.getUserName(), password);
 		if (!dbPwd.equals(passwordhashed)) {
 			Integer attemptsLeft = incrementLockCount(customer);
-			
-			if(validateCaptcha) {
+
+			if (validateCaptcha) {
 				validateCaptcha(customer);
 			}
-			
+
 			String errorExpression = JaxError.WRONG_PASSWORD.toString();
 			if (attemptsLeft > 0) {
 				errorExpression = jaxUtil.buildErrorExpression(JaxError.WRONG_PASSWORDS_ATTEMPTS.toString(),
@@ -226,13 +227,14 @@ public class UserValidationService {
 		customer.setLockDt(null);
 		custDao.saveOnlineCustomer(customer);
 	}
-	
+
 	protected void validatePassword(CustomerOnlineRegistration customer, String password) {
 		validatePassword(customer, password, false);
 	}
 
-	protected void validateDevicePassword(CustomerOnlineRegistration customer, String password, boolean validateCaptcha) {
-		if(validateCaptcha) {
+	protected void validateDevicePassword(CustomerOnlineRegistration customer, String password,
+			boolean validateCaptcha) {
+		if (validateCaptcha) {
 			validateCaptcha(customer);
 		}
 		String dbPassword = customer.getDevicePassword();
@@ -245,11 +247,11 @@ public class UserValidationService {
 		}
 		if (!dbPassword.equals(passwordHashed)) {
 			Integer attemptsLeft = incrementLockCount(customer);
-			
-			if(validateCaptcha) {
+
+			if (validateCaptcha) {
 				validateCaptcha(customer);
 			}
-			
+
 			String errorExpression = JaxError.WRONG_PASSWORD.toString();
 			if (attemptsLeft > 0) {
 				errorExpression = jaxUtil.buildErrorExpression(JaxError.WRONG_PASSWORDS_ATTEMPTS.toString(),
@@ -258,7 +260,7 @@ public class UserValidationService {
 			throw new GlobalException(errorExpression, "Incorrect/wrong password");
 		}
 	}
-	
+
 	protected void validateDevicePassword(CustomerOnlineRegistration customer, String password) {
 		validateDevicePassword(customer, password, false);
 	}
@@ -266,7 +268,6 @@ public class UserValidationService {
 	public void validateCustIdProofs(BigDecimal custId) {
 
 		if (tenantContext.get() != null) {
-			logger.info("Tenent is not bahrain" + tenantContext.get());
 			tenantContext.get().validateCustIdProofs(custId);
 			return;
 		}
@@ -471,9 +472,6 @@ public class UserValidationService {
 	}
 
 	public void validateCustomerLockCount(CustomerOnlineRegistration onlineCustomer, boolean validateCaptcha) {
-		if(validateCaptcha) {
-			validateCaptcha(onlineCustomer);
-		}
 		final Integer MAX_OTP_ATTEMPTS = otpSettings.getMaxValidateOtpAttempts();
 		if (onlineCustomer.getLockCnt() != null) {
 			int lockCnt = onlineCustomer.getLockCnt().intValue();
@@ -495,8 +493,12 @@ public class UserValidationService {
 		if (onlineCustomer.getLockDt() != null) {
 			throw new GlobalException(JaxError.ONLINE_ACCOUNT_LOCKED, "Customer is locked. Contact branch");
 		}
+		
+		if (validateCaptcha) {
+			validateCaptcha(onlineCustomer);
+		}
 	}
-	
+
 	public void validateCustomerLockCount(CustomerOnlineRegistration onlineCustomer) {
 		validateCustomerLockCount(onlineCustomer, false);
 	}
@@ -718,6 +720,28 @@ public class UserValidationService {
 		}
 	}
 
+	/*private boolean isOldVerificationDone(CustomerVerification cv) {
+		return !(cv != null && ConstantDocument.No.equals(cv.getVerificationStatus()) && cv.getFieldValue() != null);
+	}
+
+	public void validateCustomerVerification(BigDecimal customerId) {
+
+		if (customerId != null) {
+			CustomerVerification cv = customerVerificationService.getVerification(customerId,
+					CustomerVerificationType.EMAIL);
+			Customer customer = custDao.getActiveCustomerDetailsByCustomerId(customerId);
+			
+			if(!ArgUtil.isEmpty(customer.getEmail())) {
+				if((//Old is not verified
+						!isOldVerificationDone(cv) 
+						//And new is also not verfied
+						&& !Status.Y.equals(customer.getEmailVerified())) || !customer.canSendEmail()) {
+					throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Your email verificaiton is pending");
+				}
+			}
+			
+		}
+	}*/
 	public void validateCustomerVerification(BigDecimal customerId) {
 
 		if (customerId != null) {
@@ -729,6 +753,7 @@ public class UserValidationService {
 			}
 		}
 	}
+
 
 	public void validateActiveCustomer(CustomerOnlineRegistration onlineCustReg, Boolean initRegistration) {
 		if (initRegistration != null && initRegistration) {
@@ -789,6 +814,7 @@ public class UserValidationService {
 						"Customer not active in branch, please visit branch");
 			}
 		}
+
 		switch (apiFlow) {
 		case SIGNUP_ONLINE:
 			validateCustomerForSignUpOnline(customers.get(0));
@@ -814,6 +840,9 @@ public class UserValidationService {
 
 		if (customer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_REGISTERED_BRANCH, "Customer not registered in branch ");
+		}
+		if (ConstantDocument.Deleted.equals(customer.getIsActive())) {
+			throw new GlobalException(JaxError.CUSTOMER_DELETED, "Customer civil id not active");
 		}
 		if (!ConstantDocument.Yes.equals(customer.getIsActive())) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_ACTIVE_BRANCH,
@@ -863,6 +892,9 @@ public class UserValidationService {
 	private void validateCustomerForSignUpOnline(Customer customer) {
 		if (customer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_REGISTERED_BRANCH, "Customer not registered in branch ");
+		}
+		if (ConstantDocument.Deleted.equals(customer.getIsActive())) {
+			throw new GlobalException(JaxError.CUSTOMER_DELETED, "Customer civil id not active");
 		}
 		if (!ConstantDocument.Yes.equals(customer.getIsActive())) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_ACTIVE_BRANCH,

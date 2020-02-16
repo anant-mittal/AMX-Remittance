@@ -34,6 +34,10 @@ public class ViewCity implements Serializable, IResourceEntity {
 
 	@Column(name = "DISTRICT_ID")
 	private BigDecimal districtId;
+	
+	@Column(name = "DEFAULT_INDIC")
+	private String defaultIndic;
+	
 
 	public BigDecimal getCityMasterDescId() {
 		return cityMasterDescId;
@@ -81,6 +85,14 @@ public class ViewCity implements Serializable, IResourceEntity {
 
 	public void setIdNo(BigDecimal idNo) {
 		this.idNo = idNo;
+	}
+	
+	public String getDefaultIndic() {
+		return defaultIndic;
+	}
+
+	public void setDefaultIndic(String defaultIndic) {
+		this.defaultIndic = defaultIndic;
 	}
 
 	@Override

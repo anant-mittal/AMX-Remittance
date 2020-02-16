@@ -11,19 +11,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
 import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentBranchParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceImpl;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceProviderParam;
+import com.amx.jax.client.bene.BeneficiaryConstant.BeneStatus;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.model.CivilIdOtpModel;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

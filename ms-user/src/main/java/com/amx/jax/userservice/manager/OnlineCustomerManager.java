@@ -18,6 +18,7 @@ import com.amx.jax.constant.JaxApiFlow;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dict.ContactType;
+import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.SecurityQuestionModel;
@@ -57,6 +58,9 @@ public class OnlineCustomerManager {
 	
 	@Autowired
 	OnlineCustomerRepository onlineCustomerRepository;
+	
+	@Autowired
+	CommunicationPreferencesManager communicationPreferencesManager;
 
 	public void saveCustomerSecQuestions(List<SecurityQuestionModel> securityQuestions) {
 		CustomerOnlineRegistration customerOnlineRegistration = custDao
@@ -73,6 +77,7 @@ public class OnlineCustomerManager {
 				// signifies that it is send otp flow
 				if (JaxAuthContext.getMotp() == null) {
 					userValidationService.validateCustomerContactForSendOtp(Arrays.asList(ContactType.SMS), customer);
+					//communicationPreferencesManager.validateCommunicationPreferences(null,CommunicationEvents.UPDATE_SECQUE,null);
 					userService.validateTokenExpiryTime(customerOnlineRegistration);
 					userValidationService.validateTokenSentCount(customerOnlineRegistration);
 					userService.incrementTokenSentCount(customerOnlineRegistration);

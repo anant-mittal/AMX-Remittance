@@ -3,6 +3,7 @@ package com.amx.amxlib.model.response;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.exception.AmxApiError;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -72,4 +73,9 @@ public class ApiResponse<T> {
 		response.setData(data);
 		return response;
 	}
+
+	public AmxApiResponse<T, Object> toAmxApiResponse(){
+		return AmxApiResponse.buildList(this.getResults());
+	}
+	
 }

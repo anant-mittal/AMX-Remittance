@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.CustomerVerificationType;
 import com.amx.jax.dbmodel.Customer;
@@ -26,20 +27,19 @@ import com.amx.jax.logger.events.AuditActorInfo;
 import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.logger.events.CActivityEvent.Step;
 import com.amx.jax.logger.events.CActivityEvent.Type;
+import com.amx.jax.logger.events.Verify;
 import com.amx.jax.model.customer.CustomerContactVerificationDto;
 import com.amx.jax.repository.CustomerContactVerificationRepository;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.userservice.repository.CustomerVerificationRepository;
 import com.amx.jax.userservice.repository.OnlineCustomerRepository;
 import com.amx.jax.userservice.service.CustomerVerificationService;
-import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.CollectionUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.EntityDtoUtil;
 import com.amx.utils.Random;
-import com.amx.utils.TimeUtils;
 
 /**
  * 
@@ -67,6 +67,9 @@ public class CustomerContactVerificationManager {
 	@Autowired
 	AuditService auditService;
 
+	@Autowired
+	JaxTenantProperties jaxTenantProperties;
+
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	public CustomerContactVerification getCustomerContactVerification(BigDecimal id) {
@@ -74,40 +77,59 @@ public class CustomerContactVerificationManager {
 	}
 
 	public List<CustomerContactVerification> getValidCustomerContactVerificationsByCustomerId(BigDecimal customerId,
-			ContactType contactType, String contact, int validDays) {
+			ContactType contactType, String contact, int validHours) {
 		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DATE, -1 * validDays);
+		cal.add(Calendar.HOUR_OF_DAY, -1 * validHours);
 		java.util.Date oneDay = new java.util.Date(cal.getTimeInMillis());
-		List<CustomerContactVerification> links = customerContactVerificationRepository.getByContact(customerId,
-				contactType, contact, oneDay);
+		List<CustomerContactVerification> links = null;
+
+		if (ArgUtil.is(contact)) {
+			links = customerContactVerificationRepository.getByContact(customerId,
+					contactType, contact, oneDay);
+		} else {
+			links = customerContactVerificationRepository.getByContact(customerId,
+					contactType, oneDay);
+		}
 		return links;
 	}
 
 	public List<CustomerContactVerification> getValidCustomerContactVerificationsByCustomerId(BigDecimal customerId,
 			ContactType contactType, String contact) {
-		Calendar cal = Calendar.getInstance();
 		if (ContactType.WHATSAPP.equals(contactType)) {
-			cal.add(Calendar.DATE, -1 * CustomerContactVerification.EXPIRY_DAY_WHATS_APP);
 			return this.getValidCustomerContactVerificationsByCustomerId(customerId, contactType, contact,
-					CustomerContactVerification.EXPIRY_DAY_WHATS_APP);
+					jaxTenantProperties.getVerificationValidHours()
+							* CustomerContactVerification.EXPIRY_WHATS_APP_FACTOR);
 		} else {
 			return this.getValidCustomerContactVerificationsByCustomerId(customerId, contactType, contact,
-					CustomerContactVerification.EXPIRY_DAY);
-
+					jaxTenantProperties.getVerificationValidHours());
 		}
 	}
 
 	public CustomerContactVerification getValidCustomerContactVerificationByCustomerId(BigDecimal customerId,
 			ContactType contactType, String contact) {
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DATE, -1);
-		java.util.Date oneDay = new java.util.Date(cal.getTimeInMillis());
 		List<CustomerContactVerification> links = getValidCustomerContactVerificationsByCustomerId(customerId,
 				contactType, contact);
 		if (ArgUtil.isEmpty(links) || links.size() == 0) {
 			return null;
 		}
 		return links.get(0);
+	}
+
+	public BigDecimal getConfirmedCountsByCustomer(Customer c, ContactType contactType) {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, -1 * 90);
+		java.util.Date expiryPeriod = new java.util.Date(cal.getTimeInMillis());
+		List<Object[]> x = customerContactVerificationRepository.getCountsByCustomer(c.getCustomerId(),
+				contactType,
+				expiryPeriod);
+		if (ArgUtil.is(x)) {
+			for (Object[] p : x) {
+				if (Status.N.equals(p[1])) {
+					return ArgUtil.parseAsBigDecimal(p[0]);
+				}
+			}
+		}
+		return BigDecimal.ZERO;
 	}
 
 	public CustomerContactVerification create(Customer c, ContactType contactType) {
@@ -119,6 +141,7 @@ public class CustomerContactVerificationManager {
 		audit.setCustomerId(c.getCustomerId());
 		audit.setCustomer(c.getIdentityInt());
 		audit.setContactType(contactType);
+		audit.setVerify(new Verify().contactType(contactType));
 
 		CustomerContactVerification link = new CustomerContactVerification();
 		link.setCustomerId(c.getCustomerId());
@@ -137,7 +160,7 @@ public class CustomerContactVerificationManager {
 			// link.setSendById(actor.getActorIdAsBigDecimal());
 			// link.setSendByType(actor.getActorType());
 		}
-
+		CustomerContactVerification link2;
 		try {
 
 			if (ContactType.EMAIL.equals(contactType)) {
@@ -160,20 +183,43 @@ public class CustomerContactVerificationManager {
 			}
 
 			List<CustomerContactVerification> oldlinks = getValidCustomerContactVerificationsByCustomerId(
-					c.getCustomerId(), contactType, link.getContactValue(), CustomerContactVerification.EXPIRY_DAY);
+					c.getCustomerId(), contactType, link.getContactValue(),
+					jaxTenantProperties.getVerificationValidHours());
 
-			if (!ArgUtil.isEmpty(oldlinks) && oldlinks.size() > 3) {
-				throw new GlobalException(JaxError.SEND_OTP_LIMIT_EXCEEDED,
-						"Sending Verification Limit has exceeded try again after 24 hours");
+			if (ArgUtil.is(oldlinks)) {
+				if (oldlinks.size() > jaxTenantProperties.getVerificationAttemptLimit()) {
+					throw new GlobalException(JaxError.SEND_OTP_LIMIT_EXCEEDED,
+							"Please verify your " + contactType.getLabel()
+									+ " to continue. Resend again after " +
+									jaxTenantProperties.getVerificationValidHours()
+									+ " hours");
+				}
+				for (CustomerContactVerification oldLink : oldlinks) {
+
+					Calendar cal = Calendar.getInstance();
+					cal.add(Calendar.MINUTE, -1 * jaxTenantProperties.getVerificationResendAfterMinutes());
+					java.util.Date lastAttemptLimit = new java.util.Date(cal.getTimeInMillis());
+					if (lastAttemptLimit.before(oldLink.getCreatedDate())
+							&& !oldLink.hasExpired(Constants.TimeInterval.MIN,
+									jaxTenantProperties.getVerificationResendAfterMinutes())) {
+						throw new GlobalException(JaxError.SEND_OTP_LIMIT_EXCEEDED,
+								"Please verify your " + contactType.getLabel()
+										+ " to continue. Resend again after " +
+										jaxTenantProperties.getVerificationResendAfterMinutes()
+										+ " minutes");
+					}
+				}
 			}
+
+			link2 = customerContactVerificationRepository.save(link);
+
 		} catch (GlobalException e) {
 			auditService.log(audit.result(Result.FAIL).message(e.getError()));
 			throw e;
 		}
 
-		CustomerContactVerification link2 = customerContactVerificationRepository.save(link);
-
 		// Audit Info
+		audit.getVerify().id(link2.getId()).count(getConfirmedCountsByCustomer(c, contactType));
 		audit.setTargetId(link2.getId());
 		auditService.log(audit.result(Result.DONE));
 
@@ -196,19 +242,24 @@ public class CustomerContactVerificationManager {
 		audit.setCustomerId(c.getCustomerId());
 		audit.setCustomer(c.getIdentityInt());
 		audit.setContactType(oldLink.getContactType());
+		audit.setVerify(new Verify().contactType(oldLink.getContactType()).id(oldLink.getId()));
+
+		CustomerContactVerification x;
 
 		try {
 			if (!oldLink.getCustomerId().equals(c.getCustomerId())) {
 				throw new GlobalException(JaxError.INVALID_CIVIL_ID, "Civil id does not belong to the link");
 			}
 
-			if (oldLink.hasValidStatus() && !oldLink.hasExpired()) {
+			if (oldLink.hasValidStatus() && !oldLink.hasExpired(Constants.TimeInterval.HRS,
+					jaxTenantProperties.getVerificationValidHours())) {
 				throw new GlobalException(JaxError.SEND_OTP_LIMIT_EXCEEDED,
 						"Link is Valid for a day and cannot resend it again");
 			}
 
 			oldLink.setVerificationCode(Random.randomAlphaNumeric(8));
 			oldLink.setSendDate(new Date());
+			oldLink = customerContactVerificationRepository.save(oldLink);
 
 		} catch (GlobalException e) {
 			auditService.log(audit.result(Result.FAIL).message(e.getError()));
@@ -216,10 +267,11 @@ public class CustomerContactVerificationManager {
 		}
 
 		// Audit Info
+		audit.getVerify().count(getConfirmedCountsByCustomer(c, oldLink.getContactType()));
 		audit.setTargetId(oldLink.getId());
 		auditService.log(audit.result(Result.DONE));
 
-		return customerContactVerificationRepository.save(oldLink);
+		return oldLink;
 	}
 
 	/**
@@ -234,7 +286,8 @@ public class CustomerContactVerificationManager {
 			throw new GlobalException(JaxError.ENTITY_INVALID, "Verification link is Invalid");
 		} else if (!link.hasValidStatus()) {
 			throw new GlobalException(JaxError.ENTITY_INVALID, "Verification link is Invalid : " + link.getIsActive());
-		} else if (link.hasExpired()) {
+		} else if (link.hasExpired(Constants.TimeInterval.HRS,
+				jaxTenantProperties.getVerificationValidHours())) {
 			throw new GlobalException(JaxError.ENTITY_EXPIRED,
 					"Verification link is expired, Created on " + link.getCreatedDate());
 		}
@@ -259,7 +312,7 @@ public class CustomerContactVerificationManager {
 				CustomerVerificationType.EMAIL);
 
 		CustomerOnlineRegistration customerOnlineRegistration = onlineCustomerRepository
-				.getLoginCustomersDeatilsById(c.getIdentityInt());
+				.findByCustomerId(c.getCustomerId());
 
 		if (ContactType.EMAIL.equals(type)) {
 			if (!contact.equals(c.getEmail())) {
@@ -327,6 +380,7 @@ public class CustomerContactVerificationManager {
 		audit.setCustomerId(c.getCustomerId());
 		audit.setCustomer(c.getIdentityInt());
 		audit.setContactType(link.getContactType());
+		audit.setVerify(new Verify().contactType(link.getContactType()).id(link.getId()));
 
 		try {
 
@@ -339,7 +393,7 @@ public class CustomerContactVerificationManager {
 			markCustomerContactVerified(c, link.getContactType(), link.getContactValue());
 
 			List<CustomerContactVerification> oldlinks = getValidCustomerContactVerificationsByCustomerId(
-					c.getCustomerId(), link.getContactType(), link.getContactValue());
+					c.getCustomerId(), link.getContactType(), null);
 			if (!ArgUtil.isEmpty(oldlinks)) {
 				for (CustomerContactVerification customerContactVerification : oldlinks) {
 					customerContactVerification.setIsActive(Status.D);
@@ -356,6 +410,8 @@ public class CustomerContactVerificationManager {
 			throw e;
 		}
 
+		// Audit Info
+		audit.getVerify().count(getConfirmedCountsByCustomer(c, link.getContactType()));
 		audit.setTargetId(link.getId());
 		auditService.log(audit.result(Result.DONE));
 
@@ -428,4 +484,22 @@ public class CustomerContactVerificationManager {
 		return EntityDtoUtil.entityToDto(entity, dto);
 	}
 
+	public CustomerContactVerification checkAndCreateVerification(Customer customer, ContactType contactType) {
+		CustomerContactVerification verification = null;
+		switch (contactType) {
+		case EMAIL:
+			if (!Status.Y.equals(customer.getEmailVerified())) {
+				verification = create(customer, contactType);
+			}
+			break;
+		case SMS:
+			if (!Status.Y.equals(customer.getMobileVerified())) {
+				verification = create(customer, contactType);
+			}
+			break;
+		default:
+			break;
+		}
+		return verification;
+	}
 }

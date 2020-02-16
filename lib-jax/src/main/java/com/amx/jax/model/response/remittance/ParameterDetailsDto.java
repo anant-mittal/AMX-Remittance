@@ -14,18 +14,18 @@ public class ParameterDetailsDto extends ResourceDTO {
 	private static final long serialVersionUID = -3369097385587671323L;
 	private BigDecimal parameterDetailsId;
 	private BigDecimal parameterMasterId;
-	private String recordId;
+	private String recordId;// gift
 	private String paramCodeDef;
 	private String fullDesc;
 	private String shortDesc;
 
-	private BigDecimal numericUdf1;
-	private BigDecimal numericUdf2;
-	private BigDecimal numericUdf3;
-	private BigDecimal numericUdf4;
+	private BigDecimal numericUdf1; // branch code
+	private BigDecimal numericUdf2; // amount
+	private BigDecimal numericUdf3;// min amount
+	private BigDecimal numericUdf4; // max amount
 	private BigDecimal numericUdf5;
 	private String charUdf1;
-	private String charUdf2;
+	private String charUdf2;// bank code
 	private String charUdf3;
 	private String charUdf4;
 	private String charUdf5;
@@ -221,5 +221,33 @@ public class ParameterDetailsDto extends ResourceDTO {
 	public void setAmount(BigDecimal amount) {
 		this.numericUdf2 = amount;
 	}
+	
+	@Override
+	public String getResourceLocalName() {
+		return this.charUdf1;
+	}
+	@Override
+	public String getResourceCode() {
+		return this.paramCodeDef;
+	}
 
+	public BigDecimal getMinAmount() {
+		double minAmount = (numericUdf3 == null) ? 0 : numericUdf3.doubleValue();
+		double amount = (numericUdf2 == null) ? 0 : numericUdf2.doubleValue();
+		if (minAmount > 0 && amount > 0) {
+			minAmount += amount;
+		}
+		return BigDecimal.valueOf(minAmount);
+	}
+
+	public BigDecimal getMaxAmount() {
+
+		double maxAmount = (numericUdf4 == null) ? 0 : numericUdf4.doubleValue();
+		double amount = (numericUdf2 == null) ? 0 : numericUdf2.doubleValue();
+		if (maxAmount > 0 && amount > 0) {
+			maxAmount += amount;
+		}
+		return BigDecimal.valueOf(maxAmount);
+
+	}
 }

@@ -14,14 +14,12 @@
 	"data": null,
 	"results": [
 		{
-			
-					"date": "23/01/2013",
-					"branchName": "MURGAB",
-					"firstName": "KANMANI",
-					"lastName": "SUBRAMANIAN PALANIYAPPAN",
-					"identityInt": "270062401985",
-					"expiryDate": "23/01/2013"
-				
+			"date": "23/01/2013",
+			"branchName": "MURGAB",
+			"firstName": "KANMANI",
+			"lastName": " PALANIYAPPAN",
+			"identityInt": "270062401985",
+			"expiryDate": "23/01/2013"
 		}
 	]
 }

@@ -23,13 +23,13 @@ import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.mcq.shedlock.SchedulerLock;
 import com.amx.jax.mcq.shedlock.SchedulerLock.LockContext;
-import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
 import com.amx.jax.radar.ARadarTask;
 import com.amx.jax.radar.ESRepository;
 import com.amx.jax.radar.RadarConfig;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache;
-import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncIndex;
 import com.amx.jax.radar.jobs.customer.OracleViewDocument;
+import com.amx.jax.radar.snap.SnapQueryService.BulkRequestSnapBuilder;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.rates.AmxCurRate;
 import com.amx.jax.scope.TenantContextHolder;
@@ -78,14 +78,14 @@ public class AMXRatesJob extends ARadarTask {
 
 		RateType type = RateType.SELL_TRNSFR;
 
-		BulkRequestBuilder builder = new BulkRequestBuilder();
+		BulkRequestSnapBuilder builder = new BulkRequestSnapBuilder();
 
 		for (MinMaxExRateDTO minMaxExRateDTO : rates) {
 
-			Currency cur = ((Currency) ArgUtil.parseAsEnum(minMaxExRateDTO.getToCurrency().getQuoteName(),
-					Currency.UNKNOWN));
-			Currency domCur = ((Currency) ArgUtil.parseAsEnum(minMaxExRateDTO.getFromCurrency().getQuoteName(),
-					Currency.UNKNOWN));
+			Currency cur = ArgUtil.parseAsEnumT(minMaxExRateDTO.getToCurrency().getQuoteName(),
+					Currency.UNKNOWN, Currency.class);
+			Currency domCur = ArgUtil.parseAsEnumT(minMaxExRateDTO.getFromCurrency().getQuoteName(),
+					Currency.UNKNOWN, Currency.class);
 			if (!Currency.UNKNOWN.equals(cur) && !Currency.UNKNOWN.equals(domCur)) {
 				BigDecimal rate = ArgUtil.parseAsBigDecimal(minMaxExRateDTO.getMaxExrate());
 				if (!ArgUtil.isEmpty(rate)) {
@@ -97,7 +97,7 @@ public class AMXRatesJob extends ARadarTask {
 					trnsfrRate.setrRate(rate);
 					trnsfrRate.setrRate(BigDecimal.ONE.divide(rate, 12, RoundingMode.CEILING));
 					// System.out.println(JsonUtil.toJson(trnsfrRate));
-					builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
+					builder.update(DBSyncIndex.XRATE_JOB.getIndexName(),
 							new OracleViewDocument(trnsfrRate));
 				}
 			}

@@ -16,12 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.TransactionHistoryDto;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -30,10 +29,13 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionHistoryView;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
+import com.amx.jax.dbmodel.remittance.RemittanceAdditionalInstructionData;
+import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
+import com.amx.jax.repository.IRemittanceAdditionalInstructionRepository;
 import com.amx.jax.repository.ITransactionHistroyDAO;
 import com.amx.jax.repository.TransactionHistoryDAO;
 
@@ -56,9 +58,12 @@ public class TransactionHistroyService extends AbstractService {
 	@Autowired
 	TransactionHistoryDAO transactionHistroyDAO;
 
-
 	@Autowired
 	MetaData metaData;
+	@Autowired
+	IRemittanceAdditionalInstructionRepository iRemittanceAdditionalInstructionRepository;
+	@Autowired
+	BeneficiaryService beneficiaryService;
 	
 	Logger logger = LoggerFactory.getLogger(TransactionHistroyDTO.class);
 
@@ -71,7 +76,7 @@ public class TransactionHistroyService extends AbstractService {
 		} else {
 		    
 			Set<BigDecimal> beneRelSeqSet = trnxHisList.stream().map(emp -> emp.getBeneficiaryRelationSeqId())
-					.collect(Collectors.toSet());
+					.filter(seqId -> seqId != null).collect(Collectors.toSet());
 			List<BenificiaryListView> beneList = beneficiaryOnlineDao.getBeneficiaryRelationShipSeqIds(
 					metaData.getCustomerId(), new ArrayList<BigDecimal>(beneRelSeqSet));
 			Map<BigDecimal, BenificiaryListView> beneMap = beneList.stream()
@@ -109,21 +114,16 @@ public class TransactionHistroyService extends AbstractService {
 		return response;
 	}
 
-	public TransactionHistroyDTO getTransactionHistoryDto(BigDecimal cutomerReference, BigDecimal remittanceDocfyr,
-			BigDecimal remittancedocNumber) {
-		List<CustomerRemittanceTransactionView> trnxHisList = transactionHistroyDao
-				.getTransactionHistroyByDocumnet(cutomerReference, remittanceDocfyr, remittancedocNumber); 
+	public TransactionHistroyDTO getTransactionHistoryDto(BigDecimal cutomerReference, BigDecimal remittanceDocfyr,BigDecimal remittancedocNumber) {
+		List<CustomerRemittanceTransactionView> trnxHisList = transactionHistroyDao.getTransactionHistroyByDocumnet(cutomerReference, remittanceDocfyr, remittancedocNumber); 
 		if(trnxHisList.isEmpty()) {
 			getTransactionHistoryDTO(cutomerReference, remittanceDocfyr, remittancedocNumber);
 		}
 		return convert(trnxHisList).get(0);
 	}
 
-	public TransactionHistoryDto getTransactionHistoryDTO(BigDecimal cutomerReference, BigDecimal remittanceDocfyr,
-			BigDecimal remittancedocNumber) {
-		
+	public TransactionHistoryDto getTransactionHistoryDTO(BigDecimal cutomerReference, BigDecimal remittanceDocfyr,BigDecimal remittancedocNumber) {
 		List<CustomerRemittanceTransactionHistoryView> trnxHistList = transactionHistroyDAO.getTransactionHistroyByDocumnet(cutomerReference, remittanceDocfyr, remittancedocNumber);
-				
 		return convertv2(trnxHistList).get(0);
 	}
 		
@@ -133,8 +133,7 @@ public class TransactionHistroyService extends AbstractService {
 		List<CustomerRemittanceTransactionHistoryView> trnxHistoryList = new ArrayList<CustomerRemittanceTransactionHistoryView>();
 		ApiResponse response = getBlackApiResponse();
 		if (docfyr != null) {
-			trnxList = transactionHistroyDao.getTransactionHistroyDocfyrDateWise(cutomerReference, docfyr, fromDate,
-					toDate);
+			trnxList = transactionHistroyDao.getTransactionHistroyDocfyrDateWise(cutomerReference, docfyr, fromDate,toDate);
 			if (!trnxList.isEmpty()) {
 				response.getData().getValues().addAll(convert(trnxList));
 				response.setResponseStatus(ResponseStatus.OK);
@@ -142,7 +141,6 @@ public class TransactionHistroyService extends AbstractService {
 			trnxHistoryList = transactionHistroyDAO.getTransactionHistroyDocfyrAndDateWise(cutomerReference, docfyr, fromDate,
 					toDate);
 			if (!trnxHistoryList.isEmpty()) {
-
 				response.getData().getValues().addAll(convertv2(trnxHistoryList));
 				response.setResponseStatus(ResponseStatus.OK);
 
@@ -212,12 +210,21 @@ public class TransactionHistroyService extends AbstractService {
 				}
 	            
 	            model.setTransactionReference(getTransactionReferece(hist));
+	            model.setReceiptNumber(getReceiptReference(hist));
+	            
+	            
+	            
+	            
+	            
 	            
 			BenificiaryListView beneViewModel = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(
 					hist.getCustomerId(), metaData.getCountryId(), hist.getBeneficiaryRelationSeqId());
 	            if(beneViewModel!=null){
 	                 beneDtoCheck=beneCheckService.beneCheck(convertBeneModelToDto(beneViewModel));
+	                 model.setBeneIsActive(beneViewModel.getIsActive().equalsIgnoreCase(ConstantDocument.Status.Y.toString())?Boolean.TRUE:Boolean.FALSE);
+	                 
 	            }
+	            
 	            if(beneDtoCheck != null){
 	                model.setBeneficiaryErrorStatus(beneDtoCheck.getBeneficiaryErrorStatus());
 	            }
@@ -227,9 +234,14 @@ public class TransactionHistroyService extends AbstractService {
 	                list.add(model);
 	            }
 
+	            
+	            
+	            
 	        }
 	        return list;
 	    }
+	   
+	  
 	   
 	   private List<TransactionHistoryDto> convertv2(List<CustomerRemittanceTransactionHistoryView> trnxHist) {
 	        List<TransactionHistoryDto> list = new ArrayList<>();
@@ -267,14 +279,19 @@ public class TransactionHistroyService extends AbstractService {
 	            model.setSourceOfIncomeId(hist.getSourceOfIncomeId());
 	            model.setTransactionReference(getTransactionReference(hist));
 	            
-			BenificiaryListView beneViewModel = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(
-					hist.getCustomerId(), metaData.getCountryId(), hist.getBeneficiaryRelationSeqId());
+			BenificiaryListView beneViewModel = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(hist.getCustomerId(), metaData.getCountryId(), hist.getBeneficiaryRelationSeqId());
 	            if(beneViewModel!=null){
 	                 beneDtoCheck=beneCheckService.beneCheck(convertBeneModelToDto(beneViewModel));
 	            }
 	            if(beneDtoCheck != null){
 	                model.setBeneficiaryErrorStatus(beneDtoCheck.getBeneficiaryErrorStatus());
 	            }
+	            
+	            
+	            
+	            
+	            
+	            
 	            if (!StringUtils.isBlank(hist.getBeneficaryCorespondingBankName()) 
 	                && !hist.getBeneficaryCorespondingBankName().equalsIgnoreCase(ConstantDocument.WU) 
 	                && !hist.getBeneficaryCorespondingBankName().equalsIgnoreCase(ConstantDocument.MONEY)) {
@@ -342,6 +359,7 @@ public class TransactionHistroyService extends AbstractService {
 			BenificiaryListView beneViewModel = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(hist.getCustomerId(),metaData.getCountryId(),hist.getBeneficiaryRelationSeqId());
 			if(beneViewModel!=null){
 				 beneDtoCheck=beneCheckService.beneCheck(convertBeneModelToDto(beneViewModel));
+				 model.setBeneIsActive(beneViewModel.getIsActive().equalsIgnoreCase("Y")?Boolean.TRUE:Boolean.FALSE);
 			}
 			if(beneDtoCheck != null){
 				model.setBeneficiaryErrorStatus(beneDtoCheck.getBeneficiaryErrorStatus());
@@ -423,6 +441,10 @@ public class TransactionHistroyService extends AbstractService {
 		return hist.getDocumentNumber().toString() + hist.getDocumentFinanceYear().toString();
 	}
 	
+	
+	private String getReceiptReference(CustomerRemittanceTransactionView hist) {
+		return hist.getCollectionDocumentNo().toString()+hist.getCollectionDocumentFinYear().toString();
+	}
 
 	private String getTransactionReference(CustomerRemittanceTransactionHistoryView hist) {
 		return hist.getDocumentNumber().toString() + hist.getDocumentFinanceYear().toString();
@@ -459,5 +481,28 @@ public class TransactionHistroyService extends AbstractService {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
+	/**
+	 * @param beneficaryDetails
+	 * @param flexFieldName
+	 * @return additional flex data for default bene transaction
+	 */
+	public RemittanceAdditionalInstructionData getAdditionalRemittanceDataForDefaultBeneTrnx(BenificiaryListView beneficaryDetails,
+			String flexFieldName) {
+		RemittanceAdditionalInstructionData flexFieldData = null;
+		try {
+			ApiResponse apiResponse = beneficiaryService.getDefaultBeneficiary(beneficaryDetails.getCustomerId(),
+					beneficaryDetails.getApplicationCountryId(), beneficaryDetails.getBeneficiaryRelationShipSeqId(), null);
+			RemittancePageDto remittancePageDto = (RemittancePageDto) apiResponse.getResult();
+			if (remittancePageDto != null && remittancePageDto.getTrnxHistDto() != null) {
+				String idNo = remittancePageDto.getTrnxHistDto().getIdno().toString();
+				String remittanceTransactionIdStr = idNo.substring(1); // to skip prepended char 3
+				flexFieldData = iRemittanceAdditionalInstructionRepository
+						.findByexRemittanceTransactionAndFlexField(new RemittanceTransaction(remittanceTransactionIdStr), flexFieldName);
+			}
+		} catch (GlobalException ex) {
+			logger.debug("Global exception in default bene error msg {}", ex.getErrorMessage());
+		}
+		return flexFieldData;
+	}
 }

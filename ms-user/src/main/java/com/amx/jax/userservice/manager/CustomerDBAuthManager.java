@@ -1,6 +1,7 @@
 package com.amx.jax.userservice.manager;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -18,23 +19,25 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.JaxAuthMetaResp;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
-import com.amx.jax.dbmodel.ViewOnlineCurrency;
 import com.amx.jax.dict.ContactType;
+import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.response.customer.CustomerCommunicationChannel;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.CommunicationChannelContactService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
+import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Random;
@@ -66,6 +69,9 @@ public class CustomerDBAuthManager {
 	
 	@Autowired
 	OtpSettings otpSettings;
+	
+	@Autowired
+	CommunicationPreferencesManager communicationPreferencesManager;
 
 	private static final Logger log = LoggerFactory.getLogger(CustomerDBAuthManager.class);
 
@@ -73,10 +79,15 @@ public class CustomerDBAuthManager {
 		List<Customer> customers = userService.getCustomerByIdentityInt(identityInt);
 		Customer customerVal = userValidationService.validateCustomerForDuplicateRecords(customers);
 		BigDecimal customerId = customerVal.getCustomerId();
-
+		return validateAndSendOtp(customerId);
+	}
+	
+	public CustomerModel validateAndSendOtp(BigDecimal customerId) {
+		
 		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustByCustomerId(customerId);
 		Customer customer = custDao.getCustById(customerId);
-		
+		String identityInt = customer.getIdentityInt();
+		log.info("Flow is "+AppContextUtil.getFlow());
 		if(onlineCust != null) {
 			if (onlineCust.getLockCnt() != null) {
 				int lockCnt = onlineCust.getLockCnt().intValue();
@@ -99,7 +110,16 @@ public class CustomerDBAuthManager {
 		}
 
 		ContactType contactType = JaxAuthContext.getContactType();
-
+		List<ContactType> contactList = new ArrayList<ContactType>();
+		contactList.add(contactType);
+		
+		/*if(AppContextUtil.getFlow().equalsIgnoreCase(AmxDBConstants.FORGOT_PASSWORD_FLOW)) {
+			communicationPreferencesManager.validateCommunicationPreferences(contactList,CommunicationEvents.FORGOT_PASSWORD,identityInt);
+		}else if(AppContextUtil.getFlow().equalsIgnoreCase(AmxDBConstants.BENEFICIARY_ADDITION_FLOW)) {
+			communicationPreferencesManager.validateCommunicationPreferences(contactList,CommunicationEvents.ADD_BENEFICIARY,identityInt);
+		}else if(AppContextUtil.getFlow().equalsIgnoreCase(AmxDBConstants.REMIT_CART_ADD)) {
+			communicationPreferencesManager.validateCommunicationPreferences(contactList, CommunicationEvents.REMITTANCE, identityInt);
+		}*/
 		if (contactType == null) {
 
 			// send list of contact types available for customer
@@ -166,10 +186,10 @@ public class CustomerDBAuthManager {
 		if (isMotpRequired && isEotpRequired) {
 			ex = new GlobalException(JaxError.DOTP_REQUIRED, "e and m otp required");
 		}
-		if (isMotpRequired) {
+		if (isMotpRequired && !isEotpRequired) {
 			ex = new GlobalException(JaxError.MOTP_REQUIRED, "m otp required");
 		}
-		if (isEotpRequired) {
+		if (isEotpRequired && !isMotpRequired) {
 			ex = new GlobalException(JaxError.EOTP_REQUIRED, "e otp required");
 		}
 		if (ex != null) {

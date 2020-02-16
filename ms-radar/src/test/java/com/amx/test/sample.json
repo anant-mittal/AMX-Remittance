@@ -1,96 +1,623 @@
 {
-  "took" : 14867,
+  "took" : 2577,
   "timed_out" : false,
   "_shards" : {
-    "total" : 10,
-    "successful" : 10,
-    "skipped" : 0,
+    "total" : 1371,
+    "successful" : 1371,
+    "skipped" : 1277,
     "failed" : 0
   },
   "hits" : {
-    "total" : 1565365,
-    "max_score" : 0.0,
+    "total" : {
+      "value" : 35,
+      "relation" : "eq"
+    },
+    "max_score" : null,
     "hits" : [ ]
   },
   "aggregations" : {
-    "tranx" : {
+    "fp" : {
+      "doc_count_error_upper_bound" : 0,
+      "sum_other_doc_count" : 0,
       "buckets" : [
         {
-          "key" : "last_year",
-          "from" : 1.518672678172E12,
-          "from_as_string" : "2018-02-15T05:31:18.172Z",
-          "doc_count" : 1193,
-          "channel" : {
+          "key" : "DEC412F8-FC65-40E6-ACA1-3897B3AD52BF",
+          "doc_count" : 12,
+          "browser" : {
             "doc_count_error_upper_bound" : 0,
             "sum_other_doc_count" : 0,
             "buckets" : [
               {
-                "key" : "ONLINE",
-                "doc_count" : 882
-              },
-              {
-                "key" : "ANDROID",
-                "doc_count" : 216
-              },
-              {
-                "key" : "IOS",
-                "doc_count" : 53
-              },
-              {
-                "key" : "KIOSK",
-                "doc_count" : 23
-              },
-              {
-                "key" : "BRANCH",
-                "doc_count" : 19
+                "key" : "CFNETWORK",
+                "doc_count" : 12,
+                "os" : {
+                  "doc_count_error_upper_bound" : 0,
+                  "sum_other_doc_count" : 0,
+                  "buckets" : [
+                    {
+                      "key" : "MAC_OS_X",
+                      "doc_count" : 12,
+                      "ip" : {
+                        "doc_count_error_upper_bound" : 0,
+                        "sum_other_doc_count" : 0,
+                        "buckets" : [
+                          {
+                            "key" : "115.111.75.13",
+                            "doc_count" : 12,
+                            "country" : {
+                              "doc_count_error_upper_bound" : 0,
+                              "sum_other_doc_count" : 0,
+                              "buckets" : [
+                                {
+                                  "key" : "IN",
+                                  "doc_count" : 12,
+                                  "rg" : {
+                                    "doc_count_error_upper_bound" : 0,
+                                    "sum_other_doc_count" : 0,
+                                    "buckets" : [
+                                      {
+                                        "key" : "MH",
+                                        "doc_count" : 12,
+                                        "city" : {
+                                          "doc_count_error_upper_bound" : 0,
+                                          "sum_other_doc_count" : 0,
+                                          "buckets" : [
+                                            {
+                                              "key" : "Mumbai",
+                                              "doc_count" : 12,
+                                              "app" : {
+                                                "doc_count_error_upper_bound" : 0,
+                                                "sum_other_doc_count" : 0,
+                                                "buckets" : [
+                                                  {
+                                                    "key" : "ONLINE_WEB",
+                                                    "doc_count" : 12,
+                                                    "span" : {
+                                                      "buckets" : [
+                                                        {
+                                                          "key" : "lastminute",
+                                                          "from" : 1.573625973903E12,
+                                                          "from_as_string" : "2019-11-13T11:49:33.903+05:30",
+                                                          "to" : 1.573626873903E12,
+                                                          "to_as_string" : "2019-11-13T12:04:33.903+05:30",
+                                                          "doc_count" : 0,
+                                                          "UT" : {
+                                                            "value" : 0
+                                                          }
+                                                        },
+                                                        {
+                                                          "key" : "lastmonth",
+                                                          "from" : 1.573626813903E12,
+                                                          "from_as_string" : "2019-11-13T12:03:33.903+05:30",
+                                                          "to" : 1.573625973903E12,
+                                                          "to_as_string" : "2019-11-13T11:49:33.903+05:30",
+                                                          "doc_count" : 0,
+                                                          "UT" : {
+                                                            "value" : 0
+                                                          }
+                                                        }
+                                                      ]
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
               }
             ]
           }
         },
         {
-          "key" : "last_month",
-          "from" : 1.547530278172E12,
-          "from_as_string" : "2019-01-15T05:31:18.172Z",
-          "doc_count" : 78,
-          "channel" : {
+          "key" : "cede785933bbd225",
+          "doc_count" : 11,
+          "browser" : {
             "doc_count_error_upper_bound" : 0,
             "sum_other_doc_count" : 0,
             "buckets" : [
               {
-                "key" : "ONLINE",
-                "doc_count" : 65
-              },
-              {
-                "key" : "ANDROID",
-                "doc_count" : 10
-              },
-              {
-                "key" : "IOS",
-                "doc_count" : 3
+                "key" : "UNKNOWN",
+                "doc_count" : 11,
+                "os" : {
+                  "doc_count_error_upper_bound" : 0,
+                  "sum_other_doc_count" : 0,
+                  "buckets" : [
+                    {
+                      "key" : "ANDROID8_TABLET",
+                      "doc_count" : 11,
+                      "ip" : {
+                        "doc_count_error_upper_bound" : 0,
+                        "sum_other_doc_count" : 0,
+                        "buckets" : [
+                          {
+                            "key" : "115.111.75.13",
+                            "doc_count" : 11,
+                            "country" : {
+                              "doc_count_error_upper_bound" : 0,
+                              "sum_other_doc_count" : 0,
+                              "buckets" : [
+                                {
+                                  "key" : "IN",
+                                  "doc_count" : 11,
+                                  "rg" : {
+                                    "doc_count_error_upper_bound" : 0,
+                                    "sum_other_doc_count" : 0,
+                                    "buckets" : [
+                                      {
+                                        "key" : "MH",
+                                        "doc_count" : 11,
+                                        "city" : {
+                                          "doc_count_error_upper_bound" : 0,
+                                          "sum_other_doc_count" : 0,
+                                          "buckets" : [
+                                            {
+                                              "key" : "Mumbai",
+                                              "doc_count" : 11,
+                                              "app" : {
+                                                "doc_count_error_upper_bound" : 0,
+                                                "sum_other_doc_count" : 0,
+                                                "buckets" : [
+                                                  {
+                                                    "key" : "ONLINE_AND",
+                                                    "doc_count" : 11,
+                                                    "span" : {
+                                                      "buckets" : [
+                                                        {
+                                                          "key" : "lastminute",
+                                                          "from" : 1.573625973903E12,
+                                                          "from_as_string" : "2019-11-13T11:49:33.903+05:30",
+                                                          "to" : 1.573626873903E12,
+                                                          "to_as_string" : "2019-11-13T12:04:33.903+05:30",
+                                                          "doc_count" : 0,
+                                                          "UT" : {
+                                                            "value" : 0
+                                                          }
+                                                        },
+                                                        {
+                                                          "key" : "lastmonth",
+                                                          "from" : 1.573626813903E12,
+                                                          "from_as_string" : "2019-11-13T12:03:33.903+05:30",
+                                                          "to" : 1.573625973903E12,
+                                                          "to_as_string" : "2019-11-13T11:49:33.903+05:30",
+                                                          "doc_count" : 0,
+                                                          "UT" : {
+                                                            "value" : 0
+                                                          }
+                                                        }
+                                                      ]
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
               }
             ]
           }
         },
         {
-          "key" : "last_week",
-          "from" : 1.549603878172E12,
-          "from_as_string" : "2019-02-08T05:31:18.172Z",
-          "doc_count" : 0,
-          "channel" : {
+          "key" : "8e3c23c9f8f5d281579b52e39a23a3ab",
+          "doc_count" : 7,
+          "browser" : {
             "doc_count_error_upper_bound" : 0,
             "sum_other_doc_count" : 0,
-            "buckets" : [ ]
+            "buckets" : [
+              {
+                "key" : "CHROME",
+                "doc_count" : 7,
+                "os" : {
+                  "doc_count_error_upper_bound" : 0,
+                  "sum_other_doc_count" : 0,
+                  "buckets" : [
+                    {
+                      "key" : "WINDOWS_10",
+                      "doc_count" : 7,
+                      "ip" : {
+                        "doc_count_error_upper_bound" : 0,
+                        "sum_other_doc_count" : 0,
+                        "buckets" : [
+                          {
+                            "key" : "10.28.42.88",
+                            "doc_count" : 7,
+                            "country" : {
+                              "doc_count_error_upper_bound" : 0,
+                              "sum_other_doc_count" : 0,
+                              "buckets" : [
+                                {
+                                  "key" : "__missing__",
+                                  "doc_count" : 7,
+                                  "rg" : {
+                                    "doc_count_error_upper_bound" : 0,
+                                    "sum_other_doc_count" : 0,
+                                    "buckets" : [
+                                      {
+                                        "key" : "__missing__",
+                                        "doc_count" : 7,
+                                        "city" : {
+                                          "doc_count_error_upper_bound" : 0,
+                                          "sum_other_doc_count" : 0,
+                                          "buckets" : [
+                                            {
+                                              "key" : "__missing__",
+                                              "doc_count" : 7,
+                                              "app" : {
+                                                "doc_count_error_upper_bound" : 0,
+                                                "sum_other_doc_count" : 0,
+                                                "buckets" : [
+                                                  {
+                                                    "key" : "ONLINE_WEB",
+                                                    "doc_count" : 7,
+                                                    "span" : {
+                                                      "buckets" : [
+                                                        {
+                                                          "key" : "lastminute",
+                                                          "from" : 1.573625973903E12,
+                                                          "from_as_string" : "2019-11-13T11:49:33.903+05:30",
+                                                          "to" : 1.573626873903E12,
+                                                          "to_as_string" : "2019-11-13T12:04:33.903+05:30",
+                                                          "doc_count" : 0,
+                                                          "UT" : {
+                                                            "value" : 0
+                                                          }
+                                                        },
+                                                        {
+                                                          "key" : "lastmonth",
+                                                          "from" : 1.573626813903E12,
+                                                          "from_as_string" : "2019-11-13T12:03:33.903+05:30",
+                                                          "to" : 1.573625973903E12,
+                                                          "to_as_string" : "2019-11-13T11:49:33.903+05:30",
+                                                          "doc_count" : 0,
+                                                          "UT" : {
+                                                            "value" : 0
+                                                          }
+                                                        }
+                                                      ]
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         },
         {
-          "key" : "last_day",
-          "from" : 1.550122278172E12,
-          "from_as_string" : "2019-02-14T05:31:18.172Z",
-          "doc_count" : 0,
-          "channel" : {
+          "key" : "141474d6b3b6e561f14161aa3fba2298",
+          "doc_count" : 2,
+          "browser" : {
             "doc_count_error_upper_bound" : 0,
             "sum_other_doc_count" : 0,
-            "buckets" : [ ]
+            "buckets" : [
+              {
+                "key" : "CHROME",
+                "doc_count" : 2,
+                "os" : {
+                  "doc_count_error_upper_bound" : 0,
+                  "sum_other_doc_count" : 0,
+                  "buckets" : [
+                    {
+                      "key" : "MAC_OS_X",
+                      "doc_count" : 2,
+                      "ip" : {
+                        "doc_count_error_upper_bound" : 0,
+                        "sum_other_doc_count" : 0,
+                        "buckets" : [
+                          {
+                            "key" : "10.28.42.101",
+                            "doc_count" : 2,
+                            "country" : {
+                              "doc_count_error_upper_bound" : 0,
+                              "sum_other_doc_count" : 0,
+                              "buckets" : [
+                                {
+                                  "key" : "__missing__",
+                                  "doc_count" : 2,
+                                  "rg" : {
+                                    "doc_count_error_upper_bound" : 0,
+                                    "sum_other_doc_count" : 0,
+                                    "buckets" : [
+                                      {
+                                        "key" : "__missing__",
+                                        "doc_count" : 2,
+                                        "city" : {
+                                          "doc_count_error_upper_bound" : 0,
+                                          "sum_other_doc_count" : 0,
+                                          "buckets" : [
+                                            {
+                                              "key" : "__missing__",
+                                              "doc_count" : 2,
+                                              "app" : {
+                                                "doc_count_error_upper_bound" : 0,
+                                                "sum_other_doc_count" : 0,
+                                                "buckets" : [
+                                                  {
+                                                    "key" : "ONLINE_WEB",
+                                                    "doc_count" : 2,
+                                                    "span" : {
+                                                      "buckets" : [
+                                                        {
+                                                          "key" : "lastminute",
+                                                          "from" : 1.573625973903E12,
+                                                          "from_as_string" : "2019-11-13T11:49:33.903+05:30",
+                                                          "to" : 1.573626873903E12,
+                                                          "to_as_string" : "2019-11-13T12:04:33.903+05:30",
+                                                          "doc_count" : 0,
+                                                          "UT" : {
+                                                            "value" : 0
+                                                          }
+                                                        },
+                                                        {
+                                                          "key" : "lastmonth",
+                                                          "from" : 1.573626813903E12,
+                                                          "from_as_string" : "2019-11-13T12:03:33.903+05:30",
+                                                          "to" : 1.573625973903E12,
+                                                          "to_as_string" : "2019-11-13T11:49:33.903+05:30",
+                                                          "doc_count" : 0,
+                                                          "UT" : {
+                                                            "value" : 0
+                                                          }
+                                                        }
+                                                      ]
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "key" : "3dff8a27141d595769cabc6dfd384895",
+          "doc_count" : 2,
+          "browser" : {
+            "doc_count_error_upper_bound" : 0,
+            "sum_other_doc_count" : 0,
+            "buckets" : [
+              {
+                "key" : "CHROME",
+                "doc_count" : 2,
+                "os" : {
+                  "doc_count_error_upper_bound" : 0,
+                  "sum_other_doc_count" : 0,
+                  "buckets" : [
+                    {
+                      "key" : "LINUX",
+                      "doc_count" : 2,
+                      "ip" : {
+                        "doc_count_error_upper_bound" : 0,
+                        "sum_other_doc_count" : 0,
+                        "buckets" : [
+                          {
+                            "key" : "115.111.75.13",
+                            "doc_count" : 2,
+                            "country" : {
+                              "doc_count_error_upper_bound" : 0,
+                              "sum_other_doc_count" : 0,
+                              "buckets" : [
+                                {
+                                  "key" : "IN",
+                                  "doc_count" : 2,
+                                  "rg" : {
+                                    "doc_count_error_upper_bound" : 0,
+                                    "sum_other_doc_count" : 0,
+                                    "buckets" : [
+                                      {
+                                        "key" : "MH",
+                                        "doc_count" : 2,
+                                        "city" : {
+                                          "doc_count_error_upper_bound" : 0,
+                                          "sum_other_doc_count" : 0,
+                                          "buckets" : [
+                                            {
+                                              "key" : "Mumbai",
+                                              "doc_count" : 2,
+                                              "app" : {
+                                                "doc_count_error_upper_bound" : 0,
+                                                "sum_other_doc_count" : 0,
+                                                "buckets" : [
+                                                  {
+                                                    "key" : "ONLINE_WEB",
+                                                    "doc_count" : 2,
+                                                    "span" : {
+                                                      "buckets" : [
+                                                        {
+                                                          "key" : "lastminute",
+                                                          "from" : 1.573625973903E12,
+                                                          "from_as_string" : "2019-11-13T11:49:33.903+05:30",
+                                                          "to" : 1.573626873903E12,
+                                                          "to_as_string" : "2019-11-13T12:04:33.903+05:30",
+                                                          "doc_count" : 0,
+                                                          "UT" : {
+                                                            "value" : 0
+                                                          }
+                                                        },
+                                                        {
+                                                          "key" : "lastmonth",
+                                                          "from" : 1.573626813903E12,
+                                                          "from_as_string" : "2019-11-13T12:03:33.903+05:30",
+                                                          "to" : 1.573625973903E12,
+                                                          "to_as_string" : "2019-11-13T11:49:33.903+05:30",
+                                                          "doc_count" : 0,
+                                                          "UT" : {
+                                                            "value" : 0
+                                                          }
+                                                        }
+                                                      ]
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "key" : "3d9ed25b56966bd47b76f4dbc01851a0",
+          "doc_count" : 1,
+          "browser" : {
+            "doc_count_error_upper_bound" : 0,
+            "sum_other_doc_count" : 0,
+            "buckets" : [
+              {
+                "key" : "CHROME",
+                "doc_count" : 1,
+                "os" : {
+                  "doc_count_error_upper_bound" : 0,
+                  "sum_other_doc_count" : 0,
+                  "buckets" : [
+                    {
+                      "key" : "MAC_OS_X",
+                      "doc_count" : 1,
+                      "ip" : {
+                        "doc_count_error_upper_bound" : 0,
+                        "sum_other_doc_count" : 0,
+                        "buckets" : [
+                          {
+                            "key" : "10.28.42.23",
+                            "doc_count" : 1,
+                            "country" : {
+                              "doc_count_error_upper_bound" : 0,
+                              "sum_other_doc_count" : 0,
+                              "buckets" : [
+                                {
+                                  "key" : "__missing__",
+                                  "doc_count" : 1,
+                                  "rg" : {
+                                    "doc_count_error_upper_bound" : 0,
+                                    "sum_other_doc_count" : 0,
+                                    "buckets" : [
+                                      {
+                                        "key" : "__missing__",
+                                        "doc_count" : 1,
+                                        "city" : {
+                                          "doc_count_error_upper_bound" : 0,
+                                          "sum_other_doc_count" : 0,
+                                          "buckets" : [
+                                            {
+                                              "key" : "__missing__",
+                                              "doc_count" : 1,
+                                              "app" : {
+                                                "doc_count_error_upper_bound" : 0,
+                                                "sum_other_doc_count" : 0,
+                                                "buckets" : [
+                                                  {
+                                                    "key" : "ONLINE_WEB",
+                                                    "doc_count" : 1,
+                                                    "span" : {
+                                                      "buckets" : [
+                                                        {
+                                                          "key" : "lastminute",
+                                                          "from" : 1.573625973903E12,
+                                                          "from_as_string" : "2019-11-13T11:49:33.903+05:30",
+                                                          "to" : 1.573626873903E12,
+                                                          "to_as_string" : "2019-11-13T12:04:33.903+05:30",
+                                                          "doc_count" : 0,
+                                                          "UT" : {
+                                                            "value" : 0
+                                                          }
+                                                        },
+                                                        {
+                                                          "key" : "lastmonth",
+                                                          "from" : 1.573626813903E12,
+                                                          "from_as_string" : "2019-11-13T12:03:33.903+05:30",
+                                                          "to" : 1.573625973903E12,
+                                                          "to_as_string" : "2019-11-13T11:49:33.903+05:30",
+                                                          "doc_count" : 0,
+                                                          "UT" : {
+                                                            "value" : 0
+                                                          }
+                                                        }
+                                                      ]
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         }
       ]

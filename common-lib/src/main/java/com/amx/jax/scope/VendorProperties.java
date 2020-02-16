@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.scope.VendorContext.VendorScoped;
@@ -200,7 +201,7 @@ public class VendorProperties {
 
 	public Properties getProperties() {
 		if (properties == null) {
-			properties = getProperties(TenantContextHolder.currentSite().toString().toLowerCase(), obj);
+			properties = getProperties(AppContextUtil.getVendor(VendorProperties.class).toLowerCase(), obj);
 		}
 		return properties;
 	}

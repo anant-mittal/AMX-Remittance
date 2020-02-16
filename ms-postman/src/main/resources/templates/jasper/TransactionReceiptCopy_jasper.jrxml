@@ -939,7 +939,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("commision")]]>
+                                    <![CDATA[$F{tranx}.get("commision")+"             "+$F{tranx}.get("discountOnCommissionStr")]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -1078,7 +1078,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("instruction")]]>
+                                    <![CDATA[$F{tranx}.get("futherInstructions")]]>
                                 </textFieldExpression>
                             </textField>
                             <textField isStretchWithOverflow="true">
@@ -1095,56 +1095,39 @@
                             </textField>
 
                         </frame>
-                        <!--##################Payment Details END####################-->
+                         <!--##################Amount Saved Details END####################-->
                         <frame>
-                            <reportElement x="5" y="200" width="585" height="60"/>
+                            <reportElement x="5" y="256" width="585" height="60"/>
                             <staticText>
-                                <reportElement mode = "Transparent" x = "0" y = "2" width = "585" height = "30"  />
+                                <reportElement mode = "Transparent" x = "0" y = "1" width = "585" height = "30"  />
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
                             
-                            <ellipse>
-                                <reportElement  x="345" y="0" width="150" height="80" forecolor="#333333" backcolor="#333333">
+                            <rectangle radius="15">
+                                <reportElement x="337" y="0" width="170" height="57" forecolor="#333333" backcolor="#000000">
                                         <printWhenExpression><![CDATA[$F{tranx}.get("amountSaved") != "" || $F{tranx}.get("totalAmountSavedStr") != ""]]></printWhenExpression>
                                 </reportElement>
                                 <graphicElement>
-                                <pen lineWidth="2"/>
+                                <pen lineWidth="1"/>
                                 </graphicElement>
-                            </ellipse>
-                            <textField isStretchWithOverflow="true">
-                                <reportElement x="356" y="16" width="128" height="30"
+                            </rectangle>
+                          
+                               <textField isStretchWithOverflow="true">
+                                <reportElement x="323" y="2" width="200" height="45"
                                                 forecolor="#ffffff"
                                                 isPrintWhenDetailOverflows="true"/>
-                                <textElement textAlignment="Center">
-                                    <font fontName="Arial" size="9" isItalic="true"
+                                <textElement textAlignment="Center" markup="styled">
+                                    <font fontName="Arial" size="11" isItalic="true"
                                             pdfFontName="fonts/all/arial.ttf"/>
                                     <paragraph lineSpacing="AtLeast" lineSpacingSize="11" leftIndent="5"/>
 
                                 </textElement>  
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.getValue("amountSaved","You Saved ") + $F{tranx}.get("amountSaved")]]>
+                                    <![CDATA[$F{tranx}.getValue("amountSaved","You Saved <br/>")+$F{tranx}.get("amountSaved")+"<br/>"+ "Since June 2019, you've saved <br/>"+ $F{tranx}.get("totalAmountSavedStr")]]>
                                 </textFieldExpression>
                             </textField>
-
-
-                            <textField isStretchWithOverflow="true">
-                                <reportElement x="356" y="40" width="128" height="30"
-                                                forecolor="#ffffff"
-                                                isPrintWhenDetailOverflows="true"/>
-                                <textElement textAlignment="Center">
-                                    <font fontName="Arial" size="9" isItalic="true"
-                                            pdfFontName="fonts/all/arial.ttf"/>
-                                    <paragraph lineSpacing="AtLeast" lineSpacingSize="11" leftIndent="5"/>
-
-                                </textElement>
-                                <textFieldExpression class="java.lang.String">
-                                    <![CDATA["Since June 2019, you've saved "+ $F{tranx}.get("totalAmountSavedStr") ]]>
-                                </textFieldExpression>
-                            </textField>
-
-                        </frame>
-                        
+							</frame>
                         
                        
                             <!--##################Payment Mode START####################-->

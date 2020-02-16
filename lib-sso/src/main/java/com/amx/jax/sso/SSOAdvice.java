@@ -60,9 +60,6 @@ public class SSOAdvice extends AmxAdvice {
 
 	@Override
 	public HttpStatus getHttpStatus(AmxApiException exp) {
-		if (appConfig.isAppResponseOK()) {
-			return HttpStatus.OK;
-		}
 		return super.getHttpStatus(exp);
 	}
 

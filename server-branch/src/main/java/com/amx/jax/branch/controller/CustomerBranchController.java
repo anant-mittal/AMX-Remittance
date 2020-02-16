@@ -5,6 +5,19 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
+
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
@@ -14,7 +27,9 @@ import com.amx.jax.cache.box.CustomerOnCall.CustomerCall;
 import com.amx.jax.client.OffsiteCustRegClient;
 import com.amx.jax.client.branch.BranchUserClient;
 import com.amx.jax.client.customer.CustomerManagementClient;
+import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
+import com.amx.jax.http.RequestType;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.DuplicateCustomerDto;
 import com.amx.jax.model.customer.document.CustomerDocumentCategoryDto;
@@ -35,24 +50,17 @@ import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.IncomeRangeDto;
 import com.amx.jax.model.response.customer.CustomerPEPFormData;
 import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
+import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
 import com.amx.jax.model.response.remittance.UserwiseTransactionDto;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.rest.RestService;
 import com.amx.jax.sso.SSOUser;
 import com.amx.jax.terminal.TerminalService;
 import com.amx.jax.utils.PostManUtil;
-import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 import com.amx.utils.ArgUtil;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
 
@@ -73,6 +81,9 @@ public class CustomerBranchController {
 	TerminalService terminalService;
 
 	@Autowired
+	RestService restService;
+
+	@Autowired
 	BranchSession branchSession;
 
 	@Autowired
@@ -80,7 +91,6 @@ public class CustomerBranchController {
 
 	@Autowired
 	private PostManService postManService;
-	
 
 	@Autowired
 	CustomerOnCall customerOnCall;
@@ -101,7 +111,6 @@ public class CustomerBranchController {
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getCustomerDetails() {
 		return AmxApiResponse.build(branchSession.getCustomerData());
 	}
-
 
 	@RequestMapping(value = "/api/customer/connected", method = { RequestMethod.GET })
 	public AmxApiResponse<CustomerCall, Object> getCustomerConnected() {
@@ -237,8 +246,8 @@ public class CustomerBranchController {
 				: customer != null ? customer.getCustomerPersonalDetail().getLastName() : "";
 		expiryDateInString = !ArgUtil.isEmpty(expiryDateInString) ? expiryDateInString
 				: customer != null
-				? new SimpleDateFormat(pattern).format(customer.getCustomerPersonalDetail().getExpiryDate())
-				: "";
+						? new SimpleDateFormat(pattern).format(customer.getCustomerPersonalDetail().getExpiryDate())
+						: "";
 		// if(ArgUtil.isEmpty(identity) || ArgUtil.isEmpty(firstName) ||
 		// ArgUtil.isEmpty(lastName)){ // TODO: Whole model creation shouldn't be done
 		// here. Gonna confirm where and put it there.
@@ -257,6 +266,22 @@ public class CustomerBranchController {
 				.lang(AppContextUtil.getTenant().defaultLang())).getResult();
 		return PostManUtil.download(file);
 
+	}
+
+	@ApiRequest(type = RequestType.POLL)
+	@RequestMapping(value = "/api/customer/kyc/scan", method = { RequestMethod.GET })
+	public ResponseEntity<byte[]> scanKyc(HttpServletRequest request, HttpServletResponse response) {
+		// good discussion on how to get local ip here: https://stackoverflow.com/questions/22877350/how-to-extract-ip-address-in-spring-mvc-controller-get-call
+		String ip = ssoUser.getUserClient().getLocalIpAddress();
+		String scanUrl = "http://" + ip + ":8085/Scan/Scan";
+		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(scanUrl);
+		byte[] imgData = restService.ajax(builder.build().encode().toUri()).get().asByteArray();
+		return ResponseEntity.ok()
+				.header("Access-Control-Allow-Origin", "*")
+				.header("Access-Control-Allow-Credentials", "true")
+				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS, HEAD")
+				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
+				.contentType(MediaType.valueOf("image/jpeg")).body(imgData);
 	}
 
 }

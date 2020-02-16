@@ -32,10 +32,10 @@ public class PersonInfo extends AbstractModel implements Cloneable {
 	private String whatsappPrefixCode;
 	private String referallId;
 	private String emailVerified;
-	private BigDecimal identityTypeId;
 	private BigDecimal languageId;
 
 	private Language lang;
+	private BigDecimal identityTypeId;
 
 	public String getWhatsappPrefixCode() {
 		return whatsappPrefixCode;
@@ -231,10 +231,18 @@ public class PersonInfo extends AbstractModel implements Cloneable {
 		this.emailVerified = emailVerified;
 	}
 	
+	public BigDecimal getIdentityTypeId() {
+		return identityTypeId;
+	}
+
+	public void setIdentityTypeId(BigDecimal identityTypeId) {
+		this.identityTypeId = identityTypeId;
+	}
+	
 	public BigDecimal getLanguageId() {
 		return languageId;
 	}
-	
+
 	public void setLanguageId(BigDecimal languageId) {
 		this.languageId = languageId;
 	}
@@ -248,13 +256,5 @@ public class PersonInfo extends AbstractModel implements Cloneable {
 
 	public void setLang(Language lang) {
 		this.lang = lang;
-	}
-
-	public BigDecimal getIdentityTypeId() {
-		return identityTypeId;
-	}
-
-	public void setIdentityTypeId(BigDecimal identityTypeId) {
-		this.identityTypeId = identityTypeId;
 	}
 }

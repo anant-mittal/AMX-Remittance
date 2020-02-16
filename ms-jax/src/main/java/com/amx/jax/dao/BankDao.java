@@ -11,6 +11,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.dbmodel.BankBranchView;
 import com.amx.jax.dbmodel.BankServiceRule;
+import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.repository.BankServiceRuleRepository;
 import com.amx.jax.repository.IBankBranchView;
 
@@ -32,10 +33,17 @@ public class BankDao {
 
 	public BankBranchView getBankBranchById(BigDecimal bankId, BigDecimal bankBranchId) {
 		List<BankBranchView> branches = bankBranchRepo.getBankBranch(bankId, bankBranchId);
-		BankBranchView branch= null;
-		if(branches != null && !branches.isEmpty()) {
-			branch =  branches.get(0);
+		BankBranchView branch = null;
+		if (branches != null && !branches.isEmpty()) {
+			branch = branches.get(0);
 		}
 		return branch;
 	}
+
+	public List<BankServiceRule> getByCountryId(BigDecimal countryId) {
+		CountryMaster master = new CountryMaster();
+		master.setCountryId(countryId);
+		return bankServiceRuleRepo.findByCountryId(master);
+	}
+
 }

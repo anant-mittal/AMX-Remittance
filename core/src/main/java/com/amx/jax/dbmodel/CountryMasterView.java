@@ -8,11 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.amx.jax.model.IResourceEntity;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
@@ -55,6 +51,10 @@ public class CountryMasterView implements java.io.Serializable, IResourceEntity 
 	private String countryMobileLength;
 	private Integer beneCountryRisk;
 	private Integer remitterCountryRisk;
+	private String defaultIndic;
+	private String localName;
+	private String quoteName;
+	private BigDecimal currencyId;
 	
 	public CountryMasterView() {
 		super();
@@ -298,6 +298,36 @@ public class CountryMasterView implements java.io.Serializable, IResourceEntity 
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Column(name = "DEFAULT_INDIC")
+	public String getDefaultIndic() {
+		return defaultIndic;
+	}
+
+	public void setDefaultIndic(String defaultIndic) {
+		this.defaultIndic = defaultIndic;
+	}
+
+	/*
+	 * @Column(name = "LOCAL_NAME") public String getLocalName() { return localName;
+	 * }
+	 * 
+	 * public void setLocalName(String localName) { this.localName = localName; }
+	 */
+
+	/*
+	 * @Column(name = "QUOTE_NAME") public String getQuoteName() { return quoteName;
+	 * }
+	 * 
+	 * public void setQuoteName(String quoteName) { this.quoteName = quoteName; }
+	 */
+	/*
+	 * @Column(name = "CURRENCY_ID") public BigDecimal getCurrencyId() { return
+	 * currencyId; }
+	 * 
+	 * public void setCurrencyId(BigDecimal currencyId) { this.currencyId =
+	 * currencyId; }
+	 */
 	
 	
 

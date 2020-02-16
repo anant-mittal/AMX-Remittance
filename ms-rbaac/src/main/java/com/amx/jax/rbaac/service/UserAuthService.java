@@ -18,6 +18,8 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.config.RbaacTenantProperties;
 import com.amx.jax.dbmodel.Device;
+import com.amx.jax.dict.UserClient;
+import com.amx.jax.dict.UserClient.AuthSystem;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.logger.LoggerService;
@@ -33,11 +35,13 @@ import com.amx.jax.rbaac.dto.UserClientDto;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
+import com.amx.jax.rbaac.dto.response.OfflineOtpData;
 import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 import com.amx.jax.rbaac.error.RbaacServiceError;
 import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.jax.rbaac.manager.UserOtpManager;
+import com.amx.jax.rbaac.trnx.OfflineOtpCache;
 import com.amx.jax.rbaac.trnx.UserOtpCache;
 import com.amx.jax.rbaac.trnx.UserOtpData;
 import com.amx.jax.util.ObjectConverter;
@@ -73,9 +77,12 @@ public class UserAuthService {
 
 	@Autowired
 	private AppConfig appConfig;
-	
+
 	@Autowired
 	RbaacTenantProperties rbaacTenantProperties;
+
+	@Autowired
+	OfflineOtpCache offlineOtpCache;
 
 	/**
 	 * Verify user details.
@@ -415,18 +422,18 @@ public class UserAuthService {
 		RoleResponseDTO roleResponseDTO = getRoleForUser(employee.getEmployeeId());
 
 		empDetail.setUserRole(roleResponseDTO);
-		
-		//Tenant base value set
-		if(rbaacTenantProperties.getTenant() != null) {
+
+		// Tenant base value set
+		if (rbaacTenantProperties.getTenant() != null) {
 			empDetail.setTenant(rbaacTenantProperties.getTenant());
 		}
-		if(rbaacTenantProperties.getCurrencyQuote() != null) {
+		if (rbaacTenantProperties.getCurrencyQuote() != null) {
 			empDetail.setCurrencyQuote(rbaacTenantProperties.getCurrencyQuote());
 		}
-		if(rbaacTenantProperties.getCurrencyId() != null) {
+		if (rbaacTenantProperties.getCurrencyId() != null) {
 			empDetail.setCurrencyId(rbaacTenantProperties.getCurrencyId());
 		}
-		
+
 		// Set Last Successful Login Date as Current Date
 		updateLastLogin(employee);
 
@@ -453,10 +460,12 @@ public class UserAuthService {
 
 		HashBuilder builder = new HashBuilder().currentTime(System.currentTimeMillis())
 				.interval(AmxConstants.OFFLINE_OTP_TTL).tolerance(AmxConstants.OFFLINE_OTP_TOLERANCE)
-				.secret(otpDevice.getClientSecreteKey()).message(sac);
+				.secret(otpDevice.getClientSecreteKey()).message(sac).length(AmxConstants.OTP_LENGTH);
 
 		// Added Complex Password
-		if (builder.validateComplexHMAC(otp) || builder.validateNumHMAC(otp)) {
+		if (builder.validateComplexHMAC(otp)
+		// || builder.validateNumHMAC(otp)
+		) {
 			return Boolean.TRUE;
 		}
 
@@ -522,6 +531,19 @@ public class UserAuthService {
 					"The mobile number is invalid for the user");
 		}
 
+		/**
+		 * Check for the branch Details of the Employee
+		 * 
+		 * Bug Id: 11425 : An Employee from Inactive Branch should not be allowed to
+		 * login.
+		 */
+
+		if (validEmployee.getCountryBranch() == null || validEmployee.getCountryBranch().getIsActive() == null
+				|| !"Y".equalsIgnoreCase(validEmployee.getCountryBranch().getIsActive())) {
+			throw new AuthServiceException(RbaacServiceError.INACTIVE_BRANCH,
+					"The branch is currently inactive - Please contact admin/support.");
+		}
+
 		return validEmployee;
 	}
 
@@ -533,10 +555,10 @@ public class UserAuthService {
 			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_FOUND, "User Client Info Is Null");
 		}
 
-		DeviceType deviceType = userClientDto.getDeviceType();
+		//DeviceType deviceType = userClientDto.getDeviceType();
 
 		// Check for Employee System Assignment
-		if (DeviceType.COMPUTER.isParentOf(deviceType)) {
+		if (UserClient.isAuthSystem(userClientDto.getClientType(), AuthSystem.TERMINAL)) {
 
 			if (null == userClientDto.getTerminalId()) {
 				throw new AuthServiceException(RbaacServiceError.INVALID_OR_MISSING_TERMINAL_ID,
@@ -566,16 +588,17 @@ public class UserAuthService {
 
 			return Boolean.TRUE;
 
-		} else if (DeviceType.MOBILE.isParentOf(deviceType)) {
+		} else if (UserClient.isAuthSystem(userClientDto.getClientType(), AuthSystem.DEVICE)) {
 
 			// Device and terminal Validations
 			if (StringUtils.isBlank(userClientDto.getDeviceId()) || null == userClientDto.getDeviceRegId()
 					|| StringUtils.isBlank(userClientDto.getDeviceRegToken())) {
 
 				throw new AuthServiceException(RbaacServiceError.INVALID_OR_MISSING_DEVICE_ID,
-						"Valid Device Info is Mandatory for Mobile/Tablet Devices, DeviceId: "
-								+ userClientDto.getDeviceId() + ", Device Reg Id: " + userClientDto.getDeviceRegId()
-								+ " Device Reg Token: " + userClientDto.getDeviceRegToken());
+						"The device is not mapped to the Civil ID entered. Please map the device to successfully login.")
+								.put("deviceId", userClientDto.getDeviceId())
+								.put("deviceRegId", userClientDto.getDeviceRegId())
+								.put("deviceRegToken", userClientDto.getDeviceRegToken());
 
 			}
 
@@ -629,4 +652,64 @@ public class UserAuthService {
 		return true;
 	}
 
+	/**
+	 * Generates offline otp prefix
+	 * 
+	 * @param employeeId
+	 * @author prashant
+	 * @return
+	 */
+	public OfflineOtpData generateOfflineOtpPrefix(BigDecimal employeeId) {
+		FSEmployee employee = rbaacDao.getEmployeeByEmployeeId(employeeId);
+		if (employee == null) {
+			throw new AuthServiceException(RbaacServiceError.EMPLOYEE_NOT_FOUND, "No employee found with given id");
+		}
+		String employeeNumber = employee.getEmployeeNumber();
+		Device otpDevice = deviceService.validateEmployeeDeviceMappingForOtpApp(employeeId);
+		String sac = Random.randomAlphaNumeric(6);
+		OfflineOtpData otpData = new OfflineOtpData(sac);
+		LOGGER.debug("generateOfflineOtpPrefix: Emp Id {} Sac generated {}", employeeId, sac);
+		offlineOtpCache.fastPut(getOfflineOtpCacheBoxKey(employeeId), otpData);
+		// send otp to slack
+		if (!appConfig.isProdMode()) {
+			if (!ArgUtil.isEmpty(otpDevice)) {
+				HashBuilder builder = new HashBuilder().currentTime(System.currentTimeMillis())
+						.interval(AmxConstants.OFFLINE_OTP_TTL).tolerance(AmxConstants.OFFLINE_OTP_TOLERANCE)
+						.secret(otpDevice.getClientSecreteKey()).message(otpData.getOtpPrefix());
+				userOtpManager.sendToSlack("Offline OTP for Emp: " + employeeNumber, " Self ", otpData.getOtpPrefix(),
+						builder.toHMAC().toComplex(AmxConstants.OTP_LENGTH).output());
+
+			}
+		}
+
+		return otpData;
+	}
+
+	/**
+	 * Validates offline otp
+	 * 
+	 * @param employeeId
+	 * @param otp
+	 * @return true - otp is valid , false - invalid otp
+	 * @author prashant
+	 */
+	public boolean validateOfflineOtp(BigDecimal employeeId, String otp) {
+		LOGGER.debug("validateOfflineOtp: Emp Id {}", employeeId);
+		FSEmployee employee = rbaacDao.getEmployeeByEmployeeId(employeeId);
+		if (employee == null) {
+			throw new AuthServiceException(RbaacServiceError.EMPLOYEE_NOT_FOUND, "No employee found with given id");
+		}
+		OfflineOtpData otpData = offlineOtpCache.get(getOfflineOtpCacheBoxKey(employeeId));
+		if (otpData == null) {
+			throw new AuthServiceException(RbaacServiceError.INVALID_OTP,
+					"Invalid OTP: OTP is not generated for the user or timedOut");
+		}
+		String sac = otpData.getOtpPrefix();
+		boolean validationResult = validateOfflineOtp(otp, employeeId, sac);
+		return validationResult;
+	}
+
+	public String getOfflineOtpCacheBoxKey(BigDecimal employeId) {
+		return "OFFLINE_OTP_" + employeId.toString();
+	}
 }

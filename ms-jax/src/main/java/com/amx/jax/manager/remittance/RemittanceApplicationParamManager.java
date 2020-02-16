@@ -2,6 +2,7 @@ package com.amx.jax.manager.remittance;
 
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_APPLICATION_COUNTRY_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_BENEFICIARY_ACCOUNT_NO;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_BENEFICIARY_BANK_COUNTRY_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_BENEFICIARY_BANK_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_BENEFICIARY_BRANCH_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_BENEFICIARY_COUNTRY_ID;
@@ -13,7 +14,6 @@ import static com.amx.amxlib.constant.ApplicationProcedureParam.P_LC_AMOUNT;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_REMITTANCE_MODE_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_COUNTRY_ID;
-import static com.amx.amxlib.constant.ApplicationProcedureParam.P_BENEFICIARY_BANK_COUNTRY_ID;
 
 import java.util.Map;
 
@@ -22,7 +22,7 @@ import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.dbmodel.BankMasterModel;
+import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.model.request.remittance.IRemittanceApplicationParams;
 import com.amx.jax.model.response.ExchangeRateBreakup;
@@ -42,7 +42,7 @@ public class RemittanceApplicationParamManager {
 
 	public void populateRemittanceApplicationParamMap(IRemittanceApplicationParams remittanceApplicationParams,
 			BenificiaryListView beneficiaryView, ExchangeRateBreakup exchangeRateBreakup) {
-		BankMasterModel routintBankMaster = null;
+		BankMasterMdlv1 routintBankMaster = null;
 		if(remittanceApplicationParams!=null) {
 		 routintBankMaster = bankService.getBankById(remittanceApplicationParams.getCorrespondanceBankIdBD());
 		 P_ROUTING_BANK_ID.putValue(remitApplParametersMap, remittanceApplicationParams.getCorrespondanceBankIdBD());

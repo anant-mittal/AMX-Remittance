@@ -10,6 +10,20 @@ var WITHOUT_SMART_CARD = "ASSISTED";
 
 var $selfContainer, $assistedContainer;
 
+var deviceRegId = localStorage.getItem("deviceRegId");
+var deviceRegToken = localStorage.getItem("deviceRegToken");
+var did = localStorage.getItem("did") || guid();
+localStorage.setItem("did", did);
+
+function guid() {
+	function s4() {
+		return Math.floor((1 + Math.random()) * 0x10000).toString(16)
+				.substring(1);
+	}
+	return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4()
+			+ s4() + s4();
+}
+
 function explicitFieldErrors(step) {
 	if (selectedMode === WITH_SMART_CARD) {
 		var errorFields = 0;
@@ -39,6 +53,7 @@ function explicitFieldErrors(step) {
 
 function sendData(step) {
 	var selectedMode = $("input[name='cardtype']:checked").val();
+	var $loginForm = $(".login-form");
 	// let noErrors = explicitFieldErrors(step);
 	// if(!noErrors) return;
 	var reqObj;
@@ -65,19 +80,22 @@ function sendData(step) {
 		}
 	}
 
+	$loginForm.addClass("loading-inline");
 	$.ajax({
 		type : "post",
 		contentType : "application/json",
 		dataType : "json",
 		url : SSO_LOGIN_URL + '?redirect=false&loginType=' + selectedMode,
 		headers : {
-			"x-did" : "64a098c4c08d9ec2",
-			"x-ip" : "124.124.15.25"
+			"x-did" : did,
+			"x-device-reg-id" : deviceRegId,
+			"x-device-reg-token" : deviceRegToken
 		},
 		data : JSON.stringify(reqObj)
 	}).done(
 			function(resp) {
 				console.log(resp);
+				$loginForm.removeClass("loading-inline");
 				if (resp.redirectUrl) {
 					window.location.href = resp.redirectUrl;
 				}
@@ -91,6 +109,7 @@ function sendData(step) {
 				}
 			}).fail(
 			function(jqXHR, y, z) {
+				$loginForm.removeClass("loading-inline");
 				console.log(jqXHR, y, z);
 				if (step === "CREDS")
 					$("input[name='sec-code']").val(''); // $(".prefix").text("---");
@@ -308,6 +327,12 @@ $(function() {
 	}).on("/branch-user/customer-call-session/0", function(testresponse){
 		console.log("===testresponse0",testresponse)
 	});
+	if(localStorage.getItem("empno")){
+		$("input[name='ecnumber']").val(localStorage.getItem("empno")).trigger('change');
+	}
+	if(localStorage.getItem("identity")){
+		$("input[name='identity']").val(localStorage.getItem("identity")).trigger('change');
+	}
 });
 
 if(window.location.hash === "#test" && !localStorage.getItem('test')){

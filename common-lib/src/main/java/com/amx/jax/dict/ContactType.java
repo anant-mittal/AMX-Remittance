@@ -1,19 +1,30 @@
 package com.amx.jax.dict;
 
 public enum ContactType {
-	SMS("sms"), EMAIL("email"), WHATSAPP("wa"), SMS_EMAIL("esms"),
+	SMS("sms", "Mobile No."), EMAIL("email", "Email Id"), WHATSAPP("wa", "WhatsApp No."),
+	SMS_EMAIL("esms", "Mobile/Email"),
 	FBPUSH("push"),
+	NOTP_APP("notpapp"),
 	// Deprecated
+	@Deprecated
 	MOBILE(SMS),
 	// Default Null Value
 	EMPTY("");
 
 	ContactType contactType;
 	String shortCode;
+	private String label;
 
 	ContactType(String shortCode) {
 		this.contactType = this;
 		this.shortCode = shortCode;
+		this.label = null;
+	}
+
+	ContactType(String shortCode, String label) {
+		this.contactType = this;
+		this.shortCode = shortCode;
+		this.label = label;
 	}
 
 	ContactType(ContactType contactType) {
@@ -34,4 +45,7 @@ public enum ContactType {
 		return shortCode;
 	}
 
+	public String getLabel() {
+		return label;
+	}
 }

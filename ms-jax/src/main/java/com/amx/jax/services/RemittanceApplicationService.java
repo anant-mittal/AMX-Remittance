@@ -17,7 +17,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.config.JaxTenantProperties;
-import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dao.RemittanceProcedureDao;
@@ -86,33 +85,16 @@ public class RemittanceApplicationService {
 				remittanceApplicationRepository.save(remittanceApplication);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("error occured", e);
 			throw new GlobalException("updatePaymentId faliled for custoemr:"+paymentResponse.getPaymentId()+"\t Status :"+paymentResponse.getResultCode());
 		}
 		
 	}
 	
-/*public void updatePayTokenNull(List<ShoppingCartDetails> lstShoppingCartAppl,PaymentResponseDto paymentResponse) {
-	
-	for(ShoppingCartDetails shopAppl : lstShoppingCartAppl) {
-		RemittanceApplication appl = remittanceApplicationRepository.findOne(shopAppl.getApplicationId());
-		if(appl!=null) {
-			appl.setResultCode(paymentResponse.getResultCode());
-			appl.setPaymentId(paymentResponse.getPaymentId());
-			appl.setPayToken(null);
-			appl.setApplicaitonStatus(null);
-			appl.setIsactive("D");
-			remittanceApplicationRepository.save(appl);
-		}
-	}
-	
-}*/
-
-
 
 
 public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,PaymentResponseDto paymentResponse) {
-	
+	logger.debug("In update payment token method");
 	for(RemittanceApplication shopAppl : lstPayIdDetails) {
 		RemittanceApplication appl = remittanceApplicationRepository.findOne(shopAppl.getRemittanceApplicationId());
 		if(appl!=null) {
@@ -150,11 +132,24 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 			}*/
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("error occured", e);
 			throw new GlobalException("De-Activate Application failed for customer:"+customerId);
 		}
 	}
 	
+	public void deActivateLatestPbApplication(Customer customerId , String paymentType) {
+		try {
+
+			// deactivate all the application
+			List<RemittanceApplication> remittanceApplicationList = remittanceApplicationRepository.getLatestPbApplication(customerId, paymentType);
+			
+			remittanceApplicationRepository.deActivateLatestPbApplication(remittanceApplicationList.get(0).getRemittanceApplicationId());
+
+		} catch (Exception e) {
+			logger.error("error occured", e);
+			throw new GlobalException("De-Activate Application failed for customer:"+customerId);
+		}
+	}
 	/**
 	 * EX_INSERT_REMITTANCE_ONLINE 
 	 * 
@@ -217,7 +212,7 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("error occured", e);
 		}
 		return resultMap;
 	}

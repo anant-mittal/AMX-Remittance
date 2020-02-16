@@ -11,14 +11,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.PrefixDTO;
+import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
+import com.amx.amxlib.model.CountryBranchDTO;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.OffsiteCustRegClient;
+import com.amx.jax.client.bene.InstitutionCategoryDto;
+import com.amx.jax.client.bene.ReasoncodeCategory;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.model.meta.ReasonsDTO;
 import com.amx.jax.model.response.ComponentDataDto;
+import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.remittance.ServiceMasterDTO;
 
 import io.swagger.annotations.Api;
 
@@ -86,6 +93,49 @@ public class MetaController {
 	@RequestMapping(value = "/pub/meta/id_type/list", method = RequestMethod.GET)
 	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
 		return offsiteCustRegClient.getIdTypes();
+	}
+	
+	@RequestMapping(value = "/pub/meta/service/list", method = RequestMethod.GET)
+	public AmxApiResponse<ServiceGroupMasterDescDto, Object> getServiceGroupList() {
+		return metaClient.getServiceGroupList();
+	}
+
+	@RequestMapping(value = "/pub/meta/institution_category/list", method = RequestMethod.GET)
+	public AmxApiResponse<InstitutionCategoryDto, Object> listInstitutionCategoryMaster() {
+		return metaClient.listInstitutionCategoryMaster();
+	}
+
+	@RequestMapping(value = "/pub/meta/reason_category/list", method = RequestMethod.POST)
+	public AmxApiResponse<ReasonsDTO, Object> getReason(@RequestParam ReasoncodeCategory reasonCategory) {
+		return metaClient.getReason(reasonCategory);
+	} 
+
+
+	@RequestMapping(value = "/pub/meta/currency/list", method = RequestMethod.GET)
+	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyList(Boolean isActive) {
+		return metaClient.getAllExchangeRateCurrencyList(isActive);
+	}
+
+	@RequestMapping(value = "/pub/meta/currency/list", method = RequestMethod.POST)
+	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyList(
+			@RequestParam(value = "countryId", required = true) BigDecimal countryId) {
+		return metaClient.getCurrencyByCountryId(countryId);
+	}
+
+	@RequestMapping(value = "/pub/meta/bene_currency/list", method = RequestMethod.POST)
+	public AmxApiResponse<CurrencyMasterDTO, Object> getBeneCurrencyList(
+			@RequestParam(value = "countryId", required = true) BigDecimal countryId) {
+		return metaClient.getBeneficiaryCurrency(countryId);
+	}
+
+	@RequestMapping(value = "/pub/meta/branch/list", method = RequestMethod.GET)
+	public AmxApiResponse<CountryBranchDTO, Object> getBranchList() {
+		return metaClient.getCountryBranchList();
+	}
+
+	@RequestMapping(value = "/pub/meta/service_master/list", method = RequestMethod.GET)
+	public AmxApiResponse<ServiceMasterDTO, Object> getServiceMasterList() {
+		return metaClient.getServiceMaster();
 	}
 
 }

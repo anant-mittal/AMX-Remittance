@@ -18,7 +18,6 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.dto.PricingAndCostResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
-import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
 
 @RunWith(SpringRunner.class)
@@ -37,7 +36,8 @@ public class DiscountMgmtClientTest extends AbstractTestClient {
 		
 		AmxApiResponse<CountryBranchDTO,Object> response = null;
 		LOGGER.info("In Country Branch Client Test ");
-		response = disMgmtClient.getCountryBranchList();
+		Boolean isActive=true;
+		response = disMgmtClient.getCountryBranchList(isActive);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 	}

@@ -1,5 +1,8 @@
 package com.amx.jax.adapter.kwt;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +55,12 @@ public class KWTCardReaderListner implements PaciEventHandler {
 				KWTCardReaderService.CONTEXT.status(CardStatus.READING);
 				LOGGER.debug("KWTCardReaderServiceListner:CardConnectionEvent");
 				CardData data = new CardData();
+				Pattern passportPattern = Pattern.compile("^[A-Z][0-9]{5,9}$");
+				String englishName4 = KWTCardReaderService.API.getEnglishName_4(readerIndex, false);
+				Matcher checkPassport = passportPattern.matcher(englishName4);
+				if(checkPassport.find()){
+					data.setPassport(englishName4);
+				}
 
 				data.setTitle(KWTCardReaderService.API.getA_TITLE(readerIndex, false));
 				data.setIdentity(KWTCardReaderService.API.getCivil_ID(readerIndex, false));

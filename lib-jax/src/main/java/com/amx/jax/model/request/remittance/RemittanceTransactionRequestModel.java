@@ -8,8 +8,6 @@ import java.math.BigDecimal;
 import javax.validation.constraints.NotNull;
 
 import com.amx.jax.model.response.ExchangeRateBreakup;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /*@JsonDeserialize(as = RemittanceTransactionDrRequestModel.class)
 @JsonIgnoreProperties(ignoreUnknown = true)*/
@@ -25,6 +23,16 @@ public class RemittanceTransactionRequestModel extends RemittanceAdditionalBeneF
 	@NotNull
 	private ExchangeRateBreakup exRateBreakup;
 	private BigDecimal placeOrderId;
+	private String paymentType;
+
+	public String getPaymentType() {
+		return paymentType;
+	}
+
+
+	public void setPaymentType(String paymentType) {
+		this.paymentType = paymentType;
+	}
 
 
 	/*

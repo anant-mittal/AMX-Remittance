@@ -1,12 +1,16 @@
 package com.amx.jax.manager;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
+
 import com.amx.jax.customer.service.CustomerService;
 import com.amx.jax.customer.service.EmployeeValidationService;
 import com.amx.jax.dao.FcSaleBranchDao;
@@ -45,7 +49,12 @@ public class FcDeliveryOrdersearchManager {
 		List<FxOrderTransactionHistroyDto> fxOrderTransactionHistroyDto = new ArrayList<>();
 
 		if(fxOrderTransactionModelValue!=null && fxOrderTransactionModelValue.size()!=0) {	
+			List<String> duplicate = new ArrayList<>();
+		
 			for (FxOrderTransactionModel fxOrderTransactionModel : fxOrderTransactionModelValue) {	
+				if(!duplicate.contains(fxOrderTransactionModel.getCollectionDocumentFinYear()+""+fxOrderTransactionModel.getCollectionDocumentNo())) {
+					duplicate.add(fxOrderTransactionModel.getCollectionDocumentFinYear()+""+fxOrderTransactionModel.getCollectionDocumentNo());
+					
 				FxOrderTransactionHistroyDto dto = new FxOrderTransactionHistroyDto();
 				dto.setTransactionReferenceNo(fxOrderTransactionModel.getTransactionReferenceNo());
 				dto.setDeliveryDate(fxOrderTransactionModel.getDeliveryDate());
@@ -68,6 +77,7 @@ public class FcDeliveryOrdersearchManager {
 				dto.setDeliveryDetSeqId(fxOrderTransactionModel.getDeliveryDetSeqId());
 				dto.setDocumentNumber(fxOrderTransactionModel.getDocumentNumber());
 
+				HashMap<BigDecimal, BigDecimal> foreignCurrencyAmt = new HashMap<>();
 				List<FcSaleCurrencyAmountModel> lstCurrencyAmt = new ArrayList<>();
 				String mutipleInventoryId = null;
 				for (FxOrderTransactionModel fxOrderTxnModel : fxOrderTransactionModelValue) {
@@ -77,6 +87,7 @@ public class FcDeliveryOrdersearchManager {
 						fcSaleCurrencyAmountModel.setAmount(fxOrderTxnModel.getForeignTransactionAmount());
 						fcSaleCurrencyAmountModel.setCurrencyQuote(fxOrderTxnModel.getCurrencyQuoteName());
 						lstCurrencyAmt.add(fcSaleCurrencyAmountModel);
+						//foreignCurrencyAmt.put(new BigDecimal(fxOrderTxnModel.getForeignCurrencyCode()), fxOrderTxnModel.getForeignTransactionAmount());
 
 						if(mutipleInventoryId != null) {
 							mutipleInventoryId = mutipleInventoryId.concat(",").concat(fxOrderTxnModel.getInventoryId());
@@ -123,6 +134,7 @@ public class FcDeliveryOrdersearchManager {
 							
 				fxOrderTransactionHistroyDto.add(dto);
 			}
+		}
 		}
 		return fxOrderTransactionHistroyDto;
 	}

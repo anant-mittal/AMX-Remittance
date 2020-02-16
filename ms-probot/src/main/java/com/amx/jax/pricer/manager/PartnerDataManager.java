@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.client.serviceprovider.ServiceProviderClient;
+import com.amx.jax.client.serviceprovider.ServiceProviderClientWrapper;
 import com.amx.jax.dbmodel.partner.BankExternalReferenceDetail;
 import com.amx.jax.dbmodel.partner.BankExternalReferenceHead;
 import com.amx.jax.dbmodel.partner.PaymentModeLimitsView;
@@ -62,6 +62,7 @@ import com.amx.jax.pricer.repository.BankMasterRepository;
 import com.amx.jax.pricer.repository.CountryBranchRepository;
 import com.amx.jax.pricer.repository.EmployeeDetailsViewRepository;
 import com.amx.jax.pricer.repository.IBankBranchViewRepository;
+import com.amx.jax.pricer.repository.IParameterDetailsRespository;
 import com.amx.jax.pricer.repository.IPaymentModeLimitsRepository;
 import com.amx.jax.pricer.repository.IServiceProviderXMLRepository;
 import com.amx.jax.pricer.service.ExchangeDataService;
@@ -73,6 +74,7 @@ import com.amx.utils.IoUtils;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.RoundUtil;
 
+//@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
 public class PartnerDataManager {
 
@@ -83,7 +85,7 @@ public class PartnerDataManager {
 	PartnerServiceDao partnerServiceDao;
 
 	@Autowired
-	ServiceProviderClient serviceProviderClient;
+	ServiceProviderClientWrapper serviceProviderClient;
 
 	@Autowired
 	ExchangeDataService exchangeDataService;
@@ -96,21 +98,24 @@ public class PartnerDataManager {
 
 	@Autowired
 	IServiceProviderXMLRepository serviceProviderXMLRepository;
-	
+
 	@Autowired
 	BankMasterRepository bankMasterRepository;
-	
+
 	@Autowired
 	IPaymentModeLimitsRepository paymentModeLimitsRepository;
-	
+
 	@Autowired
 	AuthenticationLimitCheckRepository authenticationLimitCheckRepository;
-	
+
 	@Autowired
 	IBankBranchViewRepository bankBranchViewRepository;
-	
+
 	@Autowired
 	CountryBranchRepository countryBranchRepository;
+
+	@Autowired
+	IParameterDetailsRespository parameterDetailsRespository;
 
 	// validate get quotation
 	public void validateGetQuotation(SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO) {
@@ -130,16 +135,16 @@ public class PartnerDataManager {
 		BigDecimal settlementTotalDiscountPips = BigDecimal.ZERO;
 
 		AmxApiResponse<Quotation_Call_Response, Object> quotationResponse = null;
-		
+
 		// fetching customer details
 		CustomerDetailsDTO customerDetailsDTO = fetchCustomerDetails(srvPrvFeeInqReqDTO.getCustomerId());
 		// fetching customer beneficiary details
 		BeneficiaryDetailsDTO beneficiaryDetailsDTO = fetchBeneficiaryDetails(srvPrvFeeInqReqDTO.getCustomerId(), srvPrvFeeInqReqDTO.getBeneficiaryRelationShipId(), srvPrvFeeInqReqDTO.getForeignCurrencyId());
-		
+
 		validateCusBeneDetails(customerDetailsDTO, beneficiaryDetailsDTO);
 
 		ProductDetailsDTO productDetailsDTO = fetchProductDetails(srvPrvFeeInqReqDTO);
-		
+
 		// bank Id is available to fetch bank code
 		BankMasterModel bankMasterModel = bankMasterRepository.findBybankIdAndRecordStatus(productDetailsDTO.getBankId(), PricerServiceConstants.Yes);
 		if(bankMasterModel == null) {
@@ -149,6 +154,10 @@ public class PartnerDataManager {
 			bankCode = bankMasterModel.getBankCode();
 			productDetailsDTO.setCountryId(bankMasterModel.getBankCountryId());
 		}
+
+		// check channel to block the home send  
+		validateExceptionChannel(srvPrvFeeInqReqDTO, productDetailsDTO, beneficiaryDetailsDTO, bankCode);
+
 		if(bankCode != null && bankCode.equalsIgnoreCase(SERVICE_PROVIDER_BANK_CODE.HOME.name())) {
 			Long servProvFeeStartTime = System.currentTimeMillis();
 			BigDecimal settlementExchangeRate = fetchUsdExchangeRate();
@@ -163,11 +172,11 @@ public class PartnerDataManager {
 						amxRateWithMargin = settlementExchangeRate.add(marginAmount);
 
 						if (srvPrvFeeInqReqDTO.getSelectedCurrency().compareTo(srvPrvFeeInqReqDTO.getLocalCurrencyId()) == 0) {
-							
+
 							settlementAmtwithDecimal = new BigDecimal(srvPrvFeeInqReqDTO.getAmount().doubleValue()/amxRateWithMargin.doubleValue());
 							settlementAmount = RoundUtil.roundBigDecimal(settlementAmtwithDecimal, currencyMasterModel.getDecinalNumber().intValue());
 							LOGGER.info("Amx Exchange Rate with Margin : "+amxRateWithMargin+" settlement Amount : "+settlementAmtwithDecimal+" settlement Amount with round : "+settlementAmount);
-							
+
 							//checkingAmountLimit(bankMasterModel.getBankId(), currencyMasterModel.getCurrencyId(), customerDetailsDTO.getCustomerTypeCode(), beneficiaryDetailsDTO.getBenificaryStatusId(), settlementAmount);
 
 							quotationResponse = fetchQuotationDetails(srvPrvFeeInqReqDTO, serviceProviderRateView, settlementAmount, customerDetailsDTO, beneficiaryDetailsDTO);
@@ -187,12 +196,12 @@ public class PartnerDataManager {
 										amxRateWithMarginWithPips = amxRateWithMargin.subtract(settlementTotalDiscountPips);
 									}else {
 										//amxRateWithMargin = settlementExchangeRate.add(marginAmount);
-										amxRateWithMarginWithPips = amxRateWithMargin;
+										amxRateWithMarginWithPips = amxRateWithMargin.subtract(marginAmount);
 									}
 									//settlementAmtwithDecimal = new BigDecimal(srvPrvFeeInqReqDTO.getAmount().doubleValue()/amxRateWithMargin.doubleValue());
 									settlementAmtwithDecimal = new BigDecimal(srvPrvFeeInqReqDTO.getAmount().doubleValue()/amxRateWithMarginWithPips.doubleValue());
 									settlementAmount = RoundUtil.roundBigDecimal(settlementAmtwithDecimal, currencyMasterModel.getDecinalNumber().intValue());
-									
+
 									checkingAmountLimit(bankMasterModel.getBankId(), currencyMasterModel.getCurrencyId(), customerDetailsDTO.getCustomerTypeCode(), beneficiaryDetailsDTO.getBenificaryStatusId(), settlementAmount);
 
 									quotationResponse = fetchQuotationDetails(srvPrvFeeInqReqDTO, serviceProviderRateView, settlementAmount, customerDetailsDTO, beneficiaryDetailsDTO);
@@ -207,11 +216,11 @@ public class PartnerDataManager {
 						} else {
 							quotationResponse = fetchQuotationDetails(srvPrvFeeInqReqDTO, serviceProviderRateView, srvPrvFeeInqReqDTO.getAmount(), customerDetailsDTO, beneficiaryDetailsDTO);
 							if(quotationResponse != null) {
-								
+
 								Quotation_Call_Response quotationCallResponse = quotationResponse.getResult();
 								settlementAmount = quotationCallResponse.getInitial_amount_in_settlement_currency();
 								checkingAmountLimit(bankMasterModel.getBankId(), currencyMasterModel.getCurrencyId(), customerDetailsDTO.getCustomerTypeCode(), beneficiaryDetailsDTO.getBenificaryStatusId(), settlementAmount);
-								
+
 								// call the customer discounts
 								ExchangeRateDetails exchangeRateDetails = fetchCustomerChannelDiscounts(srvPrvFeeInqReqDTO, productDetailsDTO, marginAmount, srvPrvFeeInqReqDTO.getAmount());
 								if(exchangeRateDetails != null) {
@@ -334,7 +343,7 @@ public class PartnerDataManager {
 
 						srvPrvFeeInqResDTO.setExchangeRateBase(exchangeRate);
 						srvPrvFeeInqResDTO.setMargin(marginAmount);
-						
+
 						if (srvPrvFeeInqReqDTO.getSelectedCurrency().compareTo(srvPrvFeeInqReqDTO.getLocalCurrencyId()) == 0) {
 							// checking with local amount
 							BigDecimal baseGrossAmount = srvPrvFeeInqReqDTO.getAmount();
@@ -447,7 +456,7 @@ public class PartnerDataManager {
 			if(beneficiaryDetailsDTO.getMapSequenceId() != null) {
 				beneficiaryDto.setBeneficiary_reference(beneficiaryDetailsDTO.getMapSequenceId().toString());
 			}
-			
+
 			if(beneficiaryDetailsDTO.getBenificaryStatusId() != null && beneficiaryDetailsDTO.getBenificaryStatusId().compareTo(BigDecimal.ONE) == 0) {
 				beneficiaryDto.setBeneficiary_type(AmxDBConstants.Individual);
 			}else {
@@ -483,7 +492,7 @@ public class PartnerDataManager {
 			beneficiaryDto.setFirst_name(beneFirstName);
 			beneficiaryDto.setMiddle_name(beneMiddleName);
 			beneficiaryDto.setLast_name(beneLastName);
-			
+
 			String bankAccountNumber = null;
 			String dummyRoutingNumber = null;
 			HashMap<String, String> beneAccountDetails = validateBeneBankAccount(beneficiaryDetailsDTO.getBankAccountNumber(), designationCountryAlpha3Code);
@@ -514,7 +523,7 @@ public class PartnerDataManager {
 			beneficiaryDto.setBic_indicator(bicValue);
 			beneficiaryDto.setBeneficiary_bank_branch_indicator(bankBranch);
 
-			 
+
 			if(dummyRoutingNumber != null) {
 				// dummy routing number setted for USA to Home Send
 				beneficiaryDto.setBeneficiary_bank_code(dummyRoutingNumber);
@@ -527,7 +536,7 @@ public class PartnerDataManager {
 					beneficiaryDto.setBeneficiary_bank_code(beneficiaryDetailsDTO.getBankCode());
 				}
 			}
-			
+
 			if(beneficiaryDetailsDTO.getBranchCode() != null) {
 				String extBankBranchRef = fetchBankBranchCodeHomeSend(beneficiaryDetailsDTO.getBenificaryCountry(), serviceProviderRateView.getBankId(), beneficiaryDetailsDTO.getBankId(), beneficiaryDetailsDTO.getBranchId());
 				if(extBankBranchRef != null) {
@@ -536,7 +545,7 @@ public class PartnerDataManager {
 					beneficiaryDto.setBeneficiary_branch_code(beneficiaryDetailsDTO.getBranchCode().toString());
 				}
 			}
-			
+
 			if(beneficiaryDetailsDTO.getSwiftBic() != null){
 				beneficiaryDto.setBeneficiary_bank_branch_swift_code(beneficiaryDetailsDTO.getSwiftBic());
 			}else {
@@ -556,7 +565,7 @@ public class PartnerDataManager {
 					}
 				}
 			}
-			
+
 			if(beneficiaryDetailsDTO.getServiceProvider() != null) {
 				beneficiaryDto.setWallet_service_provider(beneficiaryDetailsDTO.getServiceProvider().toString());
 			}
@@ -567,7 +576,7 @@ public class PartnerDataManager {
 
 			LOGGER.info("Inputs passed to Service Provider Home Send : " + JsonUtil.toJson(quatationRequestDto));
 			srvPrvResp = serviceProviderClient.getQuatation(quatationRequestDto);
-			fetchServiceProviderData(srvPrvResp,srvPrvFeeInqReqDTO,customerDetailsDTO);
+			fetchServiceProviderData(srvPrvResp,srvPrvFeeInqReqDTO,quatationRequestDto);
 			LOGGER.info("Output from Service Provider Home Send : " + JsonUtil.toJson(srvPrvResp));
 
 		}catch (Exception e) {
@@ -852,13 +861,13 @@ public class PartnerDataManager {
 		homeSendSrvcProviderInfo.setWholeSaleFxRate(quotationCall.getWhole_sale_fx_rate());
 		homeSendSrvcProviderInfo.setBeneficiaryDeduct(Boolean.FALSE);
 		homeSendSrvcProviderInfo.setTransactionMargin(marginAmount);
-		
+
 		LOGGER.info("HomeSendSrvcProviderInfo orignal expiry time  : " + JsonUtil.toJson(homeSendSrvcProviderInfo));
 
 		Calendar startcalendar = Calendar.getInstance();
 		startcalendar.setTimeInMillis(servProvFeeStartTime);
 		homeSendSrvcProviderInfo.setOfferStartDate(startcalendar);
-		
+
 		AuthenticationLimitCheckView authHSLimit = authenticationLimitCheckRepository.getHomeSendTimerLimit();
 		if(authHSLimit != null && authHSLimit.getAuthLimit() != null && authHSLimit.getAuthLimit().compareTo(BigDecimal.ZERO) != 0) {
 			Calendar endcalendar = Calendar.getInstance();
@@ -923,35 +932,43 @@ public class PartnerDataManager {
 	}
 
 	// iterate the response and insert the log table
-	public void fetchServiceProviderData(AmxApiResponse<Quotation_Call_Response, Object> srvPrvResp,SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO,CustomerDetailsDTO customerDto) {
+	public void fetchServiceProviderData(AmxApiResponse<Quotation_Call_Response, Object> srvPrvResp,SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO,ServiceProviderCallRequestDto serviceProviderCallRequestDto) {
 		String requestXml = null;
 		String responseXml = null;
 		String referenceNo = null;
 		BigDecimal customerReference = null;
 		String partnerReference = null;
+		String bankCode = null;
 		String trnxType = PricerServiceConstants.SEND_TRNX;
 		BigDecimal reqSeq = new BigDecimal(1);
 		BigDecimal resSeq = new BigDecimal(2);
-		if(srvPrvResp != null && srvPrvResp.getResult() != null) {
-			if(customerDto != null) {
-				customerReference = customerDto.getCustomerReference();
+		if(srvPrvResp != null && srvPrvResp.getResult() != null && serviceProviderCallRequestDto != null) {
+			if(serviceProviderCallRequestDto.getCustomerDto() != null && serviceProviderCallRequestDto.getCustomerDto().getCustomer_reference() != null) {
+				customerReference = new BigDecimal(serviceProviderCallRequestDto.getCustomerDto().getCustomer_reference());
 			}
 			if(srvPrvResp.getResult().getOut_going_transaction_reference() != null) {
 				referenceNo = srvPrvResp.getResult().getOut_going_transaction_reference();
 			}
-			if(srvPrvResp.getResult() != null && srvPrvResp.getResult().getPartner_transaction_reference() != null) {
-				partnerReference = srvPrvResp.getResult().getPartner_transaction_reference();
+			if(serviceProviderCallRequestDto.getTransactionDto() != null) {
+				if(serviceProviderCallRequestDto.getTransactionDto().getPartner_transaction_reference() != null) {
+					partnerReference = serviceProviderCallRequestDto.getTransactionDto().getPartner_transaction_reference();
+				}else if(srvPrvResp.getResult().getPartner_transaction_reference() != null) {
+					partnerReference = srvPrvResp.getResult().getPartner_transaction_reference();
+				}
+				if(serviceProviderCallRequestDto.getTransactionDto().getRoutting_bank_code() != null) {
+					bankCode = serviceProviderCallRequestDto.getTransactionDto().getRoutting_bank_code();
+				}
 			}
 			if(srvPrvResp.getResult().getRequest_XML() != null) {
 				requestXml = srvPrvResp.getResult().getRequest_XML();
-				ServiceProviderLogDTO serviceProviderXmlLog = saveServiceProviderXMLlogData(PricerServiceConstants.FEE_REQUEST, requestXml, referenceNo, reqSeq, PricerServiceConstants.REQUEST, trnxType, partnerReference,srvPrvFeeInqReqDTO,customerReference);
+				ServiceProviderLogDTO serviceProviderXmlLog = saveServiceProviderXMLlogData(PricerServiceConstants.FEE_REQUEST, requestXml, referenceNo, reqSeq, PricerServiceConstants.REQUEST, trnxType, partnerReference,srvPrvFeeInqReqDTO,customerReference,bankCode);
 				if(serviceProviderXmlLog != null) {
 					saveServiceProviderXml(serviceProviderXmlLog);
 				}
 			}
 			if(srvPrvResp.getResult().getResponse_XML() != null) {
 				responseXml = srvPrvResp.getResult().getResponse_XML();
-				ServiceProviderLogDTO serviceProviderXmlLog = saveServiceProviderXMLlogData(PricerServiceConstants.FEE_RESPONSE, responseXml, referenceNo, resSeq, PricerServiceConstants.RESPONSE, trnxType, partnerReference,srvPrvFeeInqReqDTO,customerReference);
+				ServiceProviderLogDTO serviceProviderXmlLog = saveServiceProviderXMLlogData(PricerServiceConstants.FEE_RESPONSE, responseXml, referenceNo, resSeq, PricerServiceConstants.RESPONSE, trnxType, partnerReference,srvPrvFeeInqReqDTO,customerReference,bankCode);
 				if(serviceProviderXmlLog != null) {
 					saveServiceProviderXml(serviceProviderXmlLog);
 				}
@@ -959,7 +976,7 @@ public class PartnerDataManager {
 		}
 	}
 
-	public ServiceProviderLogDTO saveServiceProviderXMLlogData(String filename,String content,String referenceNo,BigDecimal seq,String xmlType,String trnxType,String bene_Bank_Txn_Ref,SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO,BigDecimal customerReference) {
+	public ServiceProviderLogDTO saveServiceProviderXMLlogData(String filename,String content,String referenceNo,BigDecimal seq,String xmlType,String trnxType,String bene_Bank_Txn_Ref,SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO,BigDecimal customerReference,String bankCode) {
 		ServiceProviderLogDTO serviceProviderXmlLog = new ServiceProviderLogDTO();
 		try {
 			serviceProviderXmlLog.setApplicationCountryId(srvPrvFeeInqReqDTO.getApplicationCountryId());
@@ -983,7 +1000,7 @@ public class PartnerDataManager {
 			}else {
 				serviceProviderXmlLog.setCreatedBy("ON_LINE");
 			}
-			serviceProviderXmlLog.setIdentifier(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name());
+			serviceProviderXmlLog.setIdentifier(bankCode);
 			serviceProviderXmlLog.setMtcNo(bene_Bank_Txn_Ref);
 			if(referenceNo != null) {
 				serviceProviderXmlLog.setRefernceNo(new BigDecimal(referenceNo));
@@ -1113,15 +1130,15 @@ public class PartnerDataManager {
 		mapValidAcc.put("beneBankAccount", beneBankAccount);
 		mapValidAcc.put("dummyRoutingNumber", dummyRoutingNumber);
 		mapValidAcc.put("bsbCode", bsbCode);
-		
+
 		return mapValidAcc;
 	}
-	
+
 	// checking the usd amount with limit
 	public void checkingAmountLimit(BigDecimal bankId,BigDecimal currencyId,String customerType,BigDecimal beneficiaryType,BigDecimal usdAmount) {
 		String customerTypeFrom = null;
 		String beneficiaryTypeFrom = null;
-		
+
 		if(customerType != null) {
 			if(customerType.equalsIgnoreCase(AmxDBConstants.Individual)) {
 				customerTypeFrom = PricerServiceConstants.Personal;
@@ -1129,7 +1146,7 @@ public class PartnerDataManager {
 				customerTypeFrom = PricerServiceConstants.Business;
 			}
 		}
-		
+
 		if(beneficiaryType != null) {
 			if(beneficiaryType.compareTo(BigDecimal.ONE) == 0) {
 				beneficiaryTypeFrom = PricerServiceConstants.Personal;
@@ -1137,7 +1154,7 @@ public class PartnerDataManager {
 				beneficiaryTypeFrom = PricerServiceConstants.Business;
 			}
 		}
-		
+
 		if(bankId != null && currencyId != null && customerTypeFrom != null && beneficiaryTypeFrom != null) {
 			PaymentModeLimitsView paymentModeLimitsView = fetchPaymentLimits(bankId, currencyId, customerTypeFrom, beneficiaryTypeFrom);
 			if(paymentModeLimitsView != null) {
@@ -1151,7 +1168,7 @@ public class PartnerDataManager {
 			throw new PricerServiceException(PricerServiceError.MISSING_PAYMENT_LIMIT_DATA,"Proper data not available to fetch the limits");
 		}
 	}
-	
+
 	// fetch the payment Limits
 	public PaymentModeLimitsView fetchPaymentLimits(BigDecimal bankId,BigDecimal currencyId,String customerTypeFrom,String customerTypeTo) {
 		PaymentModeLimitsView paymentModeLimitsView = null;
@@ -1162,7 +1179,7 @@ public class PartnerDataManager {
 		}
 		return paymentModeLimitsView;
 	}
-	
+
 	// validate the customer and beneficiary
 	public void validateCusBeneDetails(CustomerDetailsDTO customerDetailsDTO,BeneficiaryDetailsDTO beneficiaryDetailsDTO) {
 		if(customerDetailsDTO != null) {
@@ -1217,7 +1234,7 @@ public class PartnerDataManager {
 			}
 		}
 	}
-	
+
 	// external bank codes
 	public String fetchBankCodeHomeSend(BigDecimal countryId,BigDecimal corBankId,BigDecimal beneBankId){
 		String mapBankCode = null;
@@ -1248,6 +1265,49 @@ public class PartnerDataManager {
 		}
 
 		return mapBankBranchCode;
+	}
+
+	// check channel to block the home send 
+	public void validateExceptionChannel(SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO,ProductDetailsDTO productDetails,BeneficiaryDetailsDTO beneficiaryDetailsDTO,String bankCode){
+		String destinationCountryAlpha3Code = null;
+		//String bankCode = null;
+		String channel = null;
+		String currencyQuote = null;
+
+		boolean status = Boolean.FALSE;
+
+		HashMap<String, String> originAlphaCodes = fetchCountryAlphaCode(srvPrvFeeInqReqDTO.getDestinationCountryId());
+		if(originAlphaCodes != null && !originAlphaCodes.isEmpty()) {
+			if(originAlphaCodes.get("countryAlpha3Code") != null) {
+				destinationCountryAlpha3Code = originAlphaCodes.get("countryAlpha3Code");
+			}
+		}
+
+		List<ParameterDetailsModel> lstparameterDetails = parameterDetailsRespository.findByRecordIdAndIsActive(PricerServiceConstants.PARAM_SP_CHANNEL_BLOCK,PricerServiceConstants.Yes);
+		if(lstparameterDetails != null && lstparameterDetails.size() != 0) {
+			for (ParameterDetailsModel parameterDetails : lstparameterDetails) {
+				//if(productDetails.getBankCode().equalsIgnoreCase(parameterDetails.getCharField1())){
+				  //bankCode = parameterDetails.getCharField1();
+				if(bankCode.equalsIgnoreCase(parameterDetails.getCharField1())){
+					if(srvPrvFeeInqReqDTO.getChannel().name().equalsIgnoreCase(parameterDetails.getCharField2())){
+						channel = parameterDetails.getCharField2();
+						if(destinationCountryAlpha3Code.equalsIgnoreCase(parameterDetails.getCharField3())){
+							if(beneficiaryDetailsDTO.getCurrencyQuoteName().equalsIgnoreCase(parameterDetails.getCharField5())){
+								currencyQuote = parameterDetails.getCharField5();
+								status = Boolean.TRUE;
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		if(status){
+			LOGGER.warn("Service Provider not allowed : Bank Code : " + bankCode + " Channel : " + channel + " Destination Country : " + destinationCountryAlpha3Code + " Currency Quote : " + currencyQuote);
+			throw new PricerServiceException(PricerServiceError.SERVICE_PROVIDER_CHANNEL_BLOCKED,
+					"Service provider channel blocked based on destination country and currency");
+		}
 	}
 
 }

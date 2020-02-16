@@ -6,10 +6,10 @@ import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.Message.IChannel;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.WAMessage;
-import com.amx.jax.postman.model.Message.IChannel;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
@@ -36,6 +36,8 @@ public class PMGaugeEvent extends AuditEvent {
 		// WhatsApp Events
 		SEND_WHATSAPP,
 		ON_WHATSAPP,
+		ON_TG,
+		SEND_TG,
 		// PDF Events
 		CREATE_PDF,
 

@@ -81,7 +81,7 @@ public class RemittanceProcedureDao {
 				if (connection != null)
 					connection.close();
 			} catch (Exception ee) {
-				LOGGER.error("Error while closing connection. : ", ee);
+				LOGGER.debug("Error while closing connection. : ", ee);
 			}
 		}
 		return output;

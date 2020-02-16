@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Locale;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
@@ -16,6 +17,8 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.FileTemplateResolver;
+import org.thymeleaf.templateresolver.UrlTemplateResolver;
 
 /**
  * The Class WebmvcConfig.
@@ -28,8 +31,10 @@ public class WebmvcConfig extends WebMvcConfigurerAdapter {
 	public static final String XML_TEMPLATES_RESOLVE_PATTERN = "xml/*";
 	/** Pattern relative to templates base used to match JSON templates. */
 	public static final String JSON_TEMPLATES_RESOLVE_PATTERN = "json/*";
+	public static final String HTML_TEMPLATES_RESOLVE_PATTERN = "html/*";
 	/** Pattern relative to templates base used to match text templates. */
 	public static final String TEXT_TEMPLATES_RESOLVE_PATTERN = "text/*";
+	public static final String OWA_TEMPLATES_RESOLVE_PATTERN = "owa-content/*";
 
 	/*
 	 * (non-Javadoc)
@@ -108,23 +113,55 @@ public class WebmvcConfig extends WebMvcConfigurerAdapter {
 		return theResourceTemplateResolver;
 	}
 
+	@Value("${jax.static.url}")
+	String jaxStaticUrl;
+	
+	@Value("${jax.static.context}")
+	String jaxStaticContext;
+
+	private FileTemplateResolver fileTemplateResolver() {
+		FileTemplateResolver resolver = new FileTemplateResolver();
+		resolver.setPrefix(jaxStaticUrl+"/");
+		resolver.setResolvablePatterns(Collections.singleton(jaxStaticContext+"/templates/html/*"));
+		resolver.setSuffix(".html");
+		resolver.setCacheable(false);
+		return resolver;
+	}
+	
+	private FileTemplateResolver fileJsonTemplateResolver() {
+		FileTemplateResolver resolver = new FileTemplateResolver();
+		resolver.setPrefix(jaxStaticUrl+"/");
+		resolver.setResolvablePatterns(Collections.singleton(jaxStaticContext+"/templates/json/*"));
+		resolver.setSuffix(".json");
+		resolver.setCacheable(false);
+		return resolver;
+	}
+
+	private UrlTemplateResolver urlTemplateResolver() {
+		UrlTemplateResolver urlTemplateResolver = new UrlTemplateResolver();
+		urlTemplateResolver.setCacheable(false); // explicit set cacheable, otherwise it will be always cached
+		// urlTemplateResolver.setResolvablePatterns(Collections.singleton(OWA_TEMPLATES_RESOLVE_PATTERN));
+		return urlTemplateResolver;
+	}
+
 	/**
 	 * Creates the template engine for all message templates.
 	 *
-	 * @param inTemplateResolvers
-	 *            Template resolver for different types of messages etc. Note that
-	 *            any template resolvers defined elsewhere will also be included in
-	 *            this collection.
+	 * @param inTemplateResolvers Template resolver for different types of messages
+	 *                            etc. Note that any template resolvers defined
+	 *                            elsewhere will also be included in this
+	 *                            collection.
 	 * @return Template engine.
 	 */
 	@Bean
 	public SpringTemplateEngine messageTemplateEngine(
-			final Collection<SpringResourceTemplateResolver> inTemplateResolvers
-	) {
+			final Collection<SpringResourceTemplateResolver> inTemplateResolvers) {
 		final SpringTemplateEngine theTemplateEngine = new SpringTemplateEngine();
 		for (SpringResourceTemplateResolver theTemplateResolver : inTemplateResolvers) {
 			theTemplateEngine.addTemplateResolver(theTemplateResolver);
 		}
+		theTemplateEngine.addTemplateResolver(fileTemplateResolver());
+		theTemplateEngine.addTemplateResolver(fileJsonTemplateResolver());
 		return theTemplateEngine;
 	}
 

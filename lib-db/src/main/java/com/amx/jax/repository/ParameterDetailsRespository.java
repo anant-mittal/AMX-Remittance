@@ -17,5 +17,12 @@ public interface ParameterDetailsRespository extends CrudRepository<ParameterDet
 	
 	@Query(value = "SELECT * FROM EX_PARAMETER_DETAILS WHERE RECORD_ID =?1 AND CHAR_FIELD3=?2 AND ISACTIVE= 'Y'", nativeQuery = true)
 	public ParameterDetails fetchBeneCountryBeneAddressNotReq(String recordId,String beneCountryCode);
+	
+	public ParameterDetails findByRecordIdAndParamCodeDefAndIsActive(String recordId,String paramCodeDef,String isActive);
 
+	//
+	@Query(value = "SELECT * FROM EX_PARAMETER_DETAILS WHERE RECORD_ID =?1", nativeQuery = true)
+	public List<ParameterDetails> fetchCodeDetails(String recordId);
+	
+	
 }

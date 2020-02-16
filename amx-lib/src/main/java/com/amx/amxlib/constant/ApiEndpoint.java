@@ -1,10 +1,5 @@
 package com.amx.amxlib.constant;
 
-import java.util.Date;
-import java.util.List;
-
-import com.amx.jax.model.customer.SecurityQuestionModel;
-
 public class ApiEndpoint {
 
 	private ApiEndpoint() {
@@ -24,6 +19,8 @@ public class ApiEndpoint {
 	public static final String ONLINE_CUSTOMER_VALIDATE_URL = "/nationality-id/{nationality-id}/validate";
 	
 	public static final String REVENUE_REPORT_ENDPOINT = "/revenue-report";
+	
+	public static final String PAYATBRANCH_ENDPOINT = "/payat-branch";
 
 	public final class MetaApi {
 		// Prefix
@@ -83,6 +80,7 @@ public class ApiEndpoint {
 		public static final String API_COUNTRY_BRANCH_LIST = "/countrybranchlist/";
 		public static final String API_DESIGNATION = "/designationslist/";
 		public static final String API_DECLARATION = "/declaration/";
+		public static final String SERVICE_MASTER = "/service-master";
 	}
 
 	public static final String UPDATE_CUSTOMER_PASSWORD_ENDPOINT = "/password/";
@@ -156,6 +154,7 @@ public class ApiEndpoint {
 		public static final String GET_ANNUAL_INCOME_DETAILS = "/getAnnualIncomeDetails/";
 		public static final String SAVE_SECURITY_QUESTIONS = "/save-security-questions/";
 		public static final String UPDATE_PASSWORD_CUSTOMER = "/update-password-customer/";
+		public static final String UPDATE_PASSWORD_CUSTOMER_V2 = "/update-password-customer-v2";
 		//params
 		public static final String PARAM_INCOMEDTO = "incomeDto";
 		
@@ -217,6 +216,22 @@ public class ApiEndpoint {
 		public static final String REVENUE_REPORT_CONFIRMATION="/revenue-report-confirmation";
 		
 		public static final String REVENUE_REPORT_DEFAULT_DATE = "/revenue-report-default-date";
+	}
+	
+	public final class PayAtBranch{
+		public static final String PREFIX = PAYATBRANCH_ENDPOINT;
+		
+		// Params
+		
+		//Paths
+		public static final String PAYMENT_MODES = "/payment-modes";
+		public static final String PB_TRNX_LIST = "/pb-trnx-list";
+		public static final String PB_TRNX_LIST_BRANCH = "/pb-trnx-list-branch";
+	}
+	
+	public final class RemittanceApplEndPoint{
+		public static final String PREFIX = REMIT_API_ENDPOINT;
+		public static final String PB_SAVE_APPL = "/payat-branch/" ;
 	}
 
 }

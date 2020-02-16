@@ -20,7 +20,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.dal.ExchangeRateProcedureDao;
 import com.amx.jax.dao.CurrencyMasterDao;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.ViewOnlineCurrency;
 import com.amx.jax.dbmodel.bene.ViewBeneServiceCurrency;
 import com.amx.jax.meta.MetaData;
@@ -29,6 +29,7 @@ import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ViewBeneficiaryCurrencyRepository;
 import com.amx.jax.repository.ViewOnlineCurrencyRepository;
 import com.amx.jax.services.AbstractService;
+import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.ConverterUtil;
 
 @Service
@@ -67,8 +68,8 @@ public class CurrencyMasterService extends AbstractService {
 	
 	private Logger logger = Logger.getLogger(CurrencyMasterService.class);
 
-	public AmxApiResponse<CurrencyMasterModel, Object> getCurrencyDetails(BigDecimal currencyId) {
-		List<CurrencyMasterModel> currencyList = currencyDao.getCurrencyList(currencyId);
+	public AmxApiResponse<CurrencyMasterMdlv1, Object> getCurrencyDetails(BigDecimal currencyId) {
+		List<CurrencyMasterMdlv1> currencyList = currencyDao.getCurrencyList(currencyId);
 		if (currencyList.isEmpty()) {
 			throw new GlobalException("Currency details not avaliable");
 		} 
@@ -77,17 +78,17 @@ public class CurrencyMasterService extends AbstractService {
 	}
 
 
-	public CurrencyMasterModel getCurrencyMasterById(BigDecimal currencyId) {
-		List<CurrencyMasterModel> currencyList = currencyDao.getCurrencyList(currencyId);
-		CurrencyMasterModel currencymaster = null;
+	public CurrencyMasterMdlv1 getCurrencyMasterById(BigDecimal currencyId) {
+		List<CurrencyMasterMdlv1> currencyList = currencyDao.getCurrencyList(currencyId);
+		CurrencyMasterMdlv1 currencymaster = null;
 		if (currencyList != null && !currencyList.isEmpty()) {
 			currencymaster = currencyList.get(0);
 		}
 		return currencymaster;
 	}
 	
-	public CurrencyMasterModel getCurrencyMasterById(String quoteName) {
-		CurrencyMasterModel currencymaster = currencyMasterDao.getCurrencyMasterByQuote(quoteName);
+	public CurrencyMasterMdlv1 getCurrencyMasterById(String quoteName) {
+		CurrencyMasterMdlv1 currencymaster = currencyMasterDao.getCurrencyMasterByQuote(quoteName);
 		return currencymaster;
 	}
 
@@ -111,8 +112,17 @@ public class CurrencyMasterService extends AbstractService {
 	}
 	
 	// added by chetan 30/04/2018 list the country for currency.
-	public AmxApiResponse<CurrencyMasterDTO, Object> getAllExchangeRateCurrencyList() {
-		List<ViewOnlineCurrency> currencyList = (List<ViewOnlineCurrency>) viewOnlineCurrencyRepo.findAll(new Sort("quoteName"));
+	public AmxApiResponse<CurrencyMasterDTO, Object> getAllExchangeRateCurrencyList(Boolean isActive) {
+		
+		List<ViewOnlineCurrency> currencyList ;
+		if(isActive!=true || isActive==null) {
+		 currencyList = (List<ViewOnlineCurrency>) viewOnlineCurrencyRepo.findAll(new Sort("quoteName"));
+		}
+		else {
+			
+	      currencyList = (List<ViewOnlineCurrency>) viewOnlineCurrencyRepo.findByIsActive(new Sort("quoteName"),AmxDBConstants.Yes);
+		}	
+		
 		List<BigDecimal> uniqueCurrency = (List<BigDecimal>) exchangeRateProcedureDao.getDistinctCurrencyList();
 		Iterator<ViewOnlineCurrency> itr = currencyList.iterator();
 		if (!currencyList.isEmpty() && !uniqueCurrency.isEmpty()) {
@@ -129,14 +139,14 @@ public class CurrencyMasterService extends AbstractService {
 	}
 
 	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyByCountryId(BigDecimal countryId) {
-		List<CurrencyMasterModel> currencyList = getCurrencyMasterByCountryId(countryId);
+		List<CurrencyMasterMdlv1> currencyList = getCurrencyMasterByCountryId(countryId);
 		if (currencyList.isEmpty()) {
 			throw new GlobalException("Currency details not avaliable");
 		}
 		return AmxApiResponse.buildList(convertToModelDto(currencyList));
 	}
 	
-	public List<CurrencyMasterModel> getCurrencyMasterByCountryId(BigDecimal countryId){
+	public List<CurrencyMasterMdlv1> getCurrencyMasterByCountryId(BigDecimal countryId){
 		return currencyDao.getCurrencyListByCountryId(countryId);
 	}
 
@@ -156,13 +166,13 @@ public class CurrencyMasterService extends AbstractService {
 		return dto;
 	}
 
-	private List<CurrencyMasterDTO> convertToModelDto(List<CurrencyMasterModel> currencyList) {
+	private List<CurrencyMasterDTO> convertToModelDto(List<CurrencyMasterMdlv1> currencyList) {
 		List<CurrencyMasterDTO> output = new ArrayList<>();
 		currencyList.forEach(currency -> output.add(convertModel(currency)));
 		return output;
 	}
 
-	public CurrencyMasterDTO convertModel(CurrencyMasterModel currency) {
+	public CurrencyMasterDTO convertModel(CurrencyMasterMdlv1 currency) {
 		CurrencyMasterDTO dto = new CurrencyMasterDTO();
 		try {
 			BeanUtils.copyProperties(dto, currency);
@@ -177,7 +187,7 @@ public class CurrencyMasterService extends AbstractService {
 	public ApiResponse getBeneficiaryCurrencyList(BigDecimal beneCountryId) {
 		List<ViewBeneServiceCurrency> currencyList = viewBeneficiaryCurrencyRepository
 				.findByBeneCountryId(beneCountryId, new Sort("currencyName"));
-		Map<BigDecimal, CurrencyMasterModel> allCurrencies = currencyMasterDao.getAllCurrencyMap();
+		Map<BigDecimal, CurrencyMasterMdlv1> allCurrencies = currencyMasterDao.getAllCurrencyMap();
 		List<CurrencyMasterDTO> currencyListDto = new ArrayList<>();
 		currencyList.forEach(currency -> {
 			currencyListDto.add(convertModel(allCurrencies.get(currency.getCurrencyId())));
@@ -218,10 +228,10 @@ public class CurrencyMasterService extends AbstractService {
 				}
 			}
 		}
-		Map<BigDecimal, CurrencyMasterModel> allCurrencies = currencyMasterDao.getAllCurrencyMap();
+		Map<BigDecimal, CurrencyMasterMdlv1> allCurrencies = currencyMasterDao.getAllCurrencyMap();
 		List<CurrencyMasterDTO> currencyListDto = new ArrayList<>();
 		currencyList.forEach(currency -> {
-			CurrencyMasterModel currencyMaster = allCurrencies.get(currency.getCurrencyId());
+			CurrencyMasterMdlv1 currencyMaster = allCurrencies.get(currency.getCurrencyId());
 			if (jaxTenantProperties.getBeneThreeCountryCheck() && !beneCountryId.equals(currencyMaster.getCountryId())) {
 				return;
 			}

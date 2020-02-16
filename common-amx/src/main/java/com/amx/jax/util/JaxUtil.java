@@ -1,5 +1,6 @@
 package com.amx.jax.util;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.DateFormatSymbols;
 import java.util.ArrayList;
@@ -26,11 +27,18 @@ public class JaxUtil {
 	
 	public static BigDecimal languageScale(BigDecimal languageId) {
 		if(ArgUtil.isEmpty(languageId) || (AmxDBConstants.MAX_LANG_ID.compareTo(languageId) < 0)) {
-			return BigDecimal.ONE;
+			return AmxDBConstants.DEFAULT_LANG_ID;
 		}
 		return languageId;
 	}
-
+	
+	public static BigDecimal languageScaleMeta(BigDecimal languageId) {
+		if(ArgUtil.isEmpty(languageId) || (AmxDBConstants.MAX_LANG_ID_META.compareTo(languageId) < 0)) {
+			return AmxDBConstants.DEFAULT_LANG_ID;
+		}
+		return languageId;
+	}
+	
 	/** The logger. */
 	Logger logger = LoggerFactory.getLogger(getClass());
 	BeanUtilsBean notNullBeanUtilsBean = new NullAwareBeanUtilsBean();
@@ -126,6 +134,7 @@ public class JaxUtil {
 
 		int size = 3;
 		util.getRandomIntegersFromList(input, size);
+		
 	}
 
 	/**
@@ -148,10 +157,10 @@ public class JaxUtil {
 	 * Checks if is null zero big decimal check.
 	 *
 	 * @param value the value
-	 * @return true, if is null zero big decimal check
+	 * @return true, if is null zero big decimal check,negative check
 	 */
 	public static boolean isNullZeroBigDecimalCheck(BigDecimal value) {
-		if (value != null && value.compareTo(BigDecimal.ZERO) != 0) {
+		if (value != null && value.compareTo(BigDecimal.ZERO) != 0 && value.compareTo(BigDecimal.ZERO)>0) {
 			return true;
 		} else {
 			return false;
@@ -238,5 +247,22 @@ public class JaxUtil {
 			logger.error("error in convert", e);
 		}
 	}
+	
+	/**
+	 * true if object has all fields null
+	 * 
+	 * @return
+	 * @throws IllegalAccessException
+	 */
+	public static boolean checkNull(Object obj) throws IllegalAccessException {
+		for (Field f : obj.getClass().getDeclaredFields()) {
+			if (f.get(obj) != null) {
+				return false;
+			}
+		}
+		return true;
+	}
 
+	
+	
 }

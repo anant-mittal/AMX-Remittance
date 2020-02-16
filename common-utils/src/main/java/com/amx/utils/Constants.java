@@ -1,6 +1,5 @@
 package com.amx.utils;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,6 +35,7 @@ public class Constants {
 
 	/** The Constant defaultString. */
 	public static final String DEFAULT_STRING = "";
+	public static final String NULL_STRING = "NULL";
 
 	/** The Constant defaultObject. */
 	public static final Object DEFAULT_OBJECT = new Object();
@@ -66,7 +66,10 @@ public class Constants {
 	/** The Constant CUST_ACTIVE_INDICATOR. */
 	public static final String CUST_ACTIVE_INDICATOR = "Y";
 	
-	/** The Constant CUST_COMPLIANCE_CHECK_INDICATOR. */
+	/**
+	 * @deprecated use AmxDBConstants.Compliance
+	 *  The Constant CUST_COMPLIANCE_CHECK_INDICATOR. */
+	@Deprecated
 	public static final String CUST_COMPLIANCE_CHECK_INDICATOR = "C";
 
 	/** The Constant IDENTITY_TYPE_ID. */

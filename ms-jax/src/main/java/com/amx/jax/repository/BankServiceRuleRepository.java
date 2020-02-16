@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import com.amx.jax.dbmodel.BankServiceRule;
+import com.amx.jax.dbmodel.CountryMaster;
 
 @Transactional
 public interface BankServiceRuleRepository extends CrudRepository<BankServiceRule, BigDecimal> {
@@ -17,4 +18,6 @@ public interface BankServiceRuleRepository extends CrudRepository<BankServiceRul
 			+ " and DELIVERY_MODE_ID=?5 and ISACTIVE='Y'", nativeQuery = true)
 	List<BankServiceRule> getServiceRules(BigDecimal routingBankId, BigDecimal countryId, BigDecimal currencyId,
 			BigDecimal remittanceMode, BigDecimal deliveryMode);
+
+	List<BankServiceRule> findByCountryId(CountryMaster countryMaster);
 }

@@ -5,46 +5,47 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 
 import com.amx.jax.pricer.dbmodel.ExchangeRateAPRDET;
-import com.amx.jax.pricer.dbmodel.ExchangeRateApprovalDetModelAlt;
+import com.amx.jax.pricer.dbmodel.ExchangeRateMasterApprovalDet;
 
 @Transactional
-public interface ExchangeRateApprovalDetRepository extends CrudRepository<ExchangeRateApprovalDetModelAlt, BigDecimal> {
+public interface ExchangeRateApprovalDetRepository
+		extends JpaRepository<ExchangeRateMasterApprovalDet, BigDecimal> {
 
-	@Query("select rate from ExchangeRateApprovalDetModelAlt rate where  rate.currencyId=?1 and rate.countryBranchId=?2 "
+	@Query("select rate from ExchangeRateMasterApprovalDet rate where  rate.currencyId=?1 and rate.countryBranchId=?2 "
 			+ "and rate.bankMaster.recordStatus = 'Y' and rate.bankMaster.bankCode not in ('SCB','SCBUK', 'WU') and rate.bankMaster.bankId in (?3)")
-	List<ExchangeRateApprovalDetModelAlt> getExchangeRates(BigDecimal currencyId, BigDecimal countryBranchId,
+	List<ExchangeRateMasterApprovalDet> getExchangeRates(BigDecimal currencyId, BigDecimal countryBranchId,
 			List<BigDecimal> bankIds);
 
-	@Query("select rate from ExchangeRateApprovalDetModelAlt rate where rate.currencyId=?1 and rate.countryBranchId=?2 "
+	@Query("select rate from ExchangeRateMasterApprovalDet rate where rate.currencyId=?1 and rate.countryBranchId=?2 "
 			+ "and rate.countryId=?3 and rate.applicationCountryId=?4 and rate.bankMaster.bankId=?5 and rate.serviceId=?6")
-	List<ExchangeRateApprovalDetModelAlt> getExchangeRatesForRoutingBank(BigDecimal currencyId, BigDecimal countryBranchId,
-			BigDecimal countryId, BigDecimal applicationCountryId, BigDecimal routingBankId,
+	List<ExchangeRateMasterApprovalDet> getExchangeRatesForRoutingBank(BigDecimal currencyId,
+			BigDecimal countryBranchId, BigDecimal countryId, BigDecimal applicationCountryId, BigDecimal routingBankId,
 			BigDecimal serviceIndicatorId);
 
-	@Query("select rate from ExchangeRateApprovalDetModelAlt rate where rate.currencyId=?1 and rate.bankMaster.bankId=?2 ")
-	List<ExchangeRateApprovalDetModelAlt> getExchangeRatesPlaceorder(BigDecimal currency, BigDecimal bankId);
+	@Query("select rate from ExchangeRateMasterApprovalDet rate where rate.currencyId=?1 and rate.bankMaster.bankId=?2 ")
+	List<ExchangeRateMasterApprovalDet> getExchangeRatesPlaceorder(BigDecimal currency, BigDecimal bankId);
 
-	@Query("select rate from ExchangeRateApprovalDetModelAlt rate where rate.currencyId=?1 and rate.countryBranchId=?2 "
+	@Query("select rate from ExchangeRateMasterApprovalDet rate where rate.currencyId=?1 and rate.countryBranchId=?2 "
 			+ "and rate.applicationCountryId=?3 and rate.bankMaster.bankId in (?4)")
-	List<ExchangeRateApprovalDetModelAlt> getBranchExchangeRatesForRoutingBanks(BigDecimal currencyId,
+	List<ExchangeRateMasterApprovalDet> getBranchExchangeRatesForRoutingBanks(BigDecimal currencyId,
 			BigDecimal countryBranchId, BigDecimal applicationCountryId, List<BigDecimal> routingBankIds);
 
-	@Query("select rate from ExchangeRateApprovalDetModelAlt rate where rate.currencyId=?1 and rate.countryBranchId=?2 "
+	@Query("select rate from ExchangeRateMasterApprovalDet rate where rate.currencyId=?1 and rate.countryBranchId=?2 "
 			+ " and rate.applicationCountryId=?3 and rate.bankMaster.bankId in (?4) and rate.serviceId in (?5)")
-	List<ExchangeRateApprovalDetModelAlt> getBranchExchangeRatesForRoutingBankAndServiceIds(BigDecimal currencyId,
+	List<ExchangeRateMasterApprovalDet> getBranchExchangeRatesForRoutingBankAndServiceIds(BigDecimal currencyId,
 			BigDecimal countryBranchId, BigDecimal applicationCountryId, List<BigDecimal> routingBankIds,
 			List<BigDecimal> serviceIds);
 
-	@Query("select rate from ExchangeRateApprovalDetModelAlt rate where rate.currencyId=?1 "
+	@Query("select rate from ExchangeRateMasterApprovalDet rate where rate.currencyId=?1 "
 			+ "and rate.countryId=?2 and rate.applicationCountryId=?3 and rate.bankMaster.bankId in (?4)")
-	List<ExchangeRateApprovalDetModelAlt> getExchangeRatesForRoutingBanks(BigDecimal currencyId,
+	List<ExchangeRateMasterApprovalDet> getExchangeRatesForRoutingBanks(BigDecimal currencyId,
 			BigDecimal applicationCountryId, List<BigDecimal> routingBankIds);
 
-	@Query("select distinct rate.sellRateMin from ExchangeRateApprovalDetModelAlt rate where rate.currencyId=?1 "
+	@Query("select distinct rate.sellRateMin from ExchangeRateMasterApprovalDet rate where rate.currencyId=?1 "
 			+ " and rate.applicationCountryId=?2 and rate.bankMaster.bankId=?3")
 	List<BigDecimal> getUniqueSellRatesMinForRoutingBank(BigDecimal currencyId, BigDecimal applicationCountryId,
 			BigDecimal routingBankId);
@@ -52,7 +53,7 @@ public interface ExchangeRateApprovalDetRepository extends CrudRepository<Exchan
 	////@formatter:off
 
 	/*@Query("select new com.amx.jax.pricer.dbmodel.ExchangeRateAPRDET(isActive, sellRateMin, sellRateMax, serviceId, " 
-			+ "	bankMaster) from ExchangeRateApprovalDetModelAlt rate where rate.currencyId=?1 "
+			+ "	bankMaster) from ExchangeRateMasterApprovalDet rate where rate.currencyId=?1 "
 			+ " and rate.countryId=?2 and rate.applicationCountryId=?3 and rate.bankMaster.bankId in (?4) "
 			+ " and rate.serviceId in (?5) "
 			+ " group by rate.isActive, rate.sellRateMin, rate.sellRateMax, rate.serviceId, rate.bankMaster"
@@ -64,7 +65,7 @@ public interface ExchangeRateApprovalDetRepository extends CrudRepository<Exchan
 	 * Old Query
 	 
 	@Query("select new com.amx.jax.pricer.dbmodel.ExchangeRateAPRDET(isActive, sellRateMin, sellRateMax, serviceId, "
-			+ "	bankMaster) from ExchangeRateApprovalDetModelAlt rate where rate.currencyId=?1 "
+			+ "	bankMaster) from ExchangeRateMasterApprovalDet rate where rate.currencyId=?1 "
 			+ " and rate.applicationCountryId=?2 and rate.bankMaster.bankId in (?3) " + " and rate.serviceId in (?4) "
 			+ " group by rate.isActive, rate.sellRateMin, rate.sellRateMax, rate.serviceId, rate.bankMaster"
 			+ " order by rate.bankMaster, rate.serviceId")
@@ -78,7 +79,7 @@ public interface ExchangeRateApprovalDetRepository extends CrudRepository<Exchan
 	 * New Query
 	 */
 	@Query("select new com.amx.jax.pricer.dbmodel.ExchangeRateAPRDET(isActive, sellRateMin, sellRateMax, serviceId, "
-			+ "	bankMaster) from ExchangeRateApprovalDetModelAlt rate where rate.currencyId=?1 "
+			+ "	bankMaster) from ExchangeRateMasterApprovalDet rate where rate.currencyId=?1 "
 			+ " and rate.applicationCountryId=?2 and rate.bankMaster.bankId in (?3) " + " and rate.serviceId in (?4) "
 			+ " and rate.isActive='Y'"
 			+ " and rate.countryBranchId in (select countryBranchId from CountryBranch cb where cb.isActive='Y')"

@@ -1,0 +1,4 @@
+{
+	"_subject": "We shall be back soon with stock of your FC Order!",
+	"_message": "We regret to inform you that the currency is out of stock due to higher demand for the amount you have chosen. We shall revert back to you once the currency is in stock. Please  contact customer care @ [[${_tu.prop('company.telephone')}]] for more information."
+}

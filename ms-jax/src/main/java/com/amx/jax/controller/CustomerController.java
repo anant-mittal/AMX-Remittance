@@ -26,13 +26,19 @@ import com.amx.amxlib.meta.model.IncomeDto;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.service.ICustomerService;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.auth.AuthFailureLogManager;
+import com.amx.jax.constant.JaxEvent;
+import com.amx.jax.customer.manager.CustomerManagementManager;
 import com.amx.jax.customer.service.CustomerService;
 import com.amx.jax.customer.service.JaxCustomerContactVerificationService;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.response.customer.CustomerModelResponse;
@@ -41,12 +47,14 @@ import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.services.CustomerDataVerificationService;
 import com.amx.jax.services.JaxCustomerModelService;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.manager.CommunicationPreferencesManager;
 import com.amx.jax.userservice.repository.OnlineCustomerRepository;
 import com.amx.jax.userservice.service.AnnualIncomeService;
 import com.amx.jax.userservice.service.CustomerModelService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.ConverterUtil;
+import com.amx.jax.util.JaxContextUtil;
 
 @RestController
 @RequestMapping(CUSTOMER_ENDPOINT)
@@ -89,7 +97,14 @@ public class CustomerController implements ICustomerService {
 	
 	@Autowired
 	OnlineCustomerRepository onlineCustomerRepository;
-
+	@Autowired
+	AuthFailureLogManager authFailureLogManager;
+	@Autowired
+	CommunicationPreferencesManager communicationPreferencesManager;
+	
+	@Autowired
+	CustomerManagementManager customerManagementManager;
+	
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	@RequestMapping(value = "/logged/in/", method = RequestMethod.POST)
@@ -149,6 +164,7 @@ public class CustomerController implements ICustomerService {
 		
 		List<ContactType> channel = new ArrayList<>();
 		channel.add(ContactType.SMS_EMAIL);
+		
 		response = userService.sendOtpForCivilId(civilId, channel, null, null);
 		
 		
@@ -158,6 +174,7 @@ public class CustomerController implements ICustomerService {
 	@RequestMapping(value = "/send-otp/", method = RequestMethod.GET)
 	public ApiResponse sendOtp() {
 		logger.info("in sendOtp Request");
+		logger.info("Flow value is   "+AppContextUtil.getFlow());
 		ApiResponse response = userService.sendOtpForCivilId(null);
 		return response;
 	}
@@ -206,7 +223,7 @@ public class CustomerController implements ICustomerService {
 
 	@RequestMapping(value = UPDATE_CUSTOMER_PASSWORD_ENDPOINT, method = RequestMethod.PUT)
 	public AmxApiResponse<BoolRespModel, Object> updatePassword(@RequestBody CustomerModel model) {
-		logger.info("updatePassword Request: " + model.toString());
+		//logger.info("updatePassword Request: " + model.toString());
 		return userService.updatePassword(model);
 	}
 
@@ -230,7 +247,7 @@ public class CustomerController implements ICustomerService {
 		List<ContactType> channel = new ArrayList<>();
 		channel.add(ContactType.EMAIL);
 		channel.add(ContactType.SMS);
-
+		//communicationPreferencesManager.validateCommunicationPreferences(channel,CommunicationEvents.CONTACT_DETAILS,null);
 		if (custModel.getMobile() != null) {
 			logger.info("Validating mobile for client id : " + custModel.getCustomerId());
 			userService.validateMobile(custModel);
@@ -259,10 +276,12 @@ public class CustomerController implements ICustomerService {
 			@PathVariable("init-registration") Boolean init,
 			@RequestParam(required = false) ContactType contactType) {
 		logger.info("initRegistrationSendOtp Request:civilId" + civilId);
+		JaxContextUtil.setJaxEvent(JaxEvent.ONLINE_SIGNUP);
 		List<ContactType> contactTypes = new ArrayList<ContactType>();
 		if (contactType != null) {
 			contactTypes.add(contactType);
 		}
+		//communicationPreferencesManager.validateCommunicationPreferences(contactTypes,CommunicationEvents.SIGNUP_ONLINE,civilId);
 		ApiResponse response = userService.sendOtpForCivilId(civilId, contactTypes, null, init);
 		return response;
 	}
@@ -287,6 +306,8 @@ public class CustomerController implements ICustomerService {
 	public AmxApiResponse<CustomerModelResponse, Object> getCustomerModelResponse(
 			@RequestParam(name = Params.IDENTITY_INT) String identityInt) {
 		CustomerModelResponse response = customerModelService.getCustomerModelResponse(identityInt);
+		ResourceDTO custCategory =customerManagementManager.getCustomerCategory(response.getCustomerId());
+		response.setCustomerCategory(custCategory);
 		jaxCustomerModelService.updateCustomerModelResponse(response);
 		return AmxApiResponse.build(response);
 	}
@@ -295,6 +316,8 @@ public class CustomerController implements ICustomerService {
 	@Override
 	public AmxApiResponse<CustomerModelResponse, Object> getCustomerModelResponse() {
 		CustomerModelResponse response = customerModelService.getCustomerModelResponse();
+		ResourceDTO custCategory =customerManagementManager.getCustomerCategory(response.getCustomerId());
+		response.setCustomerCategory(custCategory);
 		jaxCustomerModelService.updateCustomerModelResponse(response);
 		return AmxApiResponse.build(response);
 	}
@@ -353,6 +376,12 @@ public class CustomerController implements ICustomerService {
 	public AmxApiResponse<BoolRespModel, Object> updatePasswordCustomer(@RequestParam("identityInt") String identityInt, 
 			@RequestParam(name = "resetPassword",  required = false) String resetPassword) {
 		AmxApiResponse<BoolRespModel, Object> response = customerService.updatePasswordCustomer(identityInt, resetPassword);
+		return response;
+	}
+	
+	@RequestMapping(value = CustomerApi.UPDATE_PASSWORD_CUSTOMER_V2, method = RequestMethod.POST)
+	public AmxApiResponse<BoolRespModel, Object> updatePasswordCustomer(@RequestBody CustomerModel customerModel) {
+		AmxApiResponse<BoolRespModel, Object> response = customerService.updatePasswordCustomer(customerModel.getIdentityId(), customerModel.getPassword());
 		return response;
 	}
 }

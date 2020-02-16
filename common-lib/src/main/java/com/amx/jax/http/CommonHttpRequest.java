@@ -1,5 +1,6 @@
 package com.amx.jax.http;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.Set;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DeviceUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -29,14 +30,18 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.UserClient;
 import com.amx.jax.dict.UserClient.AppType;
+import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.dict.UserClient.DevicePlatform;
 import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.filter.AppParamController;
+import com.amx.jax.http.ApiRequest.ResponeError;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.UserDevice;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.HttpUtils;
+import com.amx.utils.StringUtils;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import eu.bitwalker.useragentutils.Browser;
 import eu.bitwalker.useragentutils.OperatingSystem;
@@ -117,13 +122,13 @@ public class CommonHttpRequest {
 				return deviceIp;
 			}
 		}
-		return HttpUtils.getIPAddress(request);
+		return StringUtils.getByIndex(HttpUtils.getIPAddress(request), ",", 0);
 	}
 
 	public Language getLanguage() {
 		return (Language) ArgUtil.parseAsEnum(
 				ArgUtil.ifNotEmpty(getRequestParam(AppConstants.LANG_PARAM_KEY), request.getLocale().getLanguage()),
-				Language.DEFAULT);
+				Language.DEFAULT, Language.class);
 	}
 
 	public Device getCurrentDevice() {
@@ -131,28 +136,80 @@ public class CommonHttpRequest {
 	}
 
 	public String getDeviceId() {
-		String deviceId = null;
-		if (request != null) {
-			deviceId = request.getHeader(AppConstants.DEVICE_ID_XKEY);
-			if (ArgUtil.isEmpty(deviceId)) {
-				Cookie cookie = WebUtils.getCookie(request, AppConstants.DEVICE_ID_KEY);
-				if (cookie != null) {
-					deviceId = cookie.getValue();
-				}
-			}
-		}
+		return this.getRequestParam(AppConstants.DEVICE_ID_XKEY, AppConstants.DEVICE_ID_KEY);
+	}
+
+	private String readDeviceId() {
+		String deviceId = this.getRequestParam(AppConstants.DEVICE_ID_XKEY, AppConstants.DEVICE_ID_KEY);
+		this.setCookie(AppConstants.DEVICE_ID_KEY, deviceId);
 		return deviceId;
 	}
 
+	public void setTraceUserIdentifier(Object sessionUserId) {
+		if (request != null) {
+			HttpSession session = request.getSession(false);
+			if (session != null) {
+				session.setAttribute(AppConstants.SESSION_SUFFIX_XKEY, sessionUserId);
+			}
+		}
+	}
+
+	public String getTraceUserIdentifier() {
+		if (request != null) {
+			HttpSession session = request.getSession(false);
+			if (session != null) {
+				return ArgUtil.parseAsString(session.getAttribute(AppConstants.SESSION_SUFFIX_XKEY));
+			}
+		}
+		return null;
+	}
+
+	public ClientType setClientType(ClientType clientType) {
+		if (request == null) {
+			return clientType;
+		}
+		String clientTypeStr = ArgUtil.parseAsString(clientType);
+		HttpSession session = request.getSession(false);
+		if (session != null) {
+			session.setAttribute(AppConstants.UDC_CLIENT_TYPE_XKEY, clientTypeStr);
+		}
+		this.setCookie(AppConstants.UDC_CLIENT_TYPE_XKEY, clientTypeStr);
+		return clientType;
+	}
+
+	public ClientType getClientType() {
+		if (request == null) {
+			return null;
+		}
+		String clientTypeStr = this.getRequestParam(AppConstants.UDC_CLIENT_TYPE_XKEY);
+		HttpSession session = request.getSession(false);
+
+		if (ArgUtil.is(clientTypeStr)) {
+			if (session != null) {
+				session.setAttribute(AppConstants.UDC_CLIENT_TYPE_XKEY, clientTypeStr);
+			}
+			this.setCookie(AppConstants.UDC_CLIENT_TYPE_XKEY, clientTypeStr);
+		} else if (session != null) {
+			clientTypeStr = ArgUtil.parseAsString(session.getAttribute(AppConstants.UDC_CLIENT_TYPE_XKEY));
+		}
+		return ArgUtil.parseAsEnumT(clientTypeStr, appConfig.getDefaultClientType(), ClientType.class);
+	}
+
+	/**
+	 * Returns Value from Query,Header,Cookies
+	 * 
+	 * @param contextKey
+	 * @return
+	 */
 	public String getRequestParam(String... contextKeys) {
 		for (String contextKey : contextKeys) {
 			String value = request.getParameter(contextKey);
 			if (ArgUtil.isEmpty(value)) {
-				value = request.getHeader(contextKey);
+				value = ArgUtil.parseAsString(request.getHeader(contextKey), null);
 				if (ArgUtil.isEmpty(value)) {
 					Cookie cookie = WebUtils.getCookie(request, contextKey);
 					if (cookie != null) {
-						value = cookie.getValue();
+						value = ArgUtil.parseAsString(cookie.getValue(), null);
 					}
 				}
 			}
@@ -163,6 +220,12 @@ public class CommonHttpRequest {
 		return null;
 	}
 
+	/**
+	 * Returns Value from Context,Query,Header,Cookies
+	 * 
+	 * @param contextKey
+	 * @return
+	 */
 	public String get(String contextKey) {
 		String value = AppContextUtil.get(contextKey);
 		if (request != null) {
@@ -233,6 +296,8 @@ public class CommonHttpRequest {
 		if (request != null) {
 			String browserDetails = request.getHeader("User-Agent");
 			return UserAgent.parseUserAgentString(browserDetails);
+			// return UserAgent.parseUserAgentString("QuickRemit/403 CFNetwork/978.0.7
+			// Darwin/18.7.0");
 		}
 		return agent;
 	}
@@ -306,7 +371,7 @@ public class CommonHttpRequest {
 		}
 		userDevice.setType(deviceType);
 
-		userDevice.setFingerprint(this.getDeviceId());
+		userDevice.setFingerprint(this.readDeviceId());
 
 		userDevice.setId(ArgUtil.parseAsString(userAgent.getId()));
 
@@ -315,7 +380,8 @@ public class CommonHttpRequest {
 
 		if (appType == null) {
 			appType = null;
-			if (userDevice.getUserAgent().getBrowser() != Browser.UNKNOWN) {
+			if (userDevice.getUserAgent().getBrowser() != Browser.UNKNOWN
+					&& userDevice.getUserAgent().getBrowser() != Browser.CFNETWORK) {
 				appType = AppType.WEB;
 			} else if (userDevice.getPlatform() == DevicePlatform.ANDROID
 					&& userDevice.getUserAgent().getBrowser() == Browser.UNKNOWN) {
@@ -327,20 +393,30 @@ public class CommonHttpRequest {
 					&& userDevice.getUserAgent().getBrowser() == Browser.UNKNOWN
 					&& userDevice.getUserAgent().getOperatingSystem() == OperatingSystem.UNKNOWN) {
 				appType = AppType.IOS;
+//			} else if (userDevice.getPlatform() == DevicePlatform.MAC
+//					&& userDevice.getUserAgent().getBrowser() == Browser.CFNETWORK
+//					&& userDevice.getUserAgent().getOperatingSystem() == OperatingSystem.MAC_OS_X) {
+//				appType = AppType.IOS;
 			} else if (userDevice.getFingerprint() != null
 					&& !Constants.BLANK.equalsIgnoreCase(userDevice.getFingerprint())) {
 				if (userDevice.getFingerprint().length() == 16) {
 					appType = AppType.ANDROID;
 				} else if (userDevice.getFingerprint().length() == 40) {
 					appType = AppType.IOS;
+				} else if (userDevice.getFingerprint().length() == 36
+						&& userDevice.getUserAgent().getBrowser() == Browser.CFNETWORK) {
+					appType = AppType.IOS;
 				} else if (userDevice.getFingerprint().length() == 32) {
 					appType = AppType.WEB;
+				} else {
+
 				}
 			} else if (userDevice.getType() == DeviceType.COMPUTER) {
 				appType = AppType.WEB;
 			}
 		}
 		userDevice.setAppType(appType);
+		userDevice.setClientType(this.getClientType());
 		AppContextUtil.set(AppConstants.USER_DEVICE_XKEY, userDevice);
 		return userDevice;
 	}
@@ -381,6 +457,7 @@ public class CommonHttpRequest {
 				if (apiRequest == null) {
 					apiRequest = handlerMethod.getBeanType().getAnnotation(ApiRequest.class);
 				}
+
 				if (apiRequest != null) {
 					String handlerKey = handlerMethod.getShortLogMessage() + "#" +
 							ArgUtil.parseAsString(handlerMethod.hashCode());
@@ -398,11 +475,18 @@ public class CommonHttpRequest {
 		return false;
 	}
 
-	public static class ApiRequestDetail {
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public static class ApiRequestDetail implements Serializable {
+		private static final long serialVersionUID = 4723780864549272004L;
 		RequestType type;
+		ResponeError responeError;
 		boolean useAuthToken;
 		boolean useAuthKey;
 		String flow;
+		String feature;
+		String traceFilter;
+		String clientAuth;
+		String deprecated;
 
 		public RequestType getType() {
 			return type;
@@ -435,6 +519,47 @@ public class CommonHttpRequest {
 		public void setFlow(String flow) {
 			this.flow = flow;
 		}
+
+		public String getFeature() {
+			return feature;
+		}
+
+		public void setFeature(String feature) {
+			this.feature = feature;
+		}
+
+		public String getTraceFilter() {
+			return traceFilter;
+		}
+
+		public void setTraceFilter(String traceFilter) {
+			this.traceFilter = traceFilter;
+		}
+
+		public String getClientAuth() {
+			return clientAuth;
+		}
+
+		public void setClientAuth(String clientAuth) {
+			this.clientAuth = clientAuth;
+		}
+
+		public String getDeprecated() {
+			return deprecated;
+		}
+
+		public void setDeprecated(String deprecated) {
+			this.deprecated = deprecated;
+		}
+
+		public ResponeError getResponeError() {
+			return responeError;
+		}
+
+		public void setResponeError(ResponeError responeError) {
+			this.responeError = responeError;
+		}
+
 	}
 
 	public ApiRequestDetail getApiRequest(HttpServletRequest req) {
@@ -445,6 +570,11 @@ public class CommonHttpRequest {
 			detail.setUseAuthKey(x.useAuthKey());
 			detail.setUseAuthToken(x.useAuthToken());
 			detail.setFlow(x.flow());
+			detail.setFeature(x.feature());
+			detail.setTraceFilter(x.tracefilter());
+			detail.setClientAuth(x.clientAuth());
+			detail.setDeprecated(x.deprecated());
+			detail.setResponeError(x.responeError());
 		}
 
 		if (ArgUtil.isEmpty(detail.getType()) || RequestType.DEFAULT.equals(detail.getType())) {

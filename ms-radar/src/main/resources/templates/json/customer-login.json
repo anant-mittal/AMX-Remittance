@@ -1,0 +1,266 @@
+{
+  "aggs": {
+    "fp": {
+      "terms": {
+        "field": "logmap.client.fp.keyword",
+        "order": {
+          "_count": "desc"
+        },
+        "size": 20
+      },
+      "aggs": {
+        "browser": {
+          "terms": {
+            "field": "logmap.agent.browser.keyword",
+            "order": {
+              "_count": "desc"
+            },
+            "size": 10
+          },
+          "aggs": {
+            "operatingSystem": {
+              "terms": {
+                "field": "logmap.agent.operatingSystem.keyword",
+                "order": {
+                  "_count": "desc"
+                },
+                "size": 5
+              },
+              "aggs": {
+                "ip": {
+                  "terms": {
+                    "field": "logmap.client.ip.keyword",
+                    "order": {
+                      "_count": "desc"
+                    },
+                    "size": 50
+                  },
+                  "aggs": {
+                    "country": {
+                      "terms": {
+                        "field": "geoip.country_code2.keyword",
+                        "order": {
+                          "_count": "desc"
+                        },
+                        "missing": "UNKNOWN",
+                        "size": 5
+                      },
+                      "aggs": {
+                        "region": {
+                          "terms": {
+                            "field": "geoip.region_code.keyword",
+                            "order": {
+                              "_count": "desc"
+                            },
+                            "missing": "UNKNOWN",
+                            "size": 5
+                          },
+                          "aggs": {
+                            "city": {
+                              "terms": {
+                                "field": "geoip.city_name.keyword",
+                                "order": {
+                                  "_count": "desc"
+                                },
+                                "missing": "UNKNOWN",
+                                "size": 20
+                              },
+                              "aggs": {
+                                "ct": {
+                                  "terms": {
+                                    "field": "logmap.client.ct.keyword",
+                                    "order": {
+                                      "_count": "desc"
+                                    },
+                                    "size": 15
+                                  },
+                                  "aggs": {
+                                    "traceid": {
+                                      "filters": {
+                                        "filters": {
+                                          "this": {
+                                            "bool": {
+                                              "must": [],
+                                              "filter": [
+                                                {
+                                                  "bool": {
+                                                    "should": [
+                                                      {
+                                                        "match_phrase": {
+                                                          "traceid": "[[${traceid}]]"
+                                                        }
+                                                      }
+                                                    ],
+                                                    "minimum_should_match": 1
+                                                  }
+                                                }
+                                              ],
+                                              "should": [],
+                                              "must_not": []
+                                            }
+                                          },
+                                          "other": {
+                                            "bool": {
+                                              "must": [],
+                                              "filter": [
+                                                {
+                                                  "bool": {
+                                                    "should": [
+                                                      {
+                                                        "exists": {
+                                                          "field": "traceid"
+                                                        }
+                                                      }
+                                                    ],
+                                                    "minimum_should_match": 1
+                                                  }
+                                                }
+                                              ],
+                                              "should": [],
+                                              "must_not": []
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "aggs": {
+                                        "ut": {
+                                          "cardinality": {
+                                            "field": "traceid.keyword"
+                                          }
+                                        },
+                                        "lasttime": {
+                                          "max": {
+                                            "field": "@timestamp"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "stored_fields": [
+    "*"
+  ],
+  "docvalue_fields": [
+    {
+      "field": "@timestamp",
+      "format": "date_time"
+    }
+  ],
+  "query": {
+    "bool": {
+      "must": [],
+      "filter": [
+         {
+          "bool": {
+            "should": [
+             [# th:if="${logmap.client.containsKey('fp')}"] 
+              {
+                "bool": {
+                  "should": [
+                    {
+                      "match_phrase": {
+                        "logmap.client.fp.keyword": "[[${logmap?.client?.fp}]]"
+                      }
+                    }
+                  ],
+                  "minimum_should_match": 1
+                }
+              }
+              [/]
+              [# th:if="${logmap.client.containsKey('fp') && logmap.client.containsKey('ip')}"]
+              ,
+              [/]
+              [# th:if="${logmap.client.containsKey('ip')}"] 
+              {
+                "bool": {
+                  "should": [
+                    {
+                      "match_phrase": {
+                        "logmap.client.ip.keyword": "[[${logmap?.client?.ip}]]"
+                      }
+                    }
+                  ],
+                  "minimum_should_match": 1
+                }
+              }
+              [/]	
+            ],
+            "minimum_should_match": 1
+          }
+        },
+        {
+          "match_phrase": {
+            "logmap.cust.id": {
+              "query": "[[${customerId}]]"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "logmap.agent.browser.keyword": {
+              "query": "[[${logmap.agent.browser}]]"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "logmap.agent.operatingSystem.keyword": {
+              "query": "[[${logmap.agent.operatingSystem}]]"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "logmap.client.ct.keyword": {
+              "query": "[[${logmap.client.ct}]]"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "logmap.desc.keyword": {
+              "query": "LOGIN:COMPLETED:DONE"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "level.keyword": {
+              "query": "AUDIT"
+            }
+          }
+        },
+        {
+          "range": {
+            "@timestamp": {
+              "format": "epoch_millis",
+              "gte": "now-3M",
+              "lte": "now"
+            }
+          }
+        }
+      ],
+      "should": [],
+      "must_not": []
+    }
+  }
+}

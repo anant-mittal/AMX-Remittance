@@ -23,13 +23,13 @@ import com.amx.jax.dict.Currency;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.mcq.shedlock.SchedulerLock;
 import com.amx.jax.mcq.shedlock.SchedulerLock.LockContext;
-import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
 import com.amx.jax.radar.ARadarTask;
 import com.amx.jax.radar.ESRepository;
 import com.amx.jax.radar.RadarConfig;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache;
-import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncIndex;
 import com.amx.jax.radar.jobs.customer.OracleViewDocument;
+import com.amx.jax.radar.snap.SnapQueryService.BulkRequestSnapBuilder;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.rates.AmxCurRate;
 import com.amx.jax.rest.RestService;
@@ -73,7 +73,7 @@ public class BECKuwaitJob extends ARadarTask {
 			Elements transferTabs = doc.select(".currency-nav-tab-holder.transfer");
 			if (transferTabs.size() > 0) {
 				Elements trs = transferTabs.get(0).select("tr");
-				BulkRequestBuilder builder = new BulkRequestBuilder();
+				BulkRequestSnapBuilder builder = new BulkRequestSnapBuilder();
 				for (Element tr : trs) {
 					Currency cur = (Currency) ArgUtil.parseAsEnum(tr.select(".bfc-country-code").text(),
 							Currency.UNKNOWN);
@@ -86,7 +86,7 @@ public class BECKuwaitJob extends ARadarTask {
 							trnsfrRate.setrForCur(cur);
 							trnsfrRate.setrType(RateType.SELL_TRNSFR);
 							trnsfrRate.setrRate(BigDecimal.ONE.divide(rate, 12, RoundingMode.CEILING));
-							builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
+							builder.update(DBSyncIndex.XRATE_JOB.getIndexName(),
 									new OracleViewDocument(trnsfrRate));
 						}
 					}
@@ -97,7 +97,7 @@ public class BECKuwaitJob extends ARadarTask {
 			Elements xTabs = doc.select(".currency-nav-tab-holder.exchange");
 			if (xTabs.size() > 0) {
 				Elements trs = xTabs.get(0).select("tr");
-				BulkRequestBuilder builder = new BulkRequestBuilder();
+				BulkRequestSnapBuilder builder = new BulkRequestSnapBuilder();
 				for (Element tr : trs) {
 					Currency cur = (Currency) ArgUtil.parseAsEnum(tr.select(".bfc-country-code").text(),
 							Currency.UNKNOWN);
@@ -110,7 +110,7 @@ public class BECKuwaitJob extends ARadarTask {
 						if (!ArgUtil.isEmpty(buyCashRate)) {
 							buyCash.setrType(RateType.BUY_CASH);
 							buyCash.setrRate(BigDecimal.ONE.divide(buyCashRate, 12, RoundingMode.CEILING));
-							builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
+							builder.update(DBSyncIndex.XRATE_JOB.getIndexName(),
 									new OracleViewDocument(buyCash));
 						}
 
@@ -120,7 +120,7 @@ public class BECKuwaitJob extends ARadarTask {
 						if (!ArgUtil.isEmpty(sellCashRate)) {
 							sellCash.setrType(RateType.SELL_CASH);
 							sellCash.setrRate(BigDecimal.ONE.divide(sellCashRate, 12, RoundingMode.CEILING));
-							builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
+							builder.update(DBSyncIndex.XRATE_JOB.getIndexName(),
 									new OracleViewDocument(sellCash));
 						}
 

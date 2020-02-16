@@ -5,12 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +36,7 @@ import com.amx.jax.http.RequestType;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.scope.TenantProperties;
+import com.amx.jax.scope.VendorContext.ApiVendorHeaders;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.CryptoUtil.HashBuilder;
 import com.amx.utils.JsonUtil;
@@ -47,6 +49,7 @@ public class AppParamController {
 	public static final String PUB_AMX_PREFIX = "/pub/amx";
 	public static final String PUBG_AMX_PREFIX = "/pubg/";
 	public static final String PARAM_URL = PUB_AMX_PREFIX + "/params";
+	public static final String FEATURE_URL = PUB_AMX_PREFIX + "/features";
 	public static final String METRIC_URL = PUB_AMX_PREFIX + "/metric";
 
 	@Autowired
@@ -59,6 +62,9 @@ public class AppParamController {
 	AppTenantConfig appTenantConfig;
 
 	@Autowired(required = false)
+	VendorAuthConfig vendorAuthConfig;
+
+	@Autowired(required = false)
 	List<IndicatorListner> listners;
 
 	@ApiRequest(type = RequestType.NO_TRACK_PING)
@@ -69,6 +75,16 @@ public class AppParamController {
 			LOGGER.info("App Param {} changed to {}", id, id.isEnabled());
 		}
 		return AppParam.values();
+	}
+
+	@ApiVendorHeaders
+	@ApiRequest(type = RequestType.NO_TRACK_PING)
+	@RequestMapping(value = FEATURE_URL, method = RequestMethod.GET)
+	public Object[] features() {
+		if (vendorAuthConfig != null) {
+			return vendorAuthConfig.getFeaturesList().toArray();
+		}
+		return null;
 	}
 
 	@ApiRequest(type = RequestType.NO_TRACK_PING)
@@ -109,7 +125,7 @@ public class AppParamController {
 	public AmxApiResponse<BoolRespModel, Object> clearSharedConfig() {
 		if (ArgUtil.is(listAppSharedConfig)) {
 			for (AppSharedConfig appSharedConfig : listAppSharedConfig) {
-				appSharedConfig.clear();
+				appSharedConfig.clear(null);
 			}
 		}
 		return AmxApiResponse.build(new BoolRespModel(true));
@@ -118,9 +134,10 @@ public class AppParamController {
 	@Autowired(required = false)
 	VendorAuthConfig appVendorConfigForAuth;
 
-	@RequestMapping(value = "/pub/amx/device", method = RequestMethod.GET)
+	@RequestMapping(value = "/pub/amx/device", method = { RequestMethod.GET, RequestMethod.POST })
 	public AmxApiResponse<UserDevice, Map<String, Object>> userDevice(@RequestParam(required = false) String key,
-			@RequestParam(required = false) String vendor) {
+			@RequestParam(required = false) String vendor,HttpSession httpSession,
+			HttpServletRequest request) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("getAppSpecifcDecryptedProp", appConfig.getAppSpecifcDecryptedProp());
 		map.put("getTenantSpecifcDecryptedProp2", appTenantConfig.getTenantSpecifcDecryptedProp2());
@@ -132,7 +149,17 @@ public class AppParamController {
 
 		map.put("getBasicAuthPassword", appVendorConfigForAuth.getBasicAuthPassword());
 		map.put("getBasicAuthUser", appVendorConfigForAuth.getBasicAuthUser());
-
+		map.put("commonHttpRequest.getIPAddress()", commonHttpRequest.getIPAddress());
+		
+		map.put("httpSession.getId", httpSession.getId());
+		map.put("request.getRequestURL", request.getRequestURL().toString());
+		map.put("request.getServerName", request.getServerName());
+		map.put("request.getRequestURI()", request.getRequestURI());
+		map.put("request.getRemoteHost()", request.getRemoteHost());
+		map.put("request.getRemoteAddr()", request.getRemoteAddr());
+		map.put("request.getLocalAddr()", request.getLocalAddr());
+		map.put("request.getScheme()", request.getScheme());
+		
 		if (!ArgUtil.isEmpty(key)) {
 			map.put(key, prop(key));
 		}
@@ -208,4 +235,5 @@ public class AppParamController {
 		error.setException(exception);
 		return error;
 	}
+
 }

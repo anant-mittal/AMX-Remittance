@@ -3,6 +3,7 @@ package com.amx.test;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import org.jsoup.Connection;
@@ -14,8 +15,6 @@ import org.jsoup.select.Elements;
 import com.amx.jax.client.snap.ISnapService.RateSource;
 import com.amx.jax.client.snap.ISnapService.RateType;
 import com.amx.jax.dict.Currency;
-import com.amx.jax.payg.PayGParams;
-import com.amx.jax.payg.PayGService;
 import com.amx.jax.rates.AmxCurRate;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.FileUtil;
@@ -29,21 +28,41 @@ public class App { // Noncompliant
 	public static XmlMapper xmlMapper = new XmlMapper();
 
 	/**
+	 * 2001:0db8:0000:0000:0000:ff00:0042:7879
+	 * 
+	 * 12.244.233.165
+	 * 
+	 * @param ipAddress
+	 * @return
+	 */
+	private static String ipParse(String ipAddress) {
+		String[] slots = ipAddress.split(":|\\.");
+		return String.join("-", Arrays.copyOfRange(slots, 0, slots.length / 4 * 3));
+	}
+
+	public static void main(String[] args) {
+		System.out.println(ipParse("12.244.233.165"));
+		System.out.println(ipParse("2001:0db8:0000:0000:0000:ff00:0042:7879"));
+	}
+
+	/**
 	 * This is just a test method
 	 * 
 	 * @param args
 	 * @throws URISyntaxException
 	 * @throws IOException
 	 */
-	public static void main(String[] args) throws URISyntaxException, IOException {
+	public static void main5(String[] args) throws URISyntaxException, IOException {
 
 		String filePath = "file://" + System.getProperty("user.dir")
 				+ "/src/test/java/com/../../java/com/amx/test/appParams.json";
 
-		//FileUtil.normalize("file://" + System.getProperty("user.dir") + "/src/test/java/com/../../../../../../../java/com/amx/test/appParams.json");
+		// FileUtil.normalize("file://" + System.getProperty("user.dir") +
+		// "/src/test/java/com/../../../../../../../java/com/amx/test/appParams.json");
 
 		FileUtil.normalize("/D:\\workspace_master_june\\amx-jax\\common-lib\\target/application.env.properties");
-		FileUtil.normalize("/D:\\workspace_master_june\\amx-jax\\common-lib\\target/..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\application.env.properties");
+		FileUtil.normalize(
+				"/D:\\workspace_master_june\\amx-jax\\common-lib\\target/..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\application.env.properties");
 
 		return;
 		/*

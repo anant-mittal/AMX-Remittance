@@ -15,7 +15,6 @@ import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
 import com.amx.jax.pricer.dbmodel.TimezoneMasterModel;
 import com.amx.jax.pricer.dbmodel.TreasuryFundTimeImpact;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
-import com.amx.jax.pricer.dbmodel.ViewExGLCBalProvisional;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
 import com.amx.jax.pricer.dto.EstimatedDeliveryDetails;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;

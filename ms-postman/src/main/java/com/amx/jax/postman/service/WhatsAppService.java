@@ -16,10 +16,11 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.ListRequestModel;
 import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.dict.ContactType;
-import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.AuditActor;
 import com.amx.jax.logger.AuditEvent.Result;
+import com.amx.jax.logger.AuditService;
 import com.amx.jax.postman.PostManConfig;
+import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.audit.PMGaugeEvent;
 import com.amx.jax.postman.events.UserInboxEvent;
 import com.amx.jax.postman.model.File;
@@ -36,7 +37,7 @@ public class WhatsAppService {
 
 	public static String WHATS_MESSAGES = "WHATS_MESSAGES";
 
-	@Autowired
+	@Autowired(required = false)
 	RedissonClient redisson;
 
 	@Autowired
@@ -55,6 +56,9 @@ public class WhatsAppService {
 	private AuditService auditService;
 
 	private RBlockingQueue<WAMessage> getQueue(BigDecimal queueId) {
+		if (redisson == null) {
+			throw new PostManException("No Redisson Avaialble");
+		}
 		if (ArgUtil.isEmpty(queueId) || queueId.equals(BigDecimal.ZERO)) {
 			return redisson.getBlockingQueue(WHATS_MESSAGES + "_" + AppContextUtil.getTenant());
 		}
@@ -131,15 +135,16 @@ public class WhatsAppService {
 
 			try {
 				String to = ArgUtil.parseAsString(map.get("to"), Constants.BLANK);
+				String from = ArgUtil.parseAsString(map.get("from"), Constants.BLANK);
 
 				UserInboxEvent userInboxEvent = new UserInboxEvent();
 				userInboxEvent.setWaChannel(WAMessage.Channel.DEFAULT);
 				userInboxEvent.setQueue(queueId);
-				userInboxEvent.setFrom(ArgUtil.parseAsString(map.get("from"), Constants.BLANK));
+				userInboxEvent.setFrom(from);
 				userInboxEvent.setTo(to);
 				userInboxEvent.setMessage(ArgUtil.parseAsString(map.get("text"), Constants.BLANK));
 
-				AppContextUtil.setActorId(new AuditActor(AuditActor.ActorType.W, to));
+				AppContextUtil.setActorId(new AuditActor(AuditActor.ActorType.W, from));
 
 				pMGaugeEvent.setTo(CollectionUtil.getList(userInboxEvent.getFrom()));
 				pMGaugeEvent.setMessage(userInboxEvent.getMessage());

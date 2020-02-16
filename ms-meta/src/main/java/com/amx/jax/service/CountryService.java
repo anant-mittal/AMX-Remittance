@@ -18,7 +18,6 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.CountryMasterDesc;
 import com.amx.jax.dbmodel.CountryMasterView;
-import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.CountryMasterRepository;
 import com.amx.jax.repository.CountryRepository;
@@ -52,11 +51,12 @@ public class CountryService extends AbstractService {
 		BigDecimal languageIdValue = new BigDecimal("1");
 		ApiResponse response = getBlackApiResponse();
 		
+		if(meta.getLanguageId()!=null)
 		countryList = countryRepository.findByLanguageId(meta.getLanguageId());
 
-		if (!(meta.getLanguageId().equals(languageIdValue)) || !(meta.getLanguageId().toString().equalsIgnoreCase("en"))) {
+		if (countryList.isEmpty() || meta.getLanguageId()==null) {
 			
-			countryList = countryRepository.findByLanguageId(meta.getLanguageId());
+			countryList = countryRepository.findByLanguageId(languageIdValue);
 		response.getData().getValues().addAll(countryList);
 		response.setResponseStatus(ResponseStatus.OK);
 		}
@@ -192,5 +192,15 @@ public class CountryService extends AbstractService {
 		logger.debug("isarabicValue" +isArabic);
 		return isArabic;
 		
+	}
+
+
+	public boolean isEgyptCountry(BigDecimal countryId) {
+		String countryAlfa3Code = countryRepository.findByLanguageIdAndCountryId(meta.getLanguageId(), countryId).get(0)
+				.getCountryAlpha3Code();
+		if (ConstantDocument.EGYPT_ALPHA3_CODE.equals(countryAlfa3Code)) {
+			return true;
+		}
+		return false;
 	}
 }

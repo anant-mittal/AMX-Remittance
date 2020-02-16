@@ -16,6 +16,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.DocumentScanIndic;
 import com.amx.jax.dal.ImageCheckDao;
@@ -33,7 +34,6 @@ import com.amx.jax.repository.customer.DbScanRefRepo;
 import com.amx.jax.repository.customer.DmsDocumentBlobTemparoryRepository;
 import com.amx.jax.services.JaxDBService;
 import com.amx.jax.userservice.service.UserService;
-import com.jax.amxlib.exception.jax.GlobaLException;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -164,7 +164,7 @@ public class CustomerDocumentUploadManager {
 	public List<CustomerDocumentTypeMaster> fetchCustomerUploadedDocMasterList() {
 		BigDecimal customerId = metaData.getCustomerId();
 		if (customerId == null) {
-			throw new GlobaLException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Missing customer id");
+			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Missing customer id");
 		}
 		Customer customer = userSerivce.getCustById(customerId);
 		List<CustomerDocumentUploadReferenceTemp> customerUploads = getCustomerUploads(customer.getIdentityInt(), customer.getIdentityTypeId());
@@ -177,7 +177,7 @@ public class CustomerDocumentUploadManager {
 	public List<CustomerDocumentUploadReferenceTemp> fetchCustomerUploadsTemp() {
 		BigDecimal customerId = metaData.getCustomerId();
 		if (customerId == null) {
-			throw new GlobaLException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Missing customer id");
+			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Missing customer id");
 		}
 		Customer customer = userSerivce.getCustById(customerId);
 		List<CustomerDocumentUploadReferenceTemp> customerUploads = getCustomerUploads(customer.getIdentityInt(), customer.getIdentityTypeId());

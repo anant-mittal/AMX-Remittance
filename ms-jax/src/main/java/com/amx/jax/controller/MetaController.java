@@ -1,7 +1,14 @@
 package com.amx.jax.controller;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -15,8 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.constant.ApiEndpoint.MetaApi;
 import com.amx.amxlib.meta.model.ApplicationSetupDTO;
 import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
-import com.amx.amxlib.meta.model.BankBranchDto;
-import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.DeclarationDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.meta.model.MultiCountryDTO;
@@ -37,12 +42,13 @@ import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxEvent;
+import com.amx.jax.dbmodel.BankServiceRule;
 import com.amx.jax.dbmodel.BranchDetailModel;
 import com.amx.jax.dbmodel.BranchSystemDetail;
 import com.amx.jax.dbmodel.CollectionDetailViewModel;
 import com.amx.jax.dbmodel.CollectionPaymentDetailsViewModel;
 import com.amx.jax.dbmodel.CountryMasterView;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.PrefixModel;
 import com.amx.jax.dbmodel.PurposeOfRemittanceViewModel;
 import com.amx.jax.dbmodel.UserFinancialYear;
@@ -51,8 +57,11 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.manager.JaxNotificationManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.BranchSystemDetailDto;
 import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.benebranch.BankBranchDto;
+import com.amx.jax.model.response.remittance.ServiceMasterDTO;
 import com.amx.jax.service.ApplicationCountryService;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.BranchDetailService;
@@ -74,6 +83,8 @@ import com.amx.jax.service.TermsAndConditionService;
 import com.amx.jax.service.ViewDistrictService;
 import com.amx.jax.service.ViewStateService;
 import com.amx.jax.service.WhyDoAskService;
+import com.amx.jax.services.BankService;
+import com.amx.jax.services.RemittanceTransactionService;
 import com.amx.jax.util.JaxContextUtil;
 import com.amx.jax.validation.BankBranchSearchRequestlValidator;
 
@@ -160,10 +171,15 @@ public class MetaController {
 
 	@Autowired
 	BranchDetailService branchDetailService;
-	
+
 	@Autowired
 	CountryBranchService countryBranchService;
-	
+
+	@Autowired
+	RemittanceTransactionService remittanceTransactionService;
+
+	@Autowired
+	BankService bankService;
 
 	@RequestMapping(value = MetaApi.API_COUNTRY, method = RequestMethod.GET)
 	public AmxApiResponse<CountryMasterView, Object> getCountryListResponse() {
@@ -263,7 +279,7 @@ public class MetaController {
 	}
 
 	@RequestMapping(value = "/currency/{currencyId}", method = RequestMethod.GET)
-	public AmxApiResponse<CurrencyMasterModel, Object> getCurrencyMasterResponse(
+	public AmxApiResponse<CurrencyMasterMdlv1, Object> getCurrencyMasterResponse(
 			@PathVariable("currencyId") BigDecimal currencyId) {
 		return currencyMasterService.getCurrencyDetails(currencyId);
 	}
@@ -275,14 +291,46 @@ public class MetaController {
 
 	// added by chetan 30/04/2018 list the country for currency.
 	@RequestMapping(value = MetaApi.EXCHANGE_RATE_CURRENCY_LIST, method = RequestMethod.GET)
-	public AmxApiResponse<CurrencyMasterDTO, Object> getAllExchangeRateCurrencyDetails() {
-		return currencyMasterService.getAllExchangeRateCurrencyList();
+	public AmxApiResponse<CurrencyMasterDTO, Object> getAllExchangeRateCurrencyDetails(
+			@RequestParam(value = "isActive", required = false, defaultValue = "false") Boolean isActive) {
+		return currencyMasterService.getAllExchangeRateCurrencyList(isActive);
 	}
 
 	@RequestMapping(value = "/currency/bycountry/{countryId}", method = RequestMethod.GET)
 	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyDetailsByCountryId(
 			@PathVariable("countryId") BigDecimal countryId) {
 		return currencyMasterService.getCurrencyByCountryId(countryId);
+	}
+
+	@RequestMapping(value = "/currency/byRoutingCountry/{countryId}", method = RequestMethod.GET)
+	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrenciesByRoutingCountryId(
+			@PathVariable("countryId") BigDecimal countryId) {
+
+		List<BankServiceRule> rules = bankService.getBankServiceRulesForCountry(countryId);
+
+		Map<BigDecimal, CurrencyMasterDTO> cusrrencies = new HashMap<BigDecimal, CurrencyMasterDTO>();
+
+		if (rules != null && !rules.isEmpty()) {
+
+			for (BankServiceRule rule : rules) {
+
+				CurrencyMasterMdlv1 currencyModel = rule.getCurrencyId();
+
+				if (!cusrrencies.containsKey(currencyModel.getCurrencyId())
+						&& currencyModel.getIsactive().equalsIgnoreCase("Y")) {
+					CurrencyMasterDTO dto = new CurrencyMasterDTO();
+					try {
+						BeanUtils.copyProperties(dto, currencyModel);
+					} catch (IllegalAccessException | InvocationTargetException e) {
+						LOGGER.error("convertModel  to convert currency", e);
+					}
+
+					cusrrencies.put(rule.getCurrencyId().getCurrencyId(), dto);
+				}
+			}
+		}
+
+		return AmxApiResponse.buildList(new ArrayList<CurrencyMasterDTO>(cusrrencies.values()));
 	}
 
 	@RequestMapping(value = "/purpose/{documentNumber}/{documentFinancialYear}", method = RequestMethod.GET)
@@ -292,8 +340,7 @@ public class MetaController {
 		return purposeOfRemittanceService.getPurposeOfRemittance(documentNumber, documentFinancialYear);
 	}
 
-	@RequestMapping(value = "/colldetview/{companyId}/{documentNo}/{documentFinancialYear}/{documentCode}",
-			method = RequestMethod.GET)
+	@RequestMapping(value = "/colldetview/{companyId}/{documentNo}/{documentFinancialYear}/{documentCode}", method = RequestMethod.GET)
 	public AmxApiResponse<CollectionDetailViewModel, Object> getCollectionDetailFromView(
 			@PathVariable("companyId") BigDecimal companyId, @PathVariable("documentNo") BigDecimal documentNo,
 			@PathVariable("documentFinancialYear") BigDecimal documentFinancialYear) {
@@ -301,8 +348,7 @@ public class MetaController {
 				ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
 	}
 
-	@RequestMapping(value = "/collpaydetview/{companyId}/{documentNo}/{documentFinancialYear}/{documentCode}",
-			method = RequestMethod.GET)
+	@RequestMapping(value = "/collpaydetview/{companyId}/{documentNo}/{documentFinancialYear}/{documentCode}", method = RequestMethod.GET)
 	public AmxApiResponse<CollectionPaymentDetailsViewModel, Object> getCollectPaymentDetailsFromView(
 			@PathVariable("companyId") BigDecimal companyId, @PathVariable("documentNo") BigDecimal documentNo,
 			@PathVariable("documentFinancialYear") BigDecimal documentFinancialYear) {
@@ -319,7 +365,8 @@ public class MetaController {
 	@RequestMapping(value = "/bank/{country-id}", method = RequestMethod.GET)
 	public AmxApiResponse<BankMasterDTO, Object> getAllCurrencyDetails(
 			@PathVariable("country-id") BigDecimal countryId) {
-		return bankMasterService.getBanksApiResponseByCountryId(countryId);
+		// return bankMasterService.getBanksApiResponseByCountryId(countryId);
+		return bankMasterService.getBankViewApiResponseByCountryId(countryId);
 	}
 
 	@RequestMapping(value = MetaApi.API_DISTRICTDESC, method = RequestMethod.GET)
@@ -436,31 +483,36 @@ public class MetaController {
 	public AmxApiResponse<ViewAreaDto, Object> getAreaList() {
 		return metaService.getAreaList();
 	}
-	
+
 	@RequestMapping(value = MetaApi.API_GOVERNATE_LIST, method = RequestMethod.GET)
 	public AmxApiResponse<ViewGovernateDto, Object> getGovernateList() {
 		return metaService.getGovernateList(metaData.getCountryId());
 	}
-	
+
 	@RequestMapping(value = MetaApi.API_GOVERNATE_AREA_LIST, method = RequestMethod.GET)
-	public AmxApiResponse<ViewGovernateAreaDto, Object> getGovernateAreaList(@RequestParam(value = "governateId", required = true) BigDecimal governateId) {
+	public AmxApiResponse<ViewGovernateAreaDto, Object> getGovernateAreaList(
+			@RequestParam(value = "governateId", required = true) BigDecimal governateId) {
 		return metaService.getGovernateAreaList(governateId);
 	}
-	
+
 	@RequestMapping(value = MetaApi.API_STATUS_LIST, method = RequestMethod.GET)
 	public AmxApiResponse<ViewStatusDto, Object> getStatusList() {
 		return metaService.getStatusList();
 	}
-	
+
 	@RequestMapping(value = MetaApi.API_COUNTRY_BRANCH_LIST, method = RequestMethod.GET)
 	public AmxApiResponse<CountryBranchDTO, Object> getCountryBranchList() {
 		return countryBranchService.getCountryBranchList();
 	}
-	
-	
-	
+
 	@RequestMapping(value = MetaApi.API_DECLARATION, method = RequestMethod.POST)
 	public AmxApiResponse<DeclarationDTO, Object> getDeclaration() {
 		return metaService.getDeclaration(metaData.getLanguageId());
+	}
+
+	@RequestMapping(value = MetaApi.SERVICE_MASTER, method = RequestMethod.POST)
+	public AmxApiResponse<ServiceMasterDTO, Object> getServiceMaster() {
+		List<ServiceMasterDTO> serviceMasterDTO = remittanceTransactionService.getServiceMaster();
+		return AmxApiResponse.buildList(serviceMasterDTO);
 	}
 }

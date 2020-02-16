@@ -1,15 +1,23 @@
 package com.amx.jax.branch.controller;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.fx.FxOrderBranchClient;
-import com.amx.jax.client.fx.IFxBranchOrderService.Path;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
@@ -26,16 +34,6 @@ import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.utils.PostManUtil;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
 

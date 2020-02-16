@@ -102,7 +102,9 @@ public class SWAdapterController {
 				.replace("${CARD_STATUS}", String.format("%s", aCardReaderService.getCardStatusValue()))
 				.replace("${DATA_STATUS}", String.format("%s", aCardReaderService.getDataStatusValue()))
 				.replace("${SERVER_URL}", String.format("%s", aCardReaderService.getServerUrl()))
-				.replace("${ADAPTER_VERSION}", String.format("%s", aCardReaderService.getVersion()))
+				.replace("${ADAPTER_VERSION}", String.format("%s-%s-%s-%s", 
+						aCardReaderService.getEnv(),aCardReaderService.getTnt(),
+						 aCardReaderService.getLane(), aCardReaderService.getVersion()))
 				.replace("${LOG}", String.format("%s", SWAdapterGUI.LOG));
 	}
 

@@ -1,7 +1,7 @@
 package com.amx.jax.serviceprovider.service;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.config.JaxProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.FileUploadTempModel;
 import com.amx.jax.dbmodel.JobProgressModel;
@@ -41,8 +42,6 @@ import com.amx.jax.response.serviceprovider.ServiceProviderPartnerDTO;
 import com.amx.jax.response.serviceprovider.ServiceProviderSummaryDTO;
 import com.amx.jax.serviceprovider.dao.ServiceProviderDao;
 import com.amx.jax.services.AbstractService;
-
-import oracle.jdbc.Const;
 
 
 @Component
@@ -61,7 +60,9 @@ public class ServiceProviderService extends AbstractService {
 	ServiceProviderTempUploadRepository serviceProviderTempUploadRepository;
 	@Autowired
 	JobProgressRepository jobProgressRepository;
-	
+	@Autowired
+	JaxProperties jaxProperties;
+
 	
 	public List<ServiceProviderPartnerDTO> getServiceProviderPartner() {
 		List<ServiceProviderPartner> serviceProviderPartner = serviceProviderDao.getServiceProviderPartner();
@@ -88,7 +89,10 @@ public class ServiceProviderService extends AbstractService {
 	public List<ServiceProviderSummaryDTO> uploadServiceProviderFile(MultipartFile file,Date fileDate,String tpcCode) throws Exception {
 		summaryValidations(fileDate, tpcCode);
 		JobProgressModel jobProgressModel = jobProgressRepository.findOne(tpcCode);
-
+		File newFile = null;
+		Workbook workbook = null;
+		List<ServiceProviderSummaryModel> serviceProviderSummaryModelList = null;
+		try {
 		if (!jobProgressModel.getUploadStatus().equalsIgnoreCase(ConstantDocument.JOB_COMPLETED)) {
 			throw new GlobalException(JaxError.JAX_JOB_IN_PROGRESS, "Please wait while upload is in progress");
 		}
@@ -102,15 +106,23 @@ public class ServiceProviderService extends AbstractService {
 
 		}
 		serviceProviderDao.deleteTemporaryData();
-		InputStream in = file.getInputStream();
+		/*InputStream in = file.getInputStream();
 		File currDir = new File(".");
 		String path = currDir.getAbsolutePath();
 		logger.info("FUll path is " + path);
 		String fileLocation = path.substring(0, path.length() - 1) + file.getOriginalFilename();
-		logger.info("File path is " + fileLocation);
+		logger.info("File path is " + fileLocation);*/
+		
+		String fileUploadLocation =jaxProperties.getDefUploadDir()+"/"+ file.getOriginalFilename();
+		logger.info("File path is "+fileUploadLocation);
+		newFile = new File(fileUploadLocation);
+		file.transferTo(newFile);
+		logger.debug("FIle exists or not "+newFile.exists());
 
+		
 		int i, j;
-		Workbook workbook = WorkbookFactory.create(file.getInputStream());
+		InputStream targetStream = new FileInputStream(newFile);
+		workbook = WorkbookFactory.create(targetStream);
 		LocalDate today = fileDate.toLocalDate();
 		int year = today.getYear();
 		int month = today.getMonthValue();
@@ -185,18 +197,22 @@ public class ServiceProviderService extends AbstractService {
 			fileRowList.add(fileUploadTempModel);
 
 		}
-
 		serviceProviderTempUploadRepository.save(fileRowList);
-		if (!jobProgressModel.getUploadStatus().equalsIgnoreCase(ConstantDocument.JOB_COMPLETED)) {
-			jobProgressModel.setUploadStatus(ConstantDocument.JOB_COMPLETED);
-			jobProgressRepository.save(jobProgressModel);
-		}
+		
+		
+		
 
 		serviceProviderDao.saveDataByProcedure(fileDate, tpcCode);
-		List<ServiceProviderSummaryModel> serviceProviderSummaryModelList = serviceProviderDao.getSummary();
-
-		workbook.close();
-
+		serviceProviderSummaryModelList = serviceProviderDao.getSummary();
+		}finally {
+			if (!jobProgressModel.getUploadStatus().equalsIgnoreCase(ConstantDocument.JOB_COMPLETED)) {
+				jobProgressModel.setUploadStatus(ConstantDocument.JOB_COMPLETED);
+				jobProgressRepository.save(jobProgressModel);
+			}
+			workbook.close();
+			newFile.delete();
+		}
+		
 		return (convertServiceProviderSummary(serviceProviderSummaryModelList));
 		
 	}

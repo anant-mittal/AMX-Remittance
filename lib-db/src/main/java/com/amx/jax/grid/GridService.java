@@ -45,42 +45,78 @@ public class GridService {
 		PaginationCriteria pagination = dataTableInRQ.getPaginationRequest();
 		String paginatedQuery = GridUtil.buildPaginatedQueryForOracle(baseQuery, pagination,
 				gridQuery.isPaginated() && GridViewRecord.class.isAssignableFrom(gridViewRecordClass),
-				gridInfo.isCustomeQuery(),gridInfo);
-		LOGGER.debug(paginatedQuery);
-		Query query = entityManager.createNativeQuery(paginatedQuery, gridViewRecordClass);
+				gridInfo.isCustomeQuery(), gridInfo);
+		try {
+			LOGGER.debug(paginatedQuery);
+			Query query = entityManager.createNativeQuery(paginatedQuery, gridViewRecordClass);
+			return new GridViewBuilder<T>(query, dataTableInRQ).queryStr(paginatedQuery).gridView(gridView);
+		} catch (Exception e) {
+			LOGGER.error("GridViewError V:{} Q {}", gridView, paginatedQuery);
+			throw e;
+		}
 
-		return new GridViewBuilder<T>(query, dataTableInRQ);
+	}
 
+	public <T> GridViewBuilder<T> view(GridView gridView,
+			String sqlQuery) {
+		@SuppressWarnings("unchecked")
+		GridInfo<T> gridInfo = (GridInfo<T>) GridViewFactory.get(gridView);
+		Class<T> gridViewRecordClass = gridInfo.getResultClass();
+		try {
+			LOGGER.debug(sqlQuery);
+			Query query = entityManager.createNativeQuery(sqlQuery, gridViewRecordClass);
+			return new GridViewBuilder<T>(query, null).queryStr(sqlQuery).gridView(gridView);
+		} catch (Exception e) {
+			LOGGER.error("GridViewError V:{} Q {}", gridView, sqlQuery);
+			throw e;
+		}
 	}
 
 	public static class GridViewBuilder<T> {
 		Query query;
 		DataTableRequest dataTableRequest;
+		String queryStr;
+		GridView gridView;
 
 		GridViewBuilder(Query query, DataTableRequest dataTableRequest) {
 			this.query = query;
 			this.dataTableRequest = dataTableRequest;
 		}
 
-		public AmxApiResponse<T, GridMeta> get() {
+		public GridViewBuilder<T> queryStr(String queryStr) {
+			this.queryStr = queryStr;
+			return this;
+		}
 
-			@SuppressWarnings("unchecked")
-			List<T> userList = query.getResultList();
-			GridMeta meta = new GridMeta();
-			if (!ArgUtil.isEmpty(userList)) {
-				T firstElement = userList.get(0);
-				int totalRecords = 0;
-				if (firstElement instanceof GridViewRecord) {
-					totalRecords = ((GridViewRecord) firstElement).getTotalRecords();
+		public GridViewBuilder<T> gridView(GridView gridView) {
+			this.gridView = gridView;
+			return this;
+		}
+
+		public AmxApiResponse<T, GridMeta> get() {
+			try {
+				@SuppressWarnings("unchecked")
+				List<T> userList = query.getResultList();
+				GridMeta meta = new GridMeta();
+				if (!ArgUtil.isEmpty(userList)) {
+					T firstElement = userList.get(0);
+					int totalRecords = 0;
+					if (firstElement instanceof GridViewRecord) {
+						totalRecords = ((GridViewRecord) firstElement).getTotalRecords();
+					}
+					meta.setRecordsTotal(ArgUtil.parseAsString(totalRecords));
+					if (dataTableRequest!=null && dataTableRequest.getPaginationRequest().isFilterByEmpty()) {
+						meta.setRecordsFiltered(ArgUtil.parseAsString(totalRecords));
+					} else {
+						meta.setRecordsFiltered(ArgUtil.parseAsString(userList.size()));
+					}
 				}
-				meta.setRecordsTotal(ArgUtil.parseAsString(totalRecords));
-				if (dataTableRequest.getPaginationRequest().isFilterByEmpty()) {
-					meta.setRecordsFiltered(ArgUtil.parseAsString(totalRecords));
-				} else {
-					meta.setRecordsFiltered(ArgUtil.parseAsString(userList.size()));
-				}
+				return AmxApiResponse.buildList(userList, meta);
+			} catch (Exception e) {
+				LOGGER.error("GridViewError V:{} Q {}", gridView, queryStr);
+				throw e;
 			}
-			return AmxApiResponse.buildList(userList, meta);
+
 		}
 
 	}

@@ -67,19 +67,13 @@ public class RateAlertClient extends AbstractJaxServiceClient {
 	}
 
 	public ApiResponse<RateAlertDTO> getRateAlertForCustomer() {
-		try {
+		
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			String url = this.getBaseUrl() + RATE_ALERT_ENDPOINT + "/get/for/customer";
 			return restService.ajax(url).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<RateAlertDTO>>() {
 					});
-		} catch (Exception e) {
-			if (e instanceof AbstractJaxException) {
-				throw e;
-			} else {
-				throw new JaxSystemError();
-			}
-		} // end of try-catch
+		
 	}
 
 	public ApiResponse<RateAlertDTO> getAllRateAlert() {

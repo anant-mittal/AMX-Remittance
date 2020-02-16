@@ -1,6 +1,7 @@
 package com.amx.jax.rbaac;
 
 import java.math.BigDecimal;
+
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.dict.UserClient.ClientType;
@@ -14,6 +15,7 @@ import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.request.UserRoleMappingsRequestDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
+import com.amx.jax.rbaac.dto.response.OfflineOtpData;
 import com.amx.jax.rbaac.dto.response.PermissionResposeDTO;
 import com.amx.jax.rbaac.dto.response.RoleMappingForEmployee;
 import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
@@ -81,6 +83,8 @@ public interface IRbaacService {
 		public static final String DEVICE_REG = DEVICE_PREFIX + "/register";
 		public static final String DEVICE_GET_DEVICE_REG_ID = DEVICE_PREFIX + "/get-deviceregid";
 		public static final String DEVICE_GET_DEVICE_BY_DEVICE_REG_ID = DEVICE_PREFIX + "/get-device";
+		public static final String FIND_DEVICES_BY_TERMINAL = DEVICE_PREFIX + "/find-devices-by-terminal";
+		public static final String FIND_DEVICES_BY_ID = DEVICE_PREFIX + "/find-devices-by-id";
 		public static final String NOTP_VERIFY = DEVICE_PREFIX + "/notp/verify";
 		public static final String DEVICE_DELETE = DEVICE_PREFIX + "/delete";
 
@@ -90,15 +94,22 @@ public interface IRbaacService {
 
 		public static final String EMPLOYEE_SYSTEM_MAPPING_CREATE = SERVICE_PREFIX + API_VERSION_V1
 				+ "/employee-system/create";
+		
+		public static final String GENERATE_OFFLINE_OTP_PREFIX = SERVICE_PREFIX + API_VERSION_V1
+				+ "/generate-offline-otp-prefix";
+		public static final String VALIDATE_OFFLINE_OTP = SERVICE_PREFIX + API_VERSION_V1
+				+ "/validate-offline-otp";
 
 	}
 
 	public static class Params {
 
 		public static final String TERMINAL_ID = "countryBranchSystemInventoryId";
+		public static final String TERMINAL_IP = "countryBranchSystemInventoryIp";
 		public static final String EMPLOYEE_ID = "employeeId";
 		public static final String DEVICE_TYPE = "deviceType";
 		public static final String DEVICE_REG_ID = "deviceRegId";
+		public static final String DEVICE_CLIENT_ID = "deviceId";
 		public static final String SESSION_TOKEN = "sessionToken";
 		public static final String PAIRE_TOKEN = "paireToken";
 		public static final String DEVICE_CLIENT_TYPE = "deviceClientType";
@@ -288,11 +299,19 @@ public interface IRbaacService {
 
 	AmxApiResponse<BoolRespModel, Object> createEmployeeSystemMapping(BigDecimal employeeId,
 			BigDecimal countryBranchSystemInventoryId);
-
+	
 	public AmxApiResponse<NotpDTO, Object> verifyOTP(NotpDTO notpDTO);
 
 	public AmxApiResponse<DeviceDto, Object> getDeviceByDeviceRegId(BigDecimal deviceRegId);
+	
+	public AmxApiResponse<DeviceDto, Object> getDevicesByTerminal(BigDecimal terminalId,String terminalIp);
 
-	AmxApiResponse<BoolRespModel, Object> deleteDevice(Integer deviceRegId);
+	public AmxApiResponse<DeviceDto, Object> getDevicesByRegId(BigDecimal deviceRegId, String deviceId);
+
+	public AmxApiResponse<BoolRespModel, Object> deleteDevice(Integer deviceRegId);
+
+	public AmxApiResponse<OfflineOtpData, Object> generateOfflineOtpPrefix(BigDecimal employeeId);
+
+	public AmxApiResponse<BoolRespModel, Object> validateOfflineOtp(BigDecimal employeeId, String otp);
 
 }

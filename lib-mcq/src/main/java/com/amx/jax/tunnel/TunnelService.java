@@ -15,7 +15,6 @@ import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
-import com.amx.jax.tunnel.sample.SampleTunnelEventsDict;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -45,7 +44,7 @@ public class TunnelService implements ITunnelService {
 			LOGGER.error("No Redissson Client Instance Available");
 			return 0L;
 		}
-		RTopic<TunnelMessage<T>> topicQueue = redisson.getTopic(TunnelEventXchange.SHOUT_LISTNER.getTopic(topic));
+		RTopic topicQueue = redisson.getTopic(TunnelEventXchange.SHOUT_LISTNER.getTopic(topic));
 		long startTime = System.currentTimeMillis();
 
 		AppContextUtil.setTraceTime(startTime);
@@ -100,7 +99,7 @@ public class TunnelService implements ITunnelService {
 		message.setTopic(topic);
 
 		RQueue<TunnelMessage<T>> queue = redisson.getQueue(TunnelEventXchange.SEND_LISTNER.getQueue(topic));
-		RTopic<TunnelMessage<T>> topicQueue = redisson.getTopic(TunnelEventXchange.SEND_LISTNER.getTopic(topic));
+		RTopic topicQueue = redisson.getTopic(TunnelEventXchange.SEND_LISTNER.getTopic(topic));
 
 		AuditServiceClient.trackStatic(
 				new RequestTrackEvent(RequestTrackEvent.Type.PUB_OUT, TunnelEventXchange.SEND_LISTNER, message));
@@ -113,16 +112,16 @@ public class TunnelService implements ITunnelService {
 	 * : TASK_WORKER & TASK_LISTNER
 	 * 
 	 * 
-	 * Multiple TASK_LISTNER can listner to event and act upon, but only one of the
-	 * workeres will recieve event
+	 * Multiple TASK_LISTNER can listen to event and act upon, but only one of the
+	 * workers will receive the event
 	 * 
 	 * 
 	 * @param topic          - name of task
 	 * @param messagePayload - data to be used for task
 	 * @return - unique message id
 	 * 
-	 * @reliable true
-	 * @uniqueness only one WORKER and multple LISTNERS will execute per event
+	 * @reliable true for workers
+	 * @uniqueness only one WORKER and multiple LISTNERS will execute per event
 	 */
 	@Override
 	public <T> long task(String topic, T messagePayload) {
@@ -134,8 +133,8 @@ public class TunnelService implements ITunnelService {
 		message.setTopic(topic);
 
 		RQueue<TunnelMessage<T>> queue = redisson.getQueue(TunnelEventXchange.TASK_WORKER.getQueue(topic));
-		RTopic<String> topicQueue = redisson.getTopic(TunnelEventXchange.TASK_WORKER.getTopic(topic));
-		RTopic<TunnelMessage<T>> taskListnerPublisher = redisson
+		RTopic taskWorkerTopic = redisson.getTopic(TunnelEventXchange.TASK_WORKER.getTopic(topic));
+		RTopic taskListnerPublisher = redisson
 				.getTopic(TunnelEventXchange.TASK_LISTNER.getTopic(topic));
 
 		AuditServiceClient.trackStatic(
@@ -143,7 +142,7 @@ public class TunnelService implements ITunnelService {
 		debugEvent(message);
 		queue.add(message);
 		taskListnerPublisher.publish(message);
-		return topicQueue.publish(message.getId());
+		return taskWorkerTopic.publish(message.getId());
 	}
 
 	public static <T> void debugEvent(TunnelMessage<T> message) {
@@ -197,12 +196,8 @@ public class TunnelService implements ITunnelService {
 		RQueue<TunnelMessage<T>> queue = redisson.getQueue(TunnelEventXchange.AUDIT.getQueue(topic));
 		queue.add(message);
 
-		RTopic<String> topicQueue = redisson.getTopic(TunnelEventXchange.AUDIT.getTopic(topic));
+		RTopic topicQueue = redisson.getTopic(TunnelEventXchange.AUDIT.getTopic(topic));
 		return topicQueue.publish(message.getId());
-	}
-
-	public void sayHello() {
-		this.shout(SampleTunnelEventsDict.Names.TEST_TOPIC, "Hey There");
 	}
 
 	@Override

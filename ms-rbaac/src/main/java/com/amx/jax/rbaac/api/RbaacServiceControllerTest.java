@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
@@ -22,6 +23,7 @@ import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.request.UserRoleMappingsRequestDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
+import com.amx.jax.rbaac.dto.response.OfflineOtpData;
 import com.amx.jax.rbaac.dto.response.PermissionResposeDTO;
 import com.amx.jax.rbaac.dto.response.RoleMappingForEmployee;
 import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
@@ -44,7 +46,7 @@ public class RbaacServiceControllerTest implements IRbaacService {
 	/** The rbaac service client. */
 	@Autowired
 	RbaacServiceClient rbaacServiceClient;
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -250,6 +252,30 @@ public class RbaacServiceControllerTest implements IRbaacService {
 	public AmxApiResponse<BoolRespModel, Object> deleteDevice(Integer deviceRegId) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public AmxApiResponse<DeviceDto, Object> getDevicesByTerminal(BigDecimal terminalId, String terminalIp) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.FIND_DEVICES_BY_ID, method = RequestMethod.GET)
+	public AmxApiResponse<DeviceDto, Object> getDevicesByRegId(
+			@RequestParam(name = Params.DEVICE_REG_ID, required=false) BigDecimal deviceRegId, 
+			@RequestParam(name = Params.DEVICE_CLIENT_ID, required=false) String deviceId) {
+		return rbaacServiceClient.getDevicesByRegId( deviceRegId, deviceId);
+	}
+
+	@Override
+	public AmxApiResponse<OfflineOtpData, Object> generateOfflineOtpPrefix(BigDecimal employeeId) {
+		return rbaacServiceClient.generateOfflineOtpPrefix(employeeId);
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> validateOfflineOtp(BigDecimal employeeId, String otp) {
+		return rbaacServiceClient.validateOfflineOtp(employeeId, otp);
 	}
 
 }

@@ -11,7 +11,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.h2.mvstore.ConcurrentArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,16 +23,15 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.AddAdditionalBankDataDto;
 import com.amx.amxlib.meta.model.AddDynamicLabel;
 import com.amx.amxlib.meta.model.AdditionalBankDetailsViewDto;
-import com.amx.amxlib.meta.model.PurposeTrnxAmicDescDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.LanguageCodeType;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.LanguageType;
 import com.amx.jax.dbmodel.PurposeTrnxAmicDesc;
-import com.amx.jax.dbmodel.fx.FxOrderTransactionModel;
 import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
@@ -41,7 +39,6 @@ import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.IRemitTransReqPurpose;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
-import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.repository.IAdditionalBankDetailsDao;
 import com.amx.jax.repository.IAdditionalBankRuleMapDao;
 import com.amx.jax.repository.IAdditionalDataDisplayDao;
@@ -95,7 +92,8 @@ public class PurposeOfTransactionService extends AbstractService {
 		try {
 			listAdditionalBankDataTable = new ArrayList<>();
 			listDynamicLabel = new ArrayList<>();
-			List<AdditionalDataDisplayView> serviceAppRuleList = additionalDataDisplayDao.getAdditionalDataFromServiceApplicability(applicationCountryId, countryId, currencyId,remittanceModeId, deliveryModeId,IAdditionalDataDisplayDao.flexiFieldIn);
+			List<AdditionalDataDisplayView> serviceAppRuleList = additionalDataDisplayDao.getAdditionalDataFromServiceApplicability(applicationCountryId, countryId, currencyId,remittanceModeId, deliveryModeId,IAdditionalDataDisplayDao.flexiFieldIn,
+					ConstantDocument.No);
 			if (!serviceAppRuleList.isEmpty()) {
 				for (AdditionalDataDisplayView serviceRule : serviceAppRuleList) {
 					AddDynamicLabel addDynamic = new AddDynamicLabel();
@@ -259,7 +257,7 @@ public class PurposeOfTransactionService extends AbstractService {
 		try {
 			BeanUtils.copyProperties(dto, viewModel);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			logger.error("bene list display", e);
+			logger.debug("bene list display", e);
 		}
 		return dto;
 	}

@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.swagger.MockParamBuilder.MockParam;
@@ -43,8 +44,16 @@ public class DefaultSwaggerConfig {
 	public static final String SWGGER_SECRET_PARAM = "x-swagger-key";
 	public static final String SWGGER_SECRET_VALUE = UniqueID.generateString();
 
+	@Autowired(required = false)
+	DocketWrapper docketWrapper;
+
 	@Bean
 	public Docket productApi(List<MockParam> mockParams) {
+
+		if (docketWrapper != null && docketWrapper.getDocket() != null) {
+			return docketWrapper.getDocket();
+		}
+
 		Docket docket = new Docket(DocumentationType.SWAGGER_2)
 				.select()
 				.apis(RequestHandlerSelectors.basePackage("com.amx.jax"))
@@ -66,12 +75,15 @@ public class DefaultSwaggerConfig {
 
 			operationParameters.add(parameter);
 		}
+		AppContextUtil.getSessionId(true);
+		AppContextUtil.getTraceId(true,true);
 
 		operationParameters.add(new ParameterBuilder().name(AppConstants.TRANX_ID_XKEY).description("Transaction Id")
-				.defaultValue("TST-1d59nub55kbgg-1d59nub5827sx")
+				.defaultValue(
+						AppContextUtil.getTraceId())
 				.modelRef(new ModelRef(PARAM_STRING)).parameterType(PARAM_HEADER).required(false).build());
 		operationParameters.add(new ParameterBuilder().name(AppConstants.TRACE_ID_XKEY).description("Trace Id")
-				.defaultValue("TST-1d59nub55kbgg-1d59nub5827sx")
+				.defaultValue(AppContextUtil.getTraceId())
 				.modelRef(new ModelRef(PARAM_STRING)).parameterType(PARAM_HEADER).required(false).build());
 		docket.globalOperationParameters(operationParameters);
 		docket.apiInfo(metaData());
@@ -106,5 +118,17 @@ public class DefaultSwaggerConfig {
 				"Terms of service",
 				new Contact("Lalit Tanwar", "https://springframework.guru/about/", "lalit.tanwar@almullaexchange.com"),
 				"Apache License Version 2.0", "https://www.apache.org/licenses/LICENSE-2.0");
+	}
+
+	public static class DocketWrapper {
+		Docket docket;
+
+		public DocketWrapper(Docket docket) {
+			this.docket = docket;
+		}
+
+		public Docket getDocket() {
+			return docket;
+		}
 	}
 }

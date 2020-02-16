@@ -39,6 +39,9 @@ public class PostManConfig {
 	@TenantValue("${slack.channel.genral.tnt}")
 	private String channelGenral;
 
+	@Value("${app.telegram.enabled}")
+	private boolean telegramEnabled;
+
 	@Autowired
 	TenantProperties tenantProperties;
 	private Map<Channel, String> channelMap = null;
@@ -84,10 +87,13 @@ public class PostManConfig {
 	 * @return the local
 	 */
 	public Locale getLocal(File file) {
-		if (file == null || file.getLang() == null) {
-			return new Locale(tenantLang.getCode());
+		if (file != null && file.getLang() != null) {
+			return new Locale(file.getLang().getCode());
 		}
-		return new Locale(file.getLang().getCode());
+		if (tenantLang != null) {
+			new Locale(tenantLang.getCode());
+		}
+		return new Locale(Language.EN.getCode());
 	}
 
 	public Locale getLocal(Message msg) {
@@ -235,6 +241,10 @@ public class PostManConfig {
 
 	public void setEmailRetryPoll(Integer emailRetryPoll) {
 		this.emailRetryPoll = emailRetryPoll;
+	}
+
+	public boolean isTelegramEnabled() {
+		return telegramEnabled;
 	}
 
 }

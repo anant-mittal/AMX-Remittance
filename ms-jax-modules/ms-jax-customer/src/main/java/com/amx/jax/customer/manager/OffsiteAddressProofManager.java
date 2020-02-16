@@ -23,7 +23,6 @@ import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.customer.service.CustomerService;
-import com.amx.jax.customer.service.OffsitCustRegService;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.FieldListDao;

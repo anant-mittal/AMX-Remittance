@@ -1,8 +1,7 @@
 package com.amx.jax.config;
 
-import java.util.Date;
+import java.math.BigDecimal;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.scope.TenantScoped;
@@ -79,6 +78,36 @@ public class JaxTenantProperties {
 	
 	@TenantValue("${signature.algorithem}")
 	private String sigAlgorithem;
+	
+	@TenantValue("${jax.max.loyalty.count}")
+	private BigDecimal loyaltyCount;
+	
+	@TenantValue("${support.online.email}")
+	String supportOnlineEmail;
+
+	@TenantValue("${jax.max.link.count}")
+	private Integer directLinkCount;
+
+	@TenantValue("${jax.verify.link.limit.attempt}")
+	private Integer verificationAttemptLimit;
+
+	@TenantValue("${jax.verify.link.valid.hours}")
+	private Integer verificationValidHours;
+	
+	@TenantValue("${jax.verify.link.resend.minute}")
+	private Integer verificationResendAfterMinutes;
+
+	@TenantValue("${jax.authfailog.interval}")
+	private Integer authFailLogInterval;
+	
+	@TenantValue("${jax.authfaillog.attempts}")
+	private Integer authFailLogAttemps;
+
+	@TenantValue("${jax.authfaillog.blocktime}")
+	private Integer authFailBlocktime;
+	
+	@TenantValue("${support.itops.email}")
+	private String itOpsEmail;
 
 	public Boolean getCashDisable() {
 		return cashDisable;
@@ -218,6 +247,71 @@ public class JaxTenantProperties {
 
 	}
 
+	public BigDecimal getLoyaltyCount() {
+		return loyaltyCount;
+	}
 
+	public void setLoyaltyCount(BigDecimal loyaltyCount) {
+		this.loyaltyCount = loyaltyCount;
+	}
 
+	public String getSupportOnlineEmail() {
+		return supportOnlineEmail;
+	}
+	
+	public Integer getAuthFailLogInterval() {
+		return authFailLogInterval;
+	}
+
+	public void setSupportOnlineEmail(String supportOnlineEmail) {
+		this.supportOnlineEmail = supportOnlineEmail;
+	}
+	
+	public void setAuthFailLogInterval(Integer authFailLogInterval) {
+		this.authFailLogInterval = authFailLogInterval;
+	}
+
+	public Integer getVerificationAttemptLimit() {
+		return verificationAttemptLimit;
+	}
+
+	public Integer getVerificationResendAfterMinutes() {
+		return verificationResendAfterMinutes;
+	}
+
+	public Integer getVerificationValidHours() {
+		return verificationValidHours;
+	}
+
+	public void setAuthFailBlocktime(Integer authFailBlocktime) {
+		this.authFailBlocktime = authFailBlocktime;
+	}
+
+	public String getItOpsEmail() {
+		return itOpsEmail;
+	}
+
+	public void setItOpsEmail(String itOpsEmail) {
+		this.itOpsEmail = itOpsEmail;
+	}
+
+	public Integer getAuthFailLogAttemps() {
+		return authFailLogAttemps;
+	}
+
+	public void setAuthFailLogAttemps(Integer authFailLogAttemps) {
+		this.authFailLogAttemps = authFailLogAttemps;
+	}
+
+	public Integer getAuthFailBlocktime() {
+		return authFailBlocktime;
+	}
+
+	public Integer getDirectLinkCount() {
+		return directLinkCount;
+	}
+
+	public void setDirectLinkCount(Integer directLinkCount) {
+		this.directLinkCount = directLinkCount;
+	}
 }

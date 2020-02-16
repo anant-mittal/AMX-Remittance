@@ -50,6 +50,9 @@ public class ExOwsLoginCredentials implements Serializable
 	
 	@Column(name = "FLEXIFIELD1")
 	String flexiField1;
+	
+	@Column(name = "FLEXIFIELD2")
+	String flexiField2;
 
 	public String getApplicationCountry()
 	{
@@ -120,4 +123,14 @@ public class ExOwsLoginCredentials implements Serializable
 	{
 		this.flexiField1 = flexiField1;
 	}
+
+	public String getFlexiField2() {
+		return flexiField2;
+	}
+
+	public void setFlexiField2(String flexiField2) {
+		this.flexiField2 = flexiField2;
+	}
+	
+	
 }

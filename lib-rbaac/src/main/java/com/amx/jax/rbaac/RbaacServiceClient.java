@@ -26,6 +26,7 @@ import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.request.UserRoleMappingsRequestDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
+import com.amx.jax.rbaac.dto.response.OfflineOtpData;
 import com.amx.jax.rbaac.dto.response.PermissionResposeDTO;
 import com.amx.jax.rbaac.dto.response.RoleMappingForEmployee;
 import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
@@ -355,6 +356,44 @@ public class RbaacServiceClient implements IRbaacService {
 		LOGGER.debug("in deleteDevice");
 		String url = appConfig.getAuthURL() + ApiEndPoints.DEVICE_DELETE;
 		return restService.ajax(url).field(Params.DEVICE_REG_ID, deviceRegId).postForm()
+				.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<DeviceDto, Object> getDevicesByTerminal(BigDecimal terminalId, String terminalIp) {
+		LOGGER.debug("get devices by terminal");
+		String url = appConfig.getAuthURL() + ApiEndPoints.FIND_DEVICES_BY_TERMINAL;
+		return restService.ajax(url).queryParam(Params.TERMINAL_ID, terminalId)
+				.queryParam(Params.TERMINAL_IP, terminalIp).get()
+				.as(new ParameterizedTypeReference<AmxApiResponse<DeviceDto, Object>>() {
+		});
+	}
+
+	@Override
+	public AmxApiResponse<DeviceDto, Object> getDevicesByRegId(BigDecimal deviceRegId, String deviceId) {
+		LOGGER.debug("get devices by device");
+		String url = appConfig.getAuthURL() + ApiEndPoints.FIND_DEVICES_BY_ID;
+		return restService.ajax(url).queryParam(Params.DEVICE_REG_ID, deviceRegId)
+				.queryParam(Params.DEVICE_CLIENT_ID, deviceId).get()
+				.as(new ParameterizedTypeReference<AmxApiResponse<DeviceDto, Object>>() {
+		});
+	}
+
+	@Override
+	public AmxApiResponse<OfflineOtpData, Object> generateOfflineOtpPrefix(BigDecimal employeeId) {
+		LOGGER.debug("in generateOfflineOtpPrefix");
+		String url = appConfig.getAuthURL() + ApiEndPoints.GENERATE_OFFLINE_OTP_PREFIX;
+		return restService.ajax(url).queryParam(Params.EMPLOYEE_ID, employeeId).get()
+				.as(new ParameterizedTypeReference<AmxApiResponse<OfflineOtpData, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> validateOfflineOtp(BigDecimal employeeId, String otp) {
+		LOGGER.debug("in validateOfflineOtp");
+		String url = appConfig.getAuthURL() + ApiEndPoints.VALIDATE_OFFLINE_OTP;
+		return restService.ajax(url).queryParam(Params.EMPLOYEE_ID, employeeId).queryParam(Params.OTP, otp).get()
 				.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 				});
 	}

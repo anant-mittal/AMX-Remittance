@@ -15,19 +15,25 @@ import org.springframework.scheduling.annotation.Async;
 import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dict.Language;
+import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.event.AmxTunnelEvents;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.client.PushNotifyClient;
+import com.amx.jax.postman.client.WhatsAppClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.PushMessage;
+import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.tunnel.DBEvent;
 import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.jax.userservice.manager.CustomerFlagManager;
+import com.amx.jax.util.CommunicationPrefsUtil;
+import com.amx.jax.util.CommunicationPrefsUtil.CommunicationPrefsResult;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.DateUtil;
 import com.amx.utils.JsonUtil;
@@ -36,9 +42,7 @@ import com.amx.utils.JsonUtil;
 public class GigInsurancePendingTrnxListener implements ITunnelSubscriber<DBEvent> {
 	@Autowired
 	PostManService postManService;
-
 	
-
 	@Autowired
 	CustomerRepository customerRepository;
 
@@ -47,6 +51,12 @@ public class GigInsurancePendingTrnxListener implements ITunnelSubscriber<DBEven
 	
 	@Autowired
 	PushNotifyClient pushNotifyClient;
+	
+	@Autowired
+	CommunicationPrefsUtil communicationPrefsUtil;
+	
+	@Autowired
+	WhatsAppClient whatsAppClient;
 	
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
@@ -60,26 +70,18 @@ public class GigInsurancePendingTrnxListener implements ITunnelSubscriber<DBEven
 
 		LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
 		
-		LOGGER.info("Data from db is "+event.getData());
+		
 		BigDecimal custId = ArgUtil.parseAsBigDecimal(event.getData().get(CUST_ID));
-		LOGGER.info("customer id is "+custId);
+		
 		String policyValidityDateStr= ArgUtil.parseAsString(event.getData().get(VALIDITY_DT));
 		Date policyValidityDate = DateUtil.parseDateDBEvent(policyValidityDateStr);
-		
-		LOGGER.info("policy start date is "+policyValidityDate);
-		
-		
 		String langId = ArgUtil.parseAsString(event.getData().get(LANG_ID));
-		LOGGER.info("language id is "+langId);
-		
 		BigDecimal noOfTrnx = ArgUtil.parseAsBigDecimal(event.getData().get(NO_OF_TRNX));
-		LOGGER.info("no of transactions is "+noOfTrnx);
-		
 		SimpleDateFormat formatter = new SimpleDateFormat("dd-MMMM-yyyy"); 
 		String policyValidDate = formatter.format(policyValidityDate) ;
 		
 		Customer c = customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
-		LOGGER.info("Customer object is " + c.toString());
+		
 		String emailId = c.getEmail();
 
 		String custName;
@@ -89,22 +91,18 @@ public class GigInsurancePendingTrnxListener implements ITunnelSubscriber<DBEven
 		} else {
 			custName = c.getFirstName() + ' ' + c.getMiddleName() + ' ' + c.getLastName();
 		}
-
-		LOGGER.info("policy start date is   " + policyValidDate);
+		CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(CommunicationEvents.GIG_PENDING_TRNX, c);
+		
 		Map<String, Object> wrapper = new HashMap<String, Object>();
 		Map<String, Object> modeldata = new HashMap<String, Object>();
 		modeldata.put("to", emailId);
 		modeldata.put("customer", custName);
 		modeldata.put("numoftrnx", noOfTrnx);
 		modeldata.put("policyvaliddate", policyValidDate);
-
-		for (Map.Entry<String, Object> entry : modeldata.entrySet()) {
-			LOGGER.info("KeyModel = " + entry.getKey() + ", ValueModel = " + entry.getValue());
-		}
-
 		wrapper.put("data", modeldata);
-		LOGGER.info("email is is " + emailId);
-		if (!ArgUtil.isEmpty(emailId)) {
+		
+		
+		if (communicationPrefsResult.isEmail()) {
 
 			Email email = new Email();
 			if ("2".equals(langId)) {
@@ -114,11 +112,9 @@ public class GigInsurancePendingTrnxListener implements ITunnelSubscriber<DBEven
 				email.setLang(Language.EN);
 				modeldata.put("languageid", Language.EN);
 			}
-			for (Map.Entry<String, Object> entry : wrapper.entrySet()) {
-				LOGGER.info("KeyModelWrap = " + entry.getKey() + ", ValueModelWrap = " + entry.getValue());
-			}
+			
 			LOGGER.info("Json value of wrapper is " + JsonUtil.toJson(wrapper));
-			LOGGER.info("Wrapper data is {}", wrapper.get("data"));
+			
 			email.setModel(wrapper);
 			email.addTo(emailId);
 			email.setHtml(true);
@@ -127,12 +123,25 @@ public class GigInsurancePendingTrnxListener implements ITunnelSubscriber<DBEven
 
 			sendEmail(email);
 		}
+		
+		if(communicationPrefsResult.isSms()) {
+			SMS sms = new SMS();
+			sms.setModel(wrapper);
+			sms.addTo(c.getPrefixCodeMobile()+c.getMobile());
+			sms.setITemplate(TemplatesMX.POLICY_PENDING_TRNX);
+			postManService.sendSMSAsync(sms);
+		}
+		
+		if(communicationPrefsResult.isWhatsApp()) {
+			WAMessage waMessage = new WAMessage();
+			waMessage.setModel(wrapper);
+			waMessage.addTo(c.getWhatsappPrefix()+c.getWhatsapp());
+			waMessage.setITemplate(TemplatesMX.POLICY_PENDING_TRNX);
+			whatsAppClient.send(waMessage);
+		}
 
-		if(!ArgUtil.isEmpty(custId)){
+		if(!ArgUtil.isEmpty(custId)&&communicationPrefsResult.isPushNotify()){
 			PushMessage pushMessage = new PushMessage();
-
-			
-
 			pushMessage.setITemplate(TemplatesMX.POLICY_PENDING_TRNX);
 			pushMessage.addToUser(custId);
 			pushMessage.setModel(wrapper);

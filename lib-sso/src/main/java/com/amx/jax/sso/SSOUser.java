@@ -1,6 +1,7 @@
 package com.amx.jax.sso;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 import javax.servlet.http.Cookie;
 
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.rbaac.dto.UserClientDto;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
@@ -34,12 +36,21 @@ public class SSOUser implements Serializable {
 
 	private String terminalId;
 
+	private String terminalIp;
+
+	private ClientType clientType;
+
 	private boolean authDone = false;
 	private String tranxId;
 	private Long loginTime;
 	private EmployeeDetailsDTO userDetails = null;
 
 	private UserClientDto userClient;
+
+	UUID outlookState;
+	UUID outlookNonce;
+	String outlookAuthCode;
+	String outlookIdToken;
 
 	public String getUserId() {
 		if (userDetails == null) {
@@ -162,6 +173,62 @@ public class SSOUser implements Serializable {
 	 */
 	public void setTerminalId(String terminalId) {
 		this.terminalId = terminalId;
+	}
+
+	public String getTerminalIp() {
+		return terminalIp;
+	}
+
+	public void setTerminalIp(String terminalIp) {
+		this.terminalIp = terminalIp + ",0:0:0:0:0:0:0:1";
+	}
+
+	public void setTerminalIp(String terminalIp, String terminalIp2) {
+		this.terminalIp = terminalIp + ",0:0:0:0:0:0:0:1," + terminalIp2;
+	}
+
+	public void setTerminalIp(String terminalIp, String terminalIp2, String terminalIp3) {
+		this.terminalIp = terminalIp + "," + terminalIp2 + ",0:0:0:0:0:0:0:1," + terminalIp3;
+	}
+
+	public UUID getOutlookState() {
+		return outlookState;
+	}
+
+	public void setOutlookState(UUID outlookState) {
+		this.outlookState = outlookState;
+	}
+
+	public UUID getOutlookNonce() {
+		return outlookNonce;
+	}
+
+	public void setOutlookNonce(UUID outlookNonce) {
+		this.outlookNonce = outlookNonce;
+	}
+
+	public String getOutlookAuthCode() {
+		return outlookAuthCode;
+	}
+
+	public void setOutlookAuthCode(String outlookAuthCode) {
+		this.outlookAuthCode = outlookAuthCode;
+	}
+
+	public String getOutlookIdToken() {
+		return outlookIdToken;
+	}
+
+	public void setOutlookIdToken(String outlookIdToken) {
+		this.outlookIdToken = outlookIdToken;
+	}
+
+	public ClientType getClientType() {
+		return clientType;
+	}
+
+	public void setClientType(ClientType clientType) {
+		this.clientType = clientType;
 	}
 
 }

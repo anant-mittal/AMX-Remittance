@@ -36,6 +36,8 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.ExceptionReport;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.GeoLocation;
+import com.amx.jax.postman.model.ITemplates;
+import com.amx.jax.postman.model.ITemplates.ITemplate;
 import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.TemplatesMX;
@@ -272,17 +274,24 @@ public class PostManControllerTest {
 	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE + "/file/{template}.{contactType}",
 			method = RequestMethod.GET)
 	public String processTemplate(@PathVariable("contactType") ContactType contactType,
-			@PathVariable("template") TemplatesMX template) throws IOException {
-		Map<String, Object> map = readJsonWithObjectMapper("templates/dummy/" + template.getSampleJSON());
+			@PathVariable("template") String template,
+			@RequestParam(defaultValue = "HTML") File.Type type) throws IOException {
+		ITemplate temp = ITemplates.getTemplate(template);
+		Map<String, Object> map = readJsonWithObjectMapper("templates/dummy/" + temp.getSampleJSON());
 
 		postManClient.setLang(localeResolver.resolveLocale(request).toString());
 
 		File file = new File();
 		file.setModel(map);
-		file.setITemplate(template);
-		
+		file.setITemplate(temp);
 		// file.setConverter(lib);
-
+		if (File.Type.PDF.equals(type)) {
+			file.setType(File.Type.PDF);
+			file = postManClient.processTemplate(file).getResult();
+			// file = postManClient.processTemplate(template, map, File.Type.PDF);
+			file.create(response, false);
+			return file.getContent();
+		}
 		return templateService.process(file, contactType).getContent();
 	}
 

@@ -100,6 +100,10 @@ public class CustomerManagementManager {
 	CountryService countryService;
 	@Autowired
 	CustomerInsuranceRepository customerInsuranceRepo;
+	@Autowired
+	CustomerIdentityManager customerIdentityManager;
+	@Autowired
+	CustomerPersonalDetailManager customerPersonalDetailManager;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerManagementManager.class);
 
@@ -107,7 +111,7 @@ public class CustomerManagementManager {
 		OffsiteCustomerDataDTO offsiteCustomer = new OffsiteCustomerDataDTO();
 		LOGGER.debug("identityInt :" + identityInt + "\t identityTypeId :" + identityTypeId + "\t country id " + metaData.getCountryId());
 		customerManagementValidation.validateIdentityIntLength(identityInt, identityTypeId);
-		List<Customer> customerList = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(identityInt,
+		List<Customer> customerList = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(identityInt, identityTypeId,
 				JaxApiFlow.OFFSITE_REGISTRATION);
 		JaxError jaxError = null;
 		String additionalStatus = null;
@@ -116,11 +120,6 @@ public class CustomerManagementManager {
 			jaxError = getJaxErrorForCustomer(customer);
 			additionalStatus = getAdditionalCustomerStatus(customer);
 			userValidationService.validateBlackListedCustomerForLogin(customer);
-			/*
-			 * if (ConstantDocument.Yes.equals(customer.getIsActive())) {
-			 * userValidationService.validateOldEmosData(customer); }
-			 */
-
 			offsiteCustomer.setIdentityInt(customer.getIdentityInt());
 			offsiteCustomer.setIdentityTypeId(customer.getIdentityTypeId());
 			offsiteCustomer.setCustomerPersonalDetail(createCustomerPersonalDetail(customer));
@@ -131,7 +130,7 @@ public class CustomerManagementManager {
 			offsiteCustomer.setCustomerDocuments(customerDocumentManager.getCustomerUploadDocuments(customer.getCustomerId()));
 			offsiteCustomer.setLastLoginDetails(createLastLoginDetails(customer));
 			offsiteCustomer.setPolicyDetails(createPolicyDetails(customer));
-
+			offsiteCustomer.getCustomerPersonalDetail().setCustomerPassportData(customerPersonalDetailManager.getPassportDetailData(customer));
 		} else {
 			jaxError = JaxError.CUSTOMER_NOT_FOUND;
 		}
@@ -141,6 +140,8 @@ public class CustomerManagementManager {
 		if (StringUtils.isNotBlank(additionalStatus)) {
 			offsiteCustomer.setStatusKey(additionalStatus);
 		}
+		offsiteCustomer.setIdentityDerivedDob(customerIdentityManager.generateDob(identityInt, identityTypeId));
+	
 		return offsiteCustomer;
 	}
 
@@ -162,8 +163,10 @@ public class CustomerManagementManager {
 		customerDetails.setDateOfBirth(customer.getDateOfBirth());
 		customerDetails.setIdentityTypeId(customer.getIdentityTypeId());
 		customerDetails.setInsurance(customer.getMedicalInsuranceInd());
-		customerDetails.setWatsAppMobileNo(customer.getMobileOther());
-		customerDetails.setWatsAppTelePrefix(customer.getPrefixCodeMobileOther());
+		if (null != customer.getWhatsapp()) {
+			customerDetails.setWatsAppMobileNo(new BigDecimal(customer.getWhatsapp()));
+		}
+		customerDetails.setWatsAppTelePrefix(customer.getWhatsappPrefix());
 		customerDetails.setIsWatsApp(customer.getIsMobileWhatsApp());
 		customerDetails.setRegistrationType(customer.getCustomerRegistrationType());
 		customerDetails.setCustomerSignature(customer.getSignatureSpecimenClob());
@@ -209,6 +212,9 @@ public class CustomerManagementManager {
 				jaxError = statusKeyBefore;
 			}
 		}
+		if (JaxError.ID_PROOFS_SCAN_IND_MISSING.equals(jaxError)) {
+			jaxError = statusKeyBefore;
+		}
 
 		return jaxError;
 	}
@@ -222,7 +228,7 @@ public class CustomerManagementManager {
 		return null;
 	}
 
-	private ResourceDTO getCustomerCategory(BigDecimal customerId) {
+	public ResourceDTO getCustomerCategory(BigDecimal customerId) {
 		ResourceDTO dto = new ResourceDTO();
 		CustomerExtendedModel customerExtendedModel = customerExtendedRepo.findByCustomerId(customerId);
 		if (customerExtendedModel != null) {
@@ -260,6 +266,8 @@ public class CustomerManagementManager {
 	public AmxApiResponse<CustomerInfo, Object> createCustomer(CreateCustomerInfoRequest createCustomerInfoRequest) throws ParseException {
 		customerManagementValidation.validateCustomerDataForCreate(createCustomerInfoRequest);
 		customerManagementValidation.validateDocumentsData(createCustomerInfoRequest);
+		// ui hack to set emp country to personal detail country
+		createCustomerInfoRequest.getCustomerEmploymentDetails().setCountryId(createCustomerInfoRequest.getCustomerPersonalDetail().getCountryId());
 		AmxApiResponse<CustomerInfo, Object> response = offsitCustRegService.saveCustomerInfo(createCustomerInfoRequest);
 		BigDecimal customerId = response.getResult().getCustomerId();
 		setAdditionalDataForCreateCustomer(createCustomerInfoRequest, customerId);
@@ -271,8 +279,11 @@ public class CustomerManagementManager {
 		customer.setCustomerRegistrationType(CustomerRegistrationType.NEW_BRANCH);
 		customer.setPepsIndicator(createCustomerInfoRequest.getPepsIndicator() ? ConstantDocument.Yes : ConstantDocument.No);
 		customer.setIsOnlineUser(ConstantDocument.No);
+		customer.setSignatureSpecimenClob(createCustomerInfoRequest.getCustomerPersonalDetail().getCustomerSignature());
+		if(createCustomerInfoRequest.getCustomerPersonalDetail().getCustomerPassportData() != null) {
+			customerPersonalDetailManager.savePassportDetail(customer, createCustomerInfoRequest.getCustomerPersonalDetail().getCustomerPassportData());
+		}
 		custDao.saveCustomer(customer);
-
 	}
 
 	public void moveCustomerDataUsingProcedures(BigDecimal customerId, List<CustomerDocumentUploadReferenceTemp> customerTempUploads) {
@@ -293,12 +304,16 @@ public class CustomerManagementManager {
 	@Transactional
 	public void updateCustomer(UpdateCustomerInfoRequest updateCustomerInfoRequest) throws ParseException {
 		customerManagementValidation.validateDocumentsData(updateCustomerInfoRequest);
+		if (!updateCustomerInfoRequest.isCalledFromAddApi()) {
+			customerManagementValidation.validateCustomerDataForUpdate(updateCustomerInfoRequest, metaData.getCustomerId());
+		}
+		customerManagementValidation.validateInsuranceFlag(updateCustomerInfoRequest);
 		customerUpdateManager.updateCustomer(updateCustomerInfoRequest);
 	}
 
 	public CustomerShortInfo getCustomerShortDetail(String identityInt, BigDecimal identityType) {
 		customerManagementValidation.validateIdentityIntLength(identityInt, identityType);
-		List<Customer> customerList = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(identityInt,
+		List<Customer> customerList = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(identityInt, identityType,
 				JaxApiFlow.OFFSITE_REGISTRATION);
 		CustomerShortInfo info = new CustomerShortInfo();
 		if (customerList.size() > 0) {
@@ -322,8 +337,7 @@ public class CustomerManagementManager {
 	}
 
 	private PolicyDetails createPolicyDetails(Customer customer) {
-		CustomerInsurance custInsurance = customerInsuranceRepo.findByCustomerIdAndIsActive(customer.getCustomerId(),
-				ConstantDocument.Yes);
+		CustomerInsurance custInsurance = customerInsuranceRepo.findByCustomerIdAndIsActive(customer.getCustomerId(), ConstantDocument.Yes);
 		PolicyDetails policyDetails = new PolicyDetails();
 
 		if (custInsurance != null) {

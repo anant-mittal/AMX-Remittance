@@ -19,7 +19,6 @@ import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.ContactType;
-import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.custom.HelloDialect;
 import com.amx.jax.postman.model.File;
@@ -132,10 +131,7 @@ public class TemplateService {
 	 * @return the local
 	 */
 	private Locale getLocal(File file) {
-		if (file == null || file.getLang() == null) {
-			return new Locale(postManConfig.getTenantLang().getCode());
-		}
-		return new Locale(file.getLang().getCode());
+		return postManConfig.getLocal(file);
 	}
 
 	/**

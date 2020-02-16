@@ -2,6 +2,7 @@ package com.amx.jax.api;
 
 import java.util.List;
 
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.swagger.ApiMockModelProperty;
 
 public class AmxResponseSchemes {
@@ -32,6 +33,11 @@ public class AmxResponseSchemes {
 		public String getMessageKey();
 
 		public void setMessageKey(String messageKey);
+
+		public default String getTraceid() {
+			return AppContextUtil.getTraceId(false, false);
+		};
+		
 	}
 
 	public interface ApiMetaResponse<M> extends ApiWrapperResponse {

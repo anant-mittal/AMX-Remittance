@@ -2,6 +2,7 @@ package com.amx.jax.customer.validation;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.customer.document.manager.CustomerDocMasterManager;
 import com.amx.jax.customer.document.manager.CustomerDocumentUploadManager;
 import com.amx.jax.customer.manager.OffsiteCustomerRegManager;
@@ -27,11 +29,16 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.document.CustomerDocValidationResponseData;
+import com.amx.jax.model.request.CustomerEmploymentDetails;
+import com.amx.jax.model.request.CustomerPersonalDetail;
+import com.amx.jax.model.request.UpdateCustomerPersonalDetailRequest;
 import com.amx.jax.model.request.customer.CustomerDocValidationData;
+import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.jax.repository.remittance.IIdNumberLengthCheckRepository;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.jax.userservice.service.UserService;
+import com.amx.utils.DateUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -54,6 +61,8 @@ public class CustomerManagementValidation {
 	@Autowired
 	OffsitCustRegService offsitCustRegService;
 
+	public static final int INSURANCE_ELIGILIBITY_AGE = 69;
+
 	public void validateIdentityIntLength(String identityInt, BigDecimal identityTypeId) {
 
 		IDNumberLengthCheckView idnumberLengthCheck = idnumberLengthCheckRepos.findByIDTypeId(identityTypeId);
@@ -67,7 +76,7 @@ public class CustomerManagementValidation {
 			}
 		} else {
 			throw new GlobalException(JaxError.ID_TYPE_LENGTH_NOT_DEFINED,
-					"Id length setup is missing  in paramter :" + identityInt + " identityTypeId :" + identityTypeId);
+					"Id length setup is missing  in parameter :" + identityInt + " identityTypeId :" + identityTypeId);
 		}
 	}
 
@@ -131,10 +140,15 @@ public class CustomerManagementValidation {
 		}
 	}
 
-	public void validateCustomerDataForUpdate(BigDecimal customerId) {
+	public void validateCustomerDataForUpdate(UpdateCustomerInfoRequest updateCustomerInfoRequest, BigDecimal customerId) {
 		Customer customer = userService.getCustById(customerId);
-		if (customer.getSignatureSpecimenClob() == null) {
-			throw new GlobalException(JaxError.SIGNATURE_NOT_AVAILABLE, "signature missing");
+		boolean updateSignature = false;
+		if (updateCustomerInfoRequest.getPersonalDetailInfo() != null
+				&& updateCustomerInfoRequest.getPersonalDetailInfo().getCustomerSignature() != null) {
+			updateSignature = true;
+		}
+		if (customer.getSignatureSpecimenClob() == null && !updateSignature) {
+			throw new GlobalException(JaxError.SIGNATURE_NOT_AVAILABLE, "Customer Signature Missing");
 		}
 	}
 
@@ -147,6 +161,63 @@ public class CustomerManagementValidation {
 		if (customer != null) {
 			throw new GlobalException("Customer already created, use update api to update customer info");
 		}
+		validateInsuranceFlag(createCustomerInfoRequest);
 		offsitCustRegService.validateCustomerBlackList(createCustomerInfoRequest.getCustomerPersonalDetail());
+		validateEmploymentInfo(createCustomerInfoRequest.getCustomerEmploymentDetails());
+	}
+
+	private void validateEmploymentInfo(CustomerEmploymentDetails customerEmploymentDetails) {
+		if (customerEmploymentDetails.getEmploymentTypeId() == null) {
+			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Employment type can not be empty");
+		}
+		// optional fields employer detail for 222 = unemployed type
+		if (!(customerEmploymentDetails.getEmploymentTypeId().compareTo(new BigDecimal(222)) == 0)) {
+			if (customerEmploymentDetails.getEmployer() == null) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Employer name can not be empty");
+			}
+			if (customerEmploymentDetails.getProfessionId() == null) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Profession can not be empty");
+			}
+			if (customerEmploymentDetails.getArticleDetailsId() == null) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Article detail can not be empty");
+			}
+			if (customerEmploymentDetails.getIncomeRangeId() == null) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Income range can not be empty");
+			}
+		}
+	}
+
+	private void validateInsuranceFlag(CreateCustomerInfoRequest createCustomerInfoRequest) {
+		CustomerPersonalDetail personalDetail = createCustomerInfoRequest.getCustomerPersonalDetail();
+		if (personalDetail.getDateOfBirth() != null && ConstantDocument.Yes.equals(personalDetail.getInsurance())) {
+			int age = DateUtil.calculateAge(personalDetail.getDateOfBirth());
+			if (age > INSURANCE_ELIGILIBITY_AGE) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE,
+						"Customer is not eligible for insurance. Please remove insurance indic.");
+			}
+		}
+	}
+
+	public void validateInsuranceFlag(UpdateCustomerInfoRequest updateCustomerInfoRequest) {
+		Customer customer = userService.getCustById(metaData.getCustomerId());
+		Date dob = customer.getDateOfBirth();
+		if (updateCustomerInfoRequest.getPersonalDetailInfo() != null) {
+			UpdateCustomerPersonalDetailRequest personalDetailInfo = updateCustomerInfoRequest.getPersonalDetailInfo();
+			if (personalDetailInfo.getDateOfBirth() != null) {
+				dob = personalDetailInfo.getDateOfBirth();
+			}
+			Boolean insuranceIndic = personalDetailInfo.getInsuranceInd();
+			if (insuranceIndic != null && insuranceIndic) {
+				if (dob == null) {
+					throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE,
+							"In order to update insurance flag, please update date of birth of customer");
+				}
+				int age = DateUtil.calculateAge(dob);
+				if (age > INSURANCE_ELIGILIBITY_AGE) {
+					throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE,
+							"Customer is not eligible for insurance. Please remove insurance indic.");
+				}
+			}
+		}
 	}
 }

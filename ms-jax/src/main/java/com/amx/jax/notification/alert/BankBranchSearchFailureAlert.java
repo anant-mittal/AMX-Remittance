@@ -65,4 +65,10 @@ public class BankBranchSearchFailureAlert implements IAlert {
 		return channels;
 	}
 
+	
+	/** to disable old template call **/ 
+	@Override
+	public boolean isEnabled() {
+		return false;
+	}
 }

@@ -2,6 +2,7 @@ package com.amx.jax.adapter;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -19,6 +20,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Date;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -27,8 +29,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
-
-import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.adapter.ACardReaderService.CardStatus;
@@ -82,11 +82,12 @@ public class SWAdapterGUI extends JFrame {
 	JTextArea aboutTextArea = null;
 	private JButton updateButton;
 
-	public void initUI() {
+	public void initUI() throws IOException {
 		System.out.println("Init SWAdapterGUI");
 
 		JTabbedPane tabs = new JTabbedPane();
 
+		// +++CardReader
 		// create a new panel with GridBagLayout manager
 		JPanel newPanel = new JPanel();
 		newPanel.setLayout(new GridBagLayout());
@@ -180,10 +181,55 @@ public class SWAdapterGUI extends JFrame {
 		// newPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
 		// "Card Reader Status"));
 
+		// +++LOGS
 		textArea = new JTextArea();
 		textArea.setFont(new Font("monospaced", Font.PLAIN, 8));
 		textArea.setEditable(false);
 		pane = new JScrollPane(textArea);
+
+		// +++DocScanner
+		// create a new panel with GridBagLayout manager
+		JPanel scannerPanel = new JPanel();
+		scannerPanel.setLayout(new GridBagLayout());
+		scannerPanel.setFont(font);
+		constraints.anchor = GridBagConstraints.CENTER;
+
+		constraints.gridx = 1;
+		constraints.gridy = 0;
+		constraints.gridwidth = 5;
+		SWDocumentScanner.SCANNED_IMAGE = new ImageIcon();
+		SWDocumentScanner.SCANNED_IMAGE_LABEL = new JLabel(SWDocumentScanner.SCANNED_IMAGE);
+		SWDocumentScanner.SCANNED_IMAGE_LABEL.setBackground(Color.BLUE);
+		SWDocumentScanner.SCANNED_IMAGE_LABEL.setMaximumSize(new Dimension(300, 200));
+		SWDocumentScanner.SCANNED_IMAGE_LABEL.setPreferredSize(new Dimension(300, 200));
+		SWDocumentScanner.SCANNED_IMAGE_LABEL.setMinimumSize(new Dimension(300, 200));
+		scannerPanel.add(SWDocumentScanner.SCANNED_IMAGE_LABEL, constraints);
+
+		constraints.gridx = 1;
+		constraints.gridy = 9;
+		constraints.gridwidth = 1;
+		JButton scannerButton = new JButton("Scan");
+		scannerButton.addActionListener((ActionEvent event) -> {
+			if (SWDocumentScanner.CONTEXT != null) {
+				try {
+					SWDocumentScanner.CONTEXT.documentScan();
+				} catch (IOException e) {
+					logWindow(e.getMessage());
+				} catch (Exception e1) {
+					logWindow(e1.getMessage());
+				}
+			}
+		});
+		scannerPanel.add(scannerButton, constraints);
+
+		constraints.gridx = 2;
+		constraints.gridy = 9;
+		constraints.gridwidth = 1;
+		JButton openScanButton = new JButton("OpenScanPage");
+		openScanButton.addActionListener((ActionEvent event) -> {
+			SWAdapterLauncher.opneDocumentScanPage();
+		});
+		scannerPanel.add(openScanButton, constraints);
 
 		// About Area
 		JPanel aboutPaneWrapper = new JPanel();
@@ -212,6 +258,7 @@ public class SWAdapterGUI extends JFrame {
 
 		tabs.addTab("Adapter", newPanel);
 		tabs.addTab("Logs", pane);
+		tabs.addTab("Scanner", scannerPanel);
 		tabs.addTab("About", aboutPaneWrapper);
 		add(tabs);
 		System.out.println("InitDone SWAdapterGUI");

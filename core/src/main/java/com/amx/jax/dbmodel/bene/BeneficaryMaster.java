@@ -56,6 +56,7 @@ public class BeneficaryMaster implements Serializable {
 	private String flatNo;
 	private String streetNo;
 	private String beneficiaryZipCode;
+	private BigDecimal institutionCategoryId;
 	
 	@Id
 	@GeneratedValue(generator = "ex_beneficary_master_seq", strategy = GenerationType.SEQUENCE)
@@ -442,6 +443,15 @@ public class BeneficaryMaster implements Serializable {
 
 	public void setBeneficiaryZipCode(String beneficiaryZipCode) {
 		this.beneficiaryZipCode = beneficiaryZipCode;
+	}
+
+	@Column(name="INSTITUTION_CATEGORY_ID")
+	public BigDecimal getInstitutionCategoryId() {
+		return institutionCategoryId;
+	}
+
+	public void setInstitutionCategoryId(BigDecimal institutionCategoryId) {
+		this.institutionCategoryId = institutionCategoryId;
 	}
 	
 }

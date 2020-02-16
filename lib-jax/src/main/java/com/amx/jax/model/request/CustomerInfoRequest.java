@@ -1,8 +1,12 @@
 package com.amx.jax.model.request;
 
+import java.math.BigDecimal;
+
 import javax.validation.Valid;
 
-public class CustomerInfoRequest {
+import com.amx.jax.model.request.customer.ICustomerContactData;
+
+public class CustomerInfoRequest implements ICustomerContactData {
 	@Valid
 	CustomerPersonalDetail customerPersonalDetail;
 	
@@ -10,6 +14,9 @@ public class CustomerInfoRequest {
 	LocalAddressDetails localAddressDetails;
 	
 	HomeAddressDetails homeAddressDetails;
+	
+	@Deprecated
+	HomeAddressDetails homeAddressDestails;
 	
 	@Valid
 	CustomerEmploymentDetails customerEmploymentDetails;
@@ -52,6 +59,39 @@ public class CustomerInfoRequest {
 
 	public void setHomeAddressDetails(HomeAddressDetails homeAddressDetails) {
 		this.homeAddressDetails = homeAddressDetails;
+	}
+
+	public HomeAddressDetails getHomeAddressDestails() {
+		return homeAddressDestails;
+	}
+
+	public void setHomeAddressDestails(HomeAddressDetails homeAddressDestails) {
+		this.homeAddressDestails = homeAddressDestails;
+	}
+
+	@Override
+	public String getEmail() {
+		return customerPersonalDetail != null ? customerPersonalDetail.getEmail() : null;
+	}
+
+	@Override
+	public String getMobile() {
+		return customerPersonalDetail != null ? customerPersonalDetail.getMobile() : null;
+	}
+
+	@Override
+	public String getTelPrefix() {
+		return customerPersonalDetail != null ? customerPersonalDetail.getTelPrefix() : null;
+	}
+
+	@Override
+	public String getWatsAppTelePrefix() {
+		return customerPersonalDetail != null ? customerPersonalDetail.getWatsAppTelePrefix() : null;
+	}
+
+	@Override
+	public BigDecimal getWatsAppMobileNo() {
+		return customerPersonalDetail != null ? customerPersonalDetail.getWatsAppMobileNo() : null;
 	}
 
 }

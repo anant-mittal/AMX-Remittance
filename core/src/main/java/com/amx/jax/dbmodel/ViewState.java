@@ -1,6 +1,5 @@
 package com.amx.jax.dbmodel;
 
-import java.beans.Transient;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -32,6 +31,8 @@ public class ViewState implements Serializable, IResourceEntity {
 	private String stateCode;
 	@Column(name = "STATE_NAME")
 	private String stateName;
+	@Column(name = "DEFAULT_INDIC")
+	private String defaultIndic;
 
 	public BigDecimal getStateId() {
 		return stateId;
@@ -94,4 +95,13 @@ public class ViewState implements Serializable, IResourceEntity {
 		return null;
 	}
 
+	public String getDefaultIndic() {
+		return defaultIndic;
+	}
+
+	public void setDefaultIndic(String defaultIndic) {
+		this.defaultIndic = defaultIndic;
+	}
+
+	
 }

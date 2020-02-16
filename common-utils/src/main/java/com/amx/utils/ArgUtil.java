@@ -444,6 +444,8 @@ public final class ArgUtil {
 			return (Double) value;
 		} else if (value instanceof Number) {
 			return Double.valueOf(((Number) value).doubleValue());
+		} else if (value instanceof BigDecimal) {
+			return Double.valueOf(((BigDecimal) value).doubleValue());
 		} else if (value instanceof String) {
 			try {
 				return Double.valueOf(Double.parseDouble((String) value));
@@ -453,6 +455,22 @@ public final class ArgUtil {
 		}
 		return null;
 	}
+	
+	public static Double parseAsDouble(Object value, Double defaultValue) {
+		if (value instanceof Double) {
+			return (Double) value;
+		} else if (value instanceof Number) {
+			return Double.valueOf(((Number) value).doubleValue());
+		} else if (value instanceof String) {
+			try {
+				return Double.valueOf(Double.parseDouble((String) value));
+			} catch (NumberFormatException e) {
+				return defaultValue;
+			}
+		}
+		return defaultValue;
+	}
+
 
 	/**
 	 * <pre>
@@ -501,6 +519,20 @@ public final class ArgUtil {
 		if (object == null || Constants.DEFAULT_STRING.equals(object)) {
 			return defaultValue;
 		}
+		
+		if(defaultValue == null && Constants.NULL_STRING.equalsIgnoreCase(object.toString().toUpperCase())) {
+			return defaultValue;
+		}
+		
+		return parseAsString(object);
+	}
+	
+	public static String parseAsStringNull(Object object, String defaultValue) {
+		if (object == null || Constants.DEFAULT_STRING.equals(object)
+				|| Constants.NULL_STRING.equalsIgnoreCase(object.toString().toUpperCase())
+				) {
+			return defaultValue;
+		}
 		return parseAsString(object);
 	}
 
@@ -522,24 +554,24 @@ public final class ArgUtil {
 	 * @param defaultValue the default value
 	 * @return the enum
 	 */
-	public static <T extends Enum> Enum parseAsEnum(Object value, Enum defaultValue,Class<T> enumType) {
+	public static <T extends Enum> Enum parseAsEnum(Object value, Enum defaultValue, Class<T> enumType) {
 		String enumString = parseAsString(value);
 		if (enumString == null) {
 			return defaultValue;
 		}
 		String enumStringCaps = enumString.toUpperCase();
-		if (EnumType.class.isAssignableFrom(enumType) || defaultValue instanceof EnumType) {
+		if (defaultValue instanceof EnumType || EnumType.class.isAssignableFrom(enumType)) {
 			for (Object enumValue : enumType.getEnumConstants()) {
-				if (enumString.equals(((EnumType) enumValue).name())
-						|| enumStringCaps.equals(((EnumType) enumValue).name())) {
+				EnumType thisEnum = (EnumType) enumValue;
+				if (enumString.equalsIgnoreCase(thisEnum.name())
+						|| enumString.equalsIgnoreCase(thisEnum.stringValue())) {
 					return (Enum) enumValue;
 				}
 			}
 			return defaultValue;
-		} else if (EnumById.class.isAssignableFrom(enumType) || defaultValue instanceof EnumById) {
+		} else if (defaultValue instanceof EnumById) {
 			for (Object enumValue : enumType.getEnumConstants()) {
-				if (enumString.equals(((EnumById) enumValue).getId())
-						|| enumStringCaps.equals(((EnumById) enumValue).getId())) {
+				if (enumString.equalsIgnoreCase(((EnumById) enumValue).getId())) {
 					return (Enum) enumValue;
 				}
 			}
@@ -555,9 +587,27 @@ public final class ArgUtil {
 			}
 		}
 	}
-	
+	public static <T extends Enum> T parseAsEnumT(Object value, T defaultValue, Class<T> enumType) {
+		return (T) parseAsEnum(value, defaultValue, enumType);
+	}
+
+	public static <T extends Enum> Enum parseAsEnum(Object value, Class<T> enumType) {
+		return parseAsEnum(value, null, enumType);
+	}
+
+	/**
+	 * @deprecated 
+	 * @see {{@link #parseAsEnum(Object, Enum, Class)}
+	 * @param value
+	 * @param defaultValue
+	 * @return
+	 */
+	@Deprecated
 	public static Enum parseAsEnum(Object value, Enum defaultValue) {
-		return parseAsEnum(value,defaultValue,defaultValue.getClass());
+		if (ArgUtil.isEmpty(defaultValue)) {
+			return null;
+		}
+		return parseAsEnum(value, defaultValue, defaultValue.getClass());
 	}
 
 	public static Enum parseAsEnum(Object value, Enum nullValue, Enum defaultValue) {
@@ -644,6 +694,10 @@ public final class ArgUtil {
 		return !ArgUtil.isEmpty(object);
 	}
 
+	public static boolean isNotEmpty(Object object) {
+		return !isEmpty(object);
+	}
+
 	/**
 	 * Checks if is collection empty.
 	 *
@@ -695,6 +749,19 @@ public final class ArgUtil {
 
 	public static <T> T assignDefaultIfNull(T assignee, T defaultVal) {
 		return (null == assignee) ? defaultVal : assignee;
+	}
+
+	public static <T> boolean presentIn(T checkFor, T... within) {
+		if (checkFor == null || within == null || within.length == 0) {
+			return false;
+		}
+
+		for (T val : within) {
+			if (checkFor.equals(val))
+				return true;
+		}
+
+		return false;
 	}
 
 }

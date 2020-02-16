@@ -1,0 +1,147 @@
+{
+  "aggs": {
+    "area": {
+      "terms": {
+        "field": "branch.areaName.keyword",
+        "size": 5,
+        "order": {
+          "_count": "desc"
+        }
+      },
+      "aggs": {
+        "period": {
+          "date_range": {
+            "field": "trnx.trnxDate",
+            "ranges": [
+              {
+                "key" : "PrevMonth",
+                "from": "now-1M/M",
+                "to": "now-1M"
+              },
+              {
+               "key" : "ThisMonth",
+                "from": "now-0M/M",
+                "to": "now-0M"
+              }
+            ]
+          },
+          "aggs": {
+            "localCommRecv": {
+              "sum": {
+                "field": "trnx.localCommRecv"
+              }
+            },
+            "commRecv": {
+              "sum": {
+                "field": "trnx.commRecv"
+              }
+            },
+            "exchangeGain": {
+              "sum": {
+                "field": "trnx.exchangeGain"
+              }
+            },
+            "coBankCharges": {
+              "sum": {
+                "field": "trnx.coBankCharges"
+              }
+            },
+  
+            "8-bucket": {
+              "date_histogram": {
+                "field": "trnx.trnxDate",
+                "calendar_interval": "1d",
+                "time_zone": "Asia/Calcutta",
+                "min_doc_count": 1
+              }
+            },
+            
+            "8": {
+              "avg_bucket": {
+                "buckets_path": "8-bucket>_count"
+              }
+            }
+            
+          }
+        }
+      }
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "stored_fields": [
+    "*"
+  ],
+  "script_fields": {},
+  "docvalue_fields": [
+    "@timestamp",
+    "customer.creationDate",
+    "customer.creationDateOnline",
+    "customer.dateOfBirth",
+    "customer.lastTransactionDate",
+    "customer.lastUpdateDate",
+    "customer.updateDate",
+    "trnx.creationDate",
+    "trnx.lastUpdateDate",
+    "trnx.trnxDate",
+    "trnx.trnxPaidDate",
+    "xrate.timestamp"
+  ],
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match_all": {}
+        },
+        {
+          "range": {
+            "@timestamp": {
+              "gte": "now-3M",
+              "lte": "now",
+              "format": "epoch_millis"
+            }
+          }
+        },
+        {
+          "bool": {
+            "should": [
+              {
+                "match_phrase": {
+                  "trnx.trnxStatus.keyword": "PAID"
+                }
+              },
+              {
+                "match_phrase": {
+                  "trnx.trnxStatus.keyword": "DONE"
+                }
+              }
+            ],
+            "minimum_should_match": 1
+          }
+        }
+      ],
+      "filter": [],
+      "should": [],
+      "must_not": []
+    }
+  },
+  "pivot" : [
+  	{
+	 "rows" : ["area"],
+	 "cols" : ["period"],
+	 "vals" : ["sum localCommRecv","sum commRecv","sum exchangeGain","sum coBankCharges","sum _docs AS Trnx"],
+	 "computed" : ["PrevMonth_Revenue=PrevMonth_localCommRecv + PrevMonth_commRecv + PrevMonth_exchangeGain - PrevMonth_coBankCharges",
+	 				"PrevMonth_RPT=PrevMonth_Revenue/PrevMonth_Trnx",
+	 				"ThisMonth_Revenue=ThisMonth_localCommRecv + ThisMonth_commRecv + ThisMonth_exchangeGain - ThisMonth_coBankCharges",
+	 				"ThisMonth_RPT=ThisMonth_Revenue/ThisMonth_Trnx",
+	 				"DIFF=ThisMonth_RPT-PrevMonth_RPT"],
+	 "colgroups" : [
+	 	"PrevMonth(area,PrevMonth_Trnx,PrevMonth_RPT)",
+	 	"ThisMonth(area,ThisMonth_Trnx,ThisMonth_RPT)",
+	 	"DEFAULT(area,PrevMonth_Trnx,PrevMonth_RPT,ThisMonth_Trnx,ThisMonth_RPT,DIFF)"
+	 ]
+   }
+  ]
+}

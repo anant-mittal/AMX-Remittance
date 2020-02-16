@@ -43,6 +43,10 @@ public class PaymentConstant {
 		public static final String PAYMENT_CAPTURE_CALLBACK_V2 = "/v2/capture/{paygCode}/{tenant}/{channel}/{product}/{uuid}";
 		public static final String PAYMENT_CAPTURE_CALLBACK_V2_WILDCARD = "/v2/capture/{paygCode}/{tenant}/{channel}/{product}/{uuid}/*";
 	}
+	
+	public static class Filter {
+		public static final String PAYMENT_CAPTURE_CALLBACK_V2_REGEX = "/app/v2/capture/([a-zA-Z0-9_]+)/([a-zA-Z0-9_]+)/([a-zA-Z0-9_]+)/([a-zA-Z0-9_]+)/(?<traceid>[0-9A-Za-z\\-]+)/?(.*)";		
+	}
 
 	public static String getCalbackUrl(Tenant tenant, PayGServiceCode paygCode, Object channel, Object product,
 			String uuid) {
@@ -73,7 +77,7 @@ public class PaymentConstant {
 		return getCalbackUrl(payGParams.getTenant(), payGParams.getServiceCode(),
 				payGParams.getChannel(), payGParams.getProduct(), payGParams.getUuid());
 	}
-	
+
 	public static final String KWT_SECRETE_SALT = "KWT-SALT";
 	public static final String OMN_SECRETE_SALT = "KWT-SALT";
 	public static final String BHR_SECRETE_SALT = "KWT-SALT";

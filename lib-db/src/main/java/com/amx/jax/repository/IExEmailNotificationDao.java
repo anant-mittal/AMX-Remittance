@@ -15,7 +15,14 @@ public interface IExEmailNotificationDao extends JpaRepository<ExEmailNotificati
 
 	@Query(value = "select * from EX_EMAIL_NOTIFICATION where send_IND='BCE'", nativeQuery = true)
 	public List<ExEmailNotification> getBeneCreationErrorEmailNotification();
-	
+
 	@Query(value = "select * from EX_EMAIL_NOTIFICATION where send_IND='SPE'", nativeQuery = true)
 	public List<ExEmailNotification> getServiceProviderEmailNotification();
+
+	@Query(value = "select * from EX_EMAIL_NOTIFICATION where send_IND='FCS'", nativeQuery = true)
+	public List<ExEmailNotification> getFCSupportTeamEmailNotification();
+
+	@Query(value = "select * from EX_EMAIL_NOTIFICATION where SEND_IND='RPS' and ISACTIVE='Y'", nativeQuery = true)
+	public List<ExEmailNotification> getSalesAdminSupportEmailNotification();
+
 }

@@ -49,9 +49,6 @@ public class CustomerUpdateManager {
 	public void updateCustomer(UpdateCustomerInfoRequest req) throws ParseException {
 		BigDecimal customerId = metaData.getCustomerId();
 		Customer customer = userService.getCustById(customerId);
-		if (req.getEmploymentDetail() != null) {
-			customerEmployementManager.updateCustomerEmploymentInfo(customer, req.getEmploymentDetail());
-		}
 		if (req.getHomeAddressDetail() != null) {
 			req.getHomeAddressDetail().setContactType(ConstantDocument.CONTACT_TYPE_FOR_HOME);
 			customerAddressDetailsManager.updateCustomerAddressDetail(customer, req.getHomeAddressDetail());
@@ -64,6 +61,9 @@ public class CustomerUpdateManager {
 		if (req.getPersonalDetailInfo() != null) {
 			customerPersonalDetailManager.updateCustomerPersonalDetail(customer, req.getPersonalDetailInfo());
 		}
+		if (req.getEmploymentDetail() != null) {
+			customerEmployementManager.updateCustomerEmploymentInfo(customer, req.getEmploymentDetail());
+		}
 		customerDocumentManager.addCustomerDocument(metaData.getCustomerId());
 		customerBranchAuditManager.logAuditUpdateCustomer(req);
 	}
@@ -73,8 +73,10 @@ public class CustomerUpdateManager {
 		BigDecimal appCountry = companyDetail.getApplicationCountryId();
 		String countryName = countryService.getCountryMaster(appCountry).getFsCountryMasterDescs().get(0).getCountryName();
 
-		if (!appCountry.equals(req.getLocalAddressDetail().getCountryId())) {
-			throw new GlobalException("Local country should be " + countryName);
+		if (req.getLocalAddressDetail().getCountryId() != null) {
+			if (!appCountry.equals(req.getLocalAddressDetail().getCountryId())) {
+				throw new GlobalException("Local country should be " + countryName);
+			}
 		}
 	}
 

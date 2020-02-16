@@ -3,6 +3,8 @@ package com.amx.jax.model.request.customer;
 import java.math.BigDecimal;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import com.amx.jax.model.request.UpdateCustomerAddressDetailRequest;
 import com.amx.jax.model.request.UpdateCustomerEmploymentDetailsReq;
 import com.amx.jax.model.request.UpdateCustomerPersonalDetailRequest;
@@ -10,12 +12,19 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class UpdateCustomerInfoRequest implements CustomerDocValidationData {
 
+	@Valid
 	UpdateCustomerPersonalDetailRequest personalDetailInfo;
+	@Valid
 	UpdateCustomerAddressDetailRequest homeAddressDetail;
+	@Valid
 	UpdateCustomerAddressDetailRequest localAddressDetail;
+	@Valid
 	UpdateCustomerEmploymentDetailsReq employmentDetail;
 
 	List<BigDecimal> documentUploadReference;
+	
+	@JsonIgnore
+	boolean isCalledFromAddApi = false;
 
 	public UpdateCustomerPersonalDetailRequest getPersonalDetailInfo() {
 		return personalDetailInfo;
@@ -96,5 +105,14 @@ public class UpdateCustomerInfoRequest implements CustomerDocValidationData {
 	@Override
 	public Boolean isLocalAddressChange() {
 		return this.localAddressDetail != null;
+	}
+
+	@JsonIgnore
+	public boolean isCalledFromAddApi() {
+		return isCalledFromAddApi;
+	}
+
+	public void setCalledFromAddApi(boolean isCalledFromAddApi) {
+		this.isCalledFromAddApi = isCalledFromAddApi;
 	}
 }

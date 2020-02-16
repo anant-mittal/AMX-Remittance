@@ -21,16 +21,21 @@ import org.apache.commons.lang.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.cache.ExchRateAndRoutingTransientDataCache;
 import com.amx.jax.cache.TransientRoutingComputeDetails;
 import com.amx.jax.cache.WorkingHoursData;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.dao.CountryMasterDao;
+import com.amx.jax.pricer.dao.PartnerServiceDao;
 import com.amx.jax.pricer.dao.TimezoneDao;
 import com.amx.jax.pricer.dao.TreasuryFTImpactDao;
 import com.amx.jax.pricer.dao.ViewExRoutingMatrixDao;
+import com.amx.jax.pricer.dbmodel.BenificiaryListView;
 import com.amx.jax.pricer.dbmodel.CountryMasterModel;
 import com.amx.jax.pricer.dbmodel.HolidayListMasterModel;
 import com.amx.jax.pricer.dbmodel.TimezoneMasterModel;
@@ -47,6 +52,7 @@ import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_GROUP;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.DateUtil;
 
+@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
 public class RemitRoutingManager {
 
@@ -59,13 +65,13 @@ public class RemitRoutingManager {
 
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd-MMM hh:mm a");
 
-	private static final BigDecimal DEF_TR_TRANSACTION_START_TIME = new BigDecimal(10);
-	private static final BigDecimal DEF_TR_TRANSACTION_END_TIME = new BigDecimal(14.3);
+	private static final BigDecimal DEF_TR_TRANSACTION_START_TIME = new BigDecimal("10");
+	private static final BigDecimal DEF_TR_TRANSACTION_END_TIME = new BigDecimal("14.3");
 
-	private static final BigDecimal DEF_TR_WORK_DAY_FROM = new BigDecimal(2);
-	private static final BigDecimal DEF_TR_WORK_DAY_TO = new BigDecimal(5);
+	private static final BigDecimal DEF_TR_WORK_DAY_FROM = new BigDecimal("2");
+	private static final BigDecimal DEF_TR_WORK_DAY_TO = new BigDecimal("5");
 
-	private static final BigDecimal BIGD_SIXTY = new BigDecimal(60);
+	private static final BigDecimal BIGD_SIXTY = new BigDecimal("60");
 
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(RemitRoutingManager.class);
@@ -87,6 +93,9 @@ public class RemitRoutingManager {
 
 	@Resource
 	ExchRateAndRoutingTransientDataCache transientDataCache;
+	
+	@Autowired
+	PartnerServiceDao partnerServiceDao;
 
 	public boolean validateViewRoutingMatrixData(ViewExRoutingMatrix routingMatrix,
 			ExchangeRateAndRoutingRequest routingRequest) {
@@ -103,16 +112,30 @@ public class RemitRoutingManager {
 	public List<ViewExRoutingMatrix> getRoutingMatrixForRemittance(
 			ExchangeRateAndRoutingRequest exchangeRateAndRoutingRequest) {
 
-		List<ViewExRoutingMatrix> routingMatrix;
+		List<ViewExRoutingMatrix> routingMatrix = null;
 
 		if (SERVICE_GROUP.CASH.equals(exchangeRateAndRoutingRequest.getServiceGroup())) {
 
 			/**
 			 * Only For Cash : <br>
-			 * Hard Condition : RoutingBankId = BeneBankId And RoutingBankBranchId =
-			 * BeneBankBranchId
+			 * Hard Condition : RoutingBankId = BeneBankId And RoutingBankBranchId = BeneBankBranchId # wrong
+			 * cash logic to fetch routing bank Id and bank branch Id from beneficiary creation
 			 */
-			routingMatrix = viewExRoutingMatrixDao.getRoutingMatrixForCashService(
+			
+			BenificiaryListView beneficaryDetails = partnerServiceDao.getBeneficiaryDetails(exchangeRateAndRoutingRequest.getCustomerId(),exchangeRateAndRoutingRequest.getBeneficiaryId());
+			if(beneficaryDetails != null) {
+				routingMatrix = viewExRoutingMatrixDao.getRoutingMatrixForCashService(
+						exchangeRateAndRoutingRequest.getLocalCountryId(),
+						exchangeRateAndRoutingRequest.getForeignCountryId(),
+						exchangeRateAndRoutingRequest.getBeneficiaryBankId(),
+						exchangeRateAndRoutingRequest.getBeneficiaryBranchId(),
+						exchangeRateAndRoutingRequest.getForeignCurrencyId(),
+						exchangeRateAndRoutingRequest.getServiceGroup().getGroupCode(),
+						beneficaryDetails.getServiceProvider(), 
+						beneficaryDetails.getServiceProviderBranchId()); 
+			}
+			
+			/*routingMatrix = viewExRoutingMatrixDao.getRoutingMatrixForCashService(
 					exchangeRateAndRoutingRequest.getLocalCountryId(),
 					exchangeRateAndRoutingRequest.getForeignCountryId(),
 					exchangeRateAndRoutingRequest.getBeneficiaryBankId(),
@@ -120,8 +143,7 @@ public class RemitRoutingManager {
 					exchangeRateAndRoutingRequest.getForeignCurrencyId(),
 					exchangeRateAndRoutingRequest.getServiceGroup().getGroupCode(),
 					exchangeRateAndRoutingRequest.getBeneficiaryBankId(), // RoutingBankId = BeneBankId
-					exchangeRateAndRoutingRequest.getBeneficiaryBranchId()); // RoutingBankBranchId = BeneBankBranchId
-
+					exchangeRateAndRoutingRequest.getBeneficiaryBranchId()); // RoutingBankBranchId = BeneBankBranchId*/
 		} else {
 			// Else Bank
 			routingMatrix = viewExRoutingMatrixDao.getRoutingMatrixForBankService(
@@ -158,7 +180,7 @@ public class RemitRoutingManager {
 
 		if (null == routingMatrix || routingMatrix.isEmpty()) {
 
-			LOGGER.error("Routing Matrix is Data is Empty or Null for the Pricing/Routing Request");
+			LOGGER.error("Routing Matrix Data is Empty or Null for the Pricing/Routing Request");
 
 			throw new PricerServiceException(PricerServiceError.INVALID_OR_MISSING_ROUTE,
 					"Invalid or Missing Routing Banks to the Beneficiary, Check Routing Setup for:" + " BeneBankId: "

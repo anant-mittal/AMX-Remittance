@@ -1,10 +1,13 @@
 package com.bootloaderjs;
 
+import java.io.IOException;
 import java.text.Bidi;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.amx.jax.postman.model.ITemplates;
 import com.amx.jax.postman.service.TemplateUtils;
+import com.bootloaderjs.FBParser.Node;
 
 public class App { // Noncompliant
 	/**
@@ -14,15 +17,21 @@ public class App { // Noncompliant
 	 */
 	TemplateUtils templateUtils = new TemplateUtils();
 	public static final Pattern pattern = Pattern.compile("^(.*)<(.*)>$");
-	
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
+
+		String str = "/topics/A & /topics/B";
+		System.out.println(
+				str.replaceAll("/topics/([A-Z]+)", "$1_web in topics"));
+	}
+
+	public static void main5(String[] args) {
 		String from = "Al Mulla International Exchange<amxjax@gmail.com>";
 		String[] path = "html/sms/omsoe".split("^html\\/");
 
 		System.out.println(path[0] + " " + path[1]);
 	}
-	
+
 	public static void main4(String[] args) {
 		String from = "Al Mulla International Exchange<amxjax@gmail.com>";
 		String[] path = "html/sms/omsoe".split("^html\\/");

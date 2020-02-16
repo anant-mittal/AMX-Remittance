@@ -17,7 +17,6 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReference;
-import com.amx.jax.model.customer.CustomerDocumentInfo;
 import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.jax.userservice.service.UserService;
 

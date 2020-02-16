@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
+import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AResponse;
@@ -43,6 +44,8 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.AmxFieldError;
 import com.amx.jax.exception.ApiHttpExceptions.ApiHttpArgException;
 import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
+import com.amx.jax.http.ApiRequest.ResponeError;
+import com.amx.jax.http.CommonHttpRequest.ApiRequestDetail;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.logger.events.ApiAuditEvent;
@@ -57,6 +60,9 @@ public abstract class AmxAdvice implements ResponseBodyAdvice<AmxApiResponse<?, 
 
 	@Autowired
 	private AuditService auditService;
+	
+	@Autowired
+	private AppConfig appConfig;
 
 	@ExceptionHandler(AmxApiException.class)
 	@ResponseBody
@@ -76,10 +82,22 @@ public abstract class AmxAdvice implements ResponseBodyAdvice<AmxApiResponse<?, 
 		response.setHeader(AppConstants.EXCEPTION_HEADER_KEY, apiError.getException());
 		response.setHeader(AppConstants.EXCEPTION_HEADER_CODE_KEY, apiAuditEvent.getErrorCode());
 
+		for (AmxFieldError warning : AppContextUtil.getWarnings()) {
+			apiError.addWarning(warning);
+		}
 		return new ResponseEntity<AmxApiError>(apiError, getHttpStatus(ex));
 	}
 
 	public HttpStatus getHttpStatus(AmxApiException exp) {
+		ApiRequestDetail apiRequestDetail = AppContextUtil.getApiRequestDetail();
+		
+		if(apiRequestDetail.getResponeError() ==  ResponeError.PROPAGATE) {
+			return exp.getHttpStatus();
+		}
+		
+		if (appConfig.isAppResponseOK()) {
+			return HttpStatus.OK;
+		}
 		return exp.getHttpStatus();
 	}
 
@@ -103,6 +121,11 @@ public abstract class AmxAdvice implements ResponseBodyAdvice<AmxApiResponse<?, 
 		apiError.setException(ApiHttpArgException.class.getName());
 		ExceptionMessageKey.resolveLocalMessage(apiError);
 		response.setHeader(AppConstants.EXCEPTION_HEADER_KEY, apiError.getException());
+		
+		for (AmxFieldError warning : AppContextUtil.getWarnings()) {
+			apiError.addWarning(warning);
+		}
+		
 		return new ResponseEntity<AmxApiError>(apiError, HttpStatus.BAD_REQUEST);
 	}
 
@@ -194,7 +217,7 @@ public abstract class AmxAdvice implements ResponseBodyAdvice<AmxApiResponse<?, 
 		errors.add(newError);
 		return badRequest(ex, errors, request, response, ApiStatusCodes.PARAM_TYPE_MISMATCH);
 	}
-
+	
 	/**
 	 * Handle.
 	 *
@@ -263,4 +286,5 @@ public abstract class AmxAdvice implements ResponseBodyAdvice<AmxApiResponse<?, 
 				"Unable to process this request.",
 				HttpStatus.BAD_REQUEST);
 	}
+	
 }

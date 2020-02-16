@@ -36,6 +36,7 @@ import com.amx.jax.dbmodel.fx.FxDeliveryRemark;
 import com.amx.jax.dbmodel.fx.StatusMaster;
 import com.amx.jax.dbmodel.fx.VwFxDeliveryDetailsModel;
 import com.amx.jax.dict.ContactType;
+import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.manager.FcSaleAddressManager;
@@ -51,17 +52,23 @@ import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.model.response.fx.FxDeliveryDetailNotificationDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
 import com.amx.jax.notification.fx.FcSaleEventManager;
+import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.client.PushNotifyClient;
+import com.amx.jax.postman.client.WhatsAppClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.PushMessage;
+import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.manager.CommunicationPreferencesManager;
 import com.amx.jax.userservice.manager.UserContactVerificationManager;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.CryptoUtil;
+import com.amx.jax.util.CommunicationPrefsUtil;
+import com.amx.jax.util.CommunicationPrefsUtil.CommunicationPrefsResult;
 import com.amx.utils.DateUtil;
 import com.amx.utils.Random;
-import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -97,7 +104,14 @@ public class FcSaleDeliveryService {
 	PushNotifyClient pushNotifyClient;
 	@Autowired
 	UserContactVerificationManager userContactVerificationManager;
-
+	@Autowired
+	CommunicationPrefsUtil communicationPrefsUtil;
+	@Autowired
+	PostManService postManService;
+	@Autowired
+	WhatsAppClient whatsAppClient;
+	@Autowired
+	CommunicationPreferencesManager communicationPreferencesManager;
 
 	/**
 	 * @return today's order to be delivered for logged in driver
@@ -188,27 +202,49 @@ public class FcSaleDeliveryService {
 		fcSaleBranchOrderManager.saveFCStockTransferDetails(deliveryDetail.getDeleviryDelSeqId(),null,deliveryDetail.getDriverEmployeeId(), ConstantDocument.DVD);
 		PersonInfo pinfo = userService.getPersonInfo(vwdeliveryDetail.getCustomerId());
 		logger.info("FC_ORDER_SUCCESSStart: {emial sending}");
-		Email email = new Email();
-		email.setSubject("FC Order Successfully Delivered");
-		email.addTo(pinfo.getEmail());
-		logger.info("FC_ORDER_SUCCESS: {emial sending}");
-		email.setITemplate(TemplatesMX.FC_ORDER_SUCCESS);
-		logger.info("FC_ORDER_SUCCESS: {emial sent}");
-		email.setHtml(true);
-		/*email.getModel().put("tranxId", fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId());
-		email.getModel().put("verCode", JaxClientUtil.getTransactionVeryCode(fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId()).output());*/
 		FxDeliveryDetailDto ddDto = createFxDeliveryDetailDto(vwdeliveryDetail);
 		FxDeliveryDetailNotificationDto notificationModel = new FxDeliveryDetailNotificationDto(ddDto);
 		notificationModel.setTranxId(fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId());
 		notificationModel.setVerCode(JaxClientUtil.getTransactionVeryCode(fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId()).output());
-		email.getModel().put(NotificationConstants.RESP_DATA_KEY, notificationModel);
-		jaxNotificationService.sendEmail(email);
-		PushMessage pushMessage = new PushMessage();
-		pushMessage.setITemplate(TemplatesMX.FC_ORDER_SUCCESS);
-		pushMessage.addToUser(vwdeliveryDetail.getCustomerId());
-		logger.info("customer_id:"+vwdeliveryDetail.getCustomerId());
-		pushMessage.getModel().put(RESP_DATA_KEY, notificationModel);
-		pushNotifyClient.send(pushMessage);
+		Customer customer = custDao.getActiveCustomerDetailsByCustomerId(vwdeliveryDetail.getCustomerId());
+		CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(CommunicationEvents.FC_ORDER_SUCCESS, customer);
+		if(communicationPrefsResult.isEmail()) {
+			Email email = new Email();
+			email.setSubject("FC Order Successfully Delivered");
+			email.addTo(pinfo.getEmail());
+			logger.info("FC_ORDER_SUCCESS: {emial sending}");
+			email.setITemplate(TemplatesMX.FC_ORDER_SUCCESS);
+			logger.info("FC_ORDER_SUCCESS: {emial sent}");
+			email.setHtml(true);
+			/*email.getModel().put("tranxId", fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId());
+			email.getModel().put("verCode", JaxClientUtil.getTransactionVeryCode(fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId()).output());*/
+			
+			email.getModel().put(NotificationConstants.RESP_DATA_KEY, notificationModel);
+			jaxNotificationService.sendEmail(email);
+		}
+		if(communicationPrefsResult.isPushNotify()) {
+			PushMessage pushMessage = new PushMessage();
+			pushMessage.setITemplate(TemplatesMX.FC_ORDER_SUCCESS);
+			pushMessage.addToUser(vwdeliveryDetail.getCustomerId());
+			logger.info("customer_id:"+vwdeliveryDetail.getCustomerId());
+			pushMessage.getModel().put(RESP_DATA_KEY, notificationModel);
+			pushNotifyClient.send(pushMessage);
+		}
+		if(communicationPrefsResult.isSms()) {
+			SMS sms =new SMS();
+			sms.setITemplate(TemplatesMX.FC_ORDER_SUCCESS);
+			sms.addTo(customer.getPrefixCodeMobile()+customer.getMobile());
+			sms.getModel().put(RESP_DATA_KEY, notificationModel);
+			postManService.sendSMSAsync(sms);
+		}
+		if(communicationPrefsResult.isWhatsApp()) {
+			
+			WAMessage waMessage = new WAMessage();
+			waMessage.setITemplate(TemplatesMX.FC_ORDER_SUCCESS);
+			waMessage.addTo(customer.getWhatsappPrefix()+customer.getWhatsapp());
+			waMessage.getModel().put(RESP_DATA_KEY, notificationModel);
+			whatsAppClient.send(waMessage);
+		}
 		
 		logStatusChangeAuditEvent(fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId(), oldStatus);
 		return new BoolRespModel(true);
@@ -302,6 +338,12 @@ public class FcSaleDeliveryService {
 		FxDeliveryDetailNotificationDto notificationModel = new FxDeliveryDetailNotificationDto(mOtp, mOtpPrefix,
 				ddDto);
 		logger.debug("sending otp for fcsale delivery");
+		List<ContactType> contactTypes = new ArrayList<ContactType>();
+		
+		contactTypes.add(ContactType.SMS_EMAIL);
+		logger.debug("Comm preferences flow for fx order dispatch ");
+		//communicationPreferencesManager.validateCommunicationPreferences(contactTypes,CommunicationEvents.FX_ORDER_OTP,pinfo.getIdentityInt());
+		logger.debug("Comm preferences not checked ");
 		jaxNotificationService.sendOtpSms(pinfo.getMobile(), notificationModel);
 		// send email otp
 		Email email = new Email();

@@ -6,12 +6,27 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+/**
+ * Use JaxTenantProperties class for tenant specific properties
+ * */
 public class JaxProperties {
 
 	@Value("#{'${support.soa.email}'.split(',')}")
 	List<String> supportSoaEmail;
 	@Value("${jax.tpc.secret}")
 	String tpcSecret;
+	@Value("${app.upload.dir}")
+	String defUploadDir;
+	
+	
+	
+	public String getDefUploadDir() {
+		return defUploadDir;
+	}
+
+	public void setDefUploadDir(String defUploadDir) {
+		this.defUploadDir = defUploadDir;
+	}
 
 	public List<String> getSupportSoaEmail() {
 		return supportSoaEmail;
@@ -28,5 +43,6 @@ public class JaxProperties {
 	public void setTpcSecret(String tpcSecret) {
 		this.tpcSecret = tpcSecret;
 	}
+
 
 }

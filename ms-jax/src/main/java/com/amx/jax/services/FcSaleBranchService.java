@@ -3,9 +3,9 @@ package com.amx.jax.services;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,13 +13,14 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
+
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxApiFlow;
 import com.amx.jax.dao.FcSaleBranchDao;
-import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.fx.FxOrderTransactionModel;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
@@ -775,7 +776,7 @@ public class FcSaleBranchService extends AbstractService{
 
 		}
 		if(fcDeliveryBranchOrderSearchRequest.getCountryBranchId() != null) {
-			CountryBranch countryBranch = countryBranchService
+			CountryBranchMdlv1 countryBranch = countryBranchService
 					.getCountryBranchByCountryBranchId(fcDeliveryBranchOrderSearchRequest.getCountryBranchId());
 			fcDeliveryBranchOrderSearchRequest.setCountryBranchName(countryBranch.getBranchName());
 					

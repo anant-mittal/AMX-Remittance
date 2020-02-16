@@ -1,11 +1,12 @@
 package com.amx.amxlib.meta.model;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.amx.jax.model.ResourceDTO;
 
-public class UserFinancialYearDTO implements Serializable {
+
+public class UserFinancialYearDTO extends ResourceDTO {
 
 	/**
 	 * 
@@ -23,6 +24,10 @@ public class UserFinancialYearDTO implements Serializable {
 	private Date createdDate;
 	public String modifiedBy;
 	private Date modifiedDate;
+	
+	private ResourceDTO resourceDto;
+	
+	
 	
 
 	
@@ -114,5 +119,19 @@ public class UserFinancialYearDTO implements Serializable {
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
+
+	public ResourceDTO getResourceDto() {
+		return resourceDto;
+	}
+
+	public void setResourceDto(ResourceDTO resourceDto) {
+		this.resourceDto = resourceDto;
+	}
+	
+	@Override
+	public BigDecimal getResourceId() {
+		return this.financialYearID;
+	};
+	
 
 }

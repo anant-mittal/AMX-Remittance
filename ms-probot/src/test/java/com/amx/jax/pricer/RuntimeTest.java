@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -28,7 +27,6 @@ import javax.crypto.NoSuchPaddingException;
 
 import org.apache.commons.lang.time.DurationFormatUtils;
 
-import com.amx.utils.ArgUtil;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.JsonUtil;
 
@@ -73,6 +71,16 @@ public final class RuntimeTest {
 	public static void main(String[] args)
 			throws NoSuchAlgorithmException, InvalidKeySpecException, IllegalBlockSizeException, BadPaddingException,
 			InvalidKeyException, NoSuchPaddingException, UnsupportedEncodingException {
+		
+		List<String> lst = new ArrayList<String>();
+		
+		lst.add("A");
+		lst.add("B");
+		lst.add("C");
+		lst.add("D");
+		lst.add("E");
+		
+		System.out.println(" List ==> " + lst.toString());
 
 		BigDecimal hrs = new BigDecimal(245).divide(new BigDecimal(60), 4, RoundingMode.HALF_EVEN);
 

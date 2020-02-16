@@ -84,8 +84,8 @@ public class CountryMasterModel implements Serializable {
 	private String countryTelCode;
 	private String countryActive;
 	private String businessCountry;
-	private List<CountryMasterDesc> fsCountryMasterDescs = new ArrayList<CountryMasterDesc>();
-	// private CountryMasterDesc fsCountryMasterDescs;
+	private List<CountryMasterDescriptor> fsCountryMasterDescs = new ArrayList<CountryMasterDescriptor>();
+	// private CountryMasterDescriptor fsCountryMasterDescs;
 	private String createdBy;
 	private Date createdDate;
 	private String isActive;
@@ -172,11 +172,11 @@ public class CountryMasterModel implements Serializable {
 	}
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "fsCountryMaster")
-	public List<CountryMasterDesc> getFsCountryMasterDescs() {
+	public List<CountryMasterDescriptor> getFsCountryMasterDescs() {
 		return this.fsCountryMasterDescs;
 	}
 
-	public void setFsCountryMasterDescs(List<CountryMasterDesc> fsCountryMasterDescs) {
+	public void setFsCountryMasterDescs(List<CountryMasterDescriptor> fsCountryMasterDescs) {
 		this.fsCountryMasterDescs = fsCountryMasterDescs;
 	}
 

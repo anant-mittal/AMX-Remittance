@@ -4,13 +4,10 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 import com.amx.jax.AmxSharedConfig.CommunicationPrefs;
-import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 
 @Entity
 @Table(name = "JAX_COMMUNICATION_PREFERENCES")
@@ -18,8 +15,7 @@ public class CommunicationPrefsModel implements CommunicationPrefs {
 
 	@Id
 	@Column(name = "COMMUNICATION_EVENT")
-	@Enumerated(value = EnumType.STRING)
-	CommunicationEvents event;
+	String event;
 
 	@Column(name = "CREATED_BY")
 	String createdBy;
@@ -28,16 +24,16 @@ public class CommunicationPrefsModel implements CommunicationPrefs {
 	Date createdDate;
 
 	@Column(name = "PUSH_NOTIFICATION")
-	Long pushPrefs;
+	String pushPrefs;
 
 	@Column(name = "WHATSAPP")
-	Long waPrefs;
+	String waPrefs;
 
 	@Column(name = "EMAIL")
-	Long emailPrefs;
+	String emailPrefs;
 
 	@Column(name = "SMS")
-	Long smsPrefs;
+	String smsPrefs;
 
 	@Column(name = "ISACTIVE")
 	String active;
@@ -63,38 +59,38 @@ public class CommunicationPrefsModel implements CommunicationPrefs {
 	}
 
 	@Override
-	public Long getPushPrefs() {
+	public String getPushPrefs() {
 		return pushPrefs;
 	}
 
-	public void setPushPrefs(Long pushPrefs) {
+	public void setPushPrefs(String pushPrefs) {
 		this.pushPrefs = pushPrefs;
 	}
 
 	@Override
-	public Long getWaPrefs() {
+	public String getWaPrefs() {
 		return waPrefs;
 	}
 
-	public void setWaPrefs(Long waPrefs) {
+	public void setWaPrefs(String waPrefs) {
 		this.waPrefs = waPrefs;
 	}
 
 	@Override
-	public Long getEmailPrefs() {
+	public String getEmailPrefs() {
 		return emailPrefs;
 	}
 
-	public void setEmailPrefs(Long emailPrefs) {
+	public void setEmailPrefs(String emailPrefs) {
 		this.emailPrefs = emailPrefs;
 	}
 
 	@Override
-	public Long getSmsPrefs() {
+	public String getSmsPrefs() {
 		return smsPrefs;
 	}
 
-	public void setSmsPrefs(Long smsPrefs) {
+	public void setSmsPrefs(String smsPrefs) {
 		this.smsPrefs = smsPrefs;
 	}
 
@@ -107,11 +103,11 @@ public class CommunicationPrefsModel implements CommunicationPrefs {
 	}
 
 	@Override
-	public CommunicationEvents getEvent() {
+	public String getEvent() {
 		return event;
 	}
 
-	public void setEvent(CommunicationEvents event) {
+	public void setEvent(String event) {
 		this.event = event;
 	}
 

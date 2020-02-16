@@ -125,7 +125,7 @@ public class ParameterService extends AbstractService {
 		JaxMetaParameter metaParams = new JaxMetaParameter();
 		metaParams.setNewBeneTransactionTimeLimit(authMap.get(NEW_BENE_TRANSACT_TIME_LIMIT.getAuthType()));
 		metaParams.setMaxDomAmountLimit((authMap.get(MAX_DOM_AMOUNT_LIMIT.getAuthType())));
-		ViewCompanyDetails company = companyService.getCompanyDetail(metaData.getLanguageId());
+		ViewCompanyDetails company = companyService.getCompanyDetailInLang(metaData.getLanguageId());
 		metaParams.setApplicationCountryId(company.getApplicationCountryId());
 		return AmxApiResponse.build(metaParams);
 	}
@@ -133,6 +133,16 @@ public class ParameterService extends AbstractService {
 	public List<TransactionLimitCheckView>  getAllTxnLimits(){
 		List<TransactionLimitCheckView> trnxLimits =transactionLimit.findAll();
 		return trnxLimits;
+	}
+	
+	
+	public AuthenticationLimitCheckView getAmlRiskLevelForCash() {
+		AuthenticationLimitCheckView riskLevel1 = authentication.getAmlRiskCheckLevel1();
+		return riskLevel1;
+	}
+
+public AuthenticationLimitCheckView getPlaceOrderLimitCheck(String authType) {
+		return authentication.getPlaceOrderLimitCheck(authType);
 	}
 
 }

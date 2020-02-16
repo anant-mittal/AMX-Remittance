@@ -7,4 +7,8 @@ public interface Communicatable {
 	public boolean canSendWhatsApp();
 
 	public boolean canSendMobile();
+
+	boolean hasVerified(ContactType contactType);
+
+	boolean hasPresent(ContactType contactType);
 }

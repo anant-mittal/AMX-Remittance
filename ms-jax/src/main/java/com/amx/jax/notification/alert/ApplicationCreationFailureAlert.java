@@ -121,7 +121,7 @@ public class ApplicationCreationFailureAlert implements IAlert {
 	        }
 			remittanceTransactionFailure.setCustomerName(cusName.toString());
 
-			jaxNotificationService.sendErrorEmail(remittanceTransactionFailure, emailid);
+			//jaxNotificationService.sendErrorEmail(remittanceTransactionFailure, emailid);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -130,10 +130,13 @@ public class ApplicationCreationFailureAlert implements IAlert {
 	}
 	
 	private boolean isApplicable(AbstractJaxException ex) {
-		if (ex.getErrorKey().equals(JaxError.ADDTIONAL_FLEX_FIELD_REQUIRED.toString())) {
-			return false;
+		if (ex.getErrorKey().equals(JaxError.JAX_SYSTEM_ERROR.toString())) {
+			return true;
 		}
-		return true;
+		if (ex.getErrorKey().equals(JaxError.REMITTANCE_SETUP_ERROR.toString())) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override

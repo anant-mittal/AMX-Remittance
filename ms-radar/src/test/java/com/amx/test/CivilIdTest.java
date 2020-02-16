@@ -19,6 +19,7 @@ public class CivilIdTest { // Noncompliant
 	private static final Pattern FIND_DATE = Pattern.compile("\n(\\d{2}/\\d{2}/\\d{4})");
 	public static final String FIND_DATE_FORMAT_STRING = "dd/MM/yyyy";
 	public static final SimpleDateFormat FIND_DATE_FORMAT = new SimpleDateFormat(FIND_DATE_FORMAT_STRING);
+	private static final Pattern FIND_MRZ_CODE = Pattern.compile("IDKWT(.+)[\\n](.+)[\\n](.+)");
 
 	public static XmlMapper xmlMapper = new XmlMapper();
 
@@ -28,11 +29,28 @@ public class CivilIdTest { // Noncompliant
 
 	public static final String STR3 = "STATE OF KUWAIT CIVIL ID CARD\nCivil ID No\n293040704063\nlall ulali jis\nName GEETHU NAGAMANI NAGAMANI\nu\nNationality ND\nSex\nBirth Date\nsi\nF\n07/04/1993\n20/05/2019\npypiry Date";
 
-	
+	public static final String STR4 = "B+:l ai\n2:4hil\n273022300825:iall á\nslilall Jlaa:l J\n383:u\n:J\n20633112:0 y\nU 182345: 65660003:0 i\nSerial No: 8815869001\nIDKWTJ653889998273022300825<<<\n7302231 M2006095SAU206331 12<<<4\nALRASHEEDI<<MUBARAK<<<<<<<<<<";
+
+	/**
+	 * 
+	 * 
+	 * @param args
+	 * @throws URISyntaxException
+	 * @throws IOException
+	 */
+
 	public static void main2(String[] args) throws URISyntaxException, IOException {
 		getDate("23-02-1973");
 	}
+
 	public static void main(String[] args) throws URISyntaxException, IOException {
+		StringMatcher matcher = new StringMatcher(STR4);
+		if (matcher.isMatch(FIND_MRZ_CODE)) {
+			System.out.println("MRZ = " + matcher.group(0).replace(" ", ""));
+		}
+	}
+
+	public static void main3(String[] args) throws URISyntaxException, IOException {
 		// CivilIdValidationService service = new CivilIdValidationService();
 
 		// service.validateCaptcha("285061506787");

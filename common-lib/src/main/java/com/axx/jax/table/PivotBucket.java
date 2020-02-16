@@ -5,11 +5,27 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import org.slf4j.Logger;
+
+import com.amx.jax.logger.LoggerService;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.Constants;
+import com.github.gianlucanitti.javaexpreval.Expression;
+import com.github.gianlucanitti.javaexpreval.ExpressionContext;
+import com.github.gianlucanitti.javaexpreval.ExpressionException;
 
 public class PivotBucket {
+
+	public static final Map<String, PivotBucketColFunction> MAP = new HashMap<String, PivotBucketColFunction>();
+	private static final Logger LOGGER = LoggerService.getLogger(PivotBucket.class);
+
+	public static interface PivotBucketColFunction {
+		default Object body(PivotBucket col, String rowId, String exp) {
+			return exp;
+		}
+	}
+
 	public List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();
 	public Map<String, Object> result = new HashMap<String, Object>();
 	public Map<String, PivotBucket> pivotcols;
@@ -76,6 +92,37 @@ public class PivotBucket {
 
 	public void add(Map<String, Object> e) {
 		rows.add(e);
+	}
+
+	public static void register(String fun, PivotBucketColFunction funBody) {
+		MAP.put(fun, funBody);
+	}
+
+	public void exp(List<String> computedCols, List<String> computedVals) {
+		int computedColsCount = computedCols.size();
+		if (computedColsCount == 0) {
+			return;
+		}
+
+		ExpressionContext c = new ExpressionContext();
+		try {
+			for (Entry<String, Object> entry : this.result.entrySet()) {
+				c.setVariable(entry.getKey(), ArgUtil.parseAsDouble(entry.getValue(), Double.valueOf(0)));
+			}
+
+			for (int i = 0; i < computedColsCount; i++) {
+				String funExp = computedVals.get(i);
+				String funkey = computedCols.get(i);
+
+				Expression expr = Expression.parse(funExp);
+				// expr.
+				double result = expr.eval(c);
+				this.result.put(funkey, result);
+				c.setVariable(funkey, result);
+			}
+		} catch (ExpressionException e) {
+			LOGGER.error("ExpressionContext Fauilure", e);
+		}
 	}
 
 }

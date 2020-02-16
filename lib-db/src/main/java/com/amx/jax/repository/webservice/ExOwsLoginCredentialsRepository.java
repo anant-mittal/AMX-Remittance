@@ -12,6 +12,8 @@ public interface ExOwsLoginCredentialsRepository extends CrudRepository<ExOwsLog
 {
 	
 	public ExOwsLoginCredentials findByApplicationCountryAndBankCode(String applicationCountry, String bankCode);
+	
+	public ExOwsLoginCredentials findByBankCode(String bankCode);
 }
 
 

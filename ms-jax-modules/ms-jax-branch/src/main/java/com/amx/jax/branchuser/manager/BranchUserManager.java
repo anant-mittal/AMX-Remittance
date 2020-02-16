@@ -16,7 +16,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.RoutingProcedureDao;
-import com.amx.jax.dbmodel.CollectDetailModel;
+import com.amx.jax.dbmodel.CollectDetailMdlv1;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
 import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 import com.amx.jax.dbmodel.remittance.BranchDayTransactionView;
@@ -122,9 +122,9 @@ public class BranchUserManager  extends AbstractModel {
 			for (BranchDayTransactionView branchDayTransactionView : totalTrnxList) {
 				totalRefund = totalRefund.add(branchDayTransactionView.getRefundAmount());
 			}
-				List<CollectDetailModel> branchDayCoolectionDetailList = collecDetailRepository.getCollectionDetailsForUser(empDetails.getUserName(), accMonthYear,empDetails.getCountryBranchId());
+				List<CollectDetailMdlv1> branchDayCoolectionDetailList = collecDetailRepository.getCollectionDetailsForUser(empDetails.getUserName(), accMonthYear,empDetails.getCountryBranchId());
 				if (branchDayCoolectionDetailList != null && !branchDayCoolectionDetailList.isEmpty()) {
-					for (CollectDetailModel collectDetail : branchDayCoolectionDetailList) {
+					for (CollectDetailMdlv1 collectDetail : branchDayCoolectionDetailList) {
 						if (collectDetail.getCollectionMode() != null && collectDetail.getExCurrencyMaster() !=null &&  collectDetail.getExCurrencyMaster().getCurrencyId().compareTo(metaData.getDefaultCurrencyId())==0) {
 							if (collectDetail.getCollectionMode().equalsIgnoreCase(ConstantDocument.CASH)) {
 								totalCash = totalCash.add(collectDetail.getCollAmt());

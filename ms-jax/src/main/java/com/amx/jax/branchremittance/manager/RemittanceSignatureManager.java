@@ -49,7 +49,9 @@ public class RemittanceSignatureManager {
 				remitTrnx.setRemittanceTransactionId(trnxDetails.getRemittanceTransactionId());
 				RemittanceBenificiary remitBene = remitBeneRepository.findByExRemittancefromBenfi(remitTrnx);
 				RemittanceSignatureDto sigDto = createSignature(trnxDetails,remitBene);
-				//logger.info("Signature JSON ----- :"+JsonUtil.toJson(sigDto));
+				if(sigDto!=null) {
+					logger.info("Signature JSON ----- :"+JsonUtil.toJson(sigDto));
+				}
 				String signature =getTrnxSignature(sigDto);
 				branchRemittanceDao.updateSignatureHash(trnxDetails,signature);
 				//logger.info("Signature value ----- :"+signature);
@@ -57,7 +59,7 @@ public class RemittanceSignatureManager {
 		}
 		}catch(Exception e) {
 			logger.info("updateSignatureHash JSON ----- :"+JsonUtil.toJson(pDto));
-			e.printStackTrace();
+			logger.error("updateSignatureHash Error occurred", e); 
 		}
 	}
 	
@@ -84,7 +86,7 @@ public class RemittanceSignatureManager {
 		
 	}
 	
-	private  String getTrnxSignature(RemittanceSignatureDto sigDto) {
+	private  String getTrnxSignature(RemittanceSignatureDto sigDto) throws Exception{
 		String signature =null;
 	
 		if(sigDto!=null) {
@@ -128,9 +130,7 @@ public class RemittanceSignatureManager {
 			
 			if(sb!=null) {
 				signature =sb.toString();
-				System.out.println("signature -->"+signature);
 				signature =pKCS7Signer.getSignature(signature);
-				System.out.println("hash signature -->"+signature);
 			}
 		}
 		return signature;
@@ -139,4 +139,6 @@ public class RemittanceSignatureManager {
 	private String getSignature(String str) {
 		return null;
 	}
+
+
 }

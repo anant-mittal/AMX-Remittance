@@ -40,4 +40,13 @@ public class CustomerBankDto {
 	private String debitCardName;
 	private BigDecimal relationsId;
 	
+	private BigDecimal cardTypeId;
+
+	public BigDecimal getCardTypeId() {
+		return cardTypeId;
+	}
+	public void setCardTypeId(BigDecimal cardTypeId) {
+		this.cardTypeId = cardTypeId;
+	}
+	
 }

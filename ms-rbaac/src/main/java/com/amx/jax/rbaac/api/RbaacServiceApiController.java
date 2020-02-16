@@ -35,6 +35,7 @@ import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.request.UserRoleMappingsRequestDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
+import com.amx.jax.rbaac.dto.response.OfflineOtpData;
 import com.amx.jax.rbaac.dto.response.PermissionResposeDTO;
 import com.amx.jax.rbaac.dto.response.RoleMappingForEmployee;
 import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
@@ -427,5 +428,35 @@ public class RbaacServiceApiController implements IRbaacService {
 		BoolRespModel response = deviceService.deleteDevice(deviceRegId);
 		return AmxApiResponse.build(response);
 	}
+	
+	@Override
+	@RequestMapping(value = ApiEndPoints.FIND_DEVICES_BY_TERMINAL, method = RequestMethod.GET)
+	public AmxApiResponse<DeviceDto, Object> getDevicesByTerminal(
+			@RequestParam(name = Params.TERMINAL_ID, required=false) BigDecimal terminalId, 
+			@RequestParam(name = Params.TERMINAL_IP, required=false) String terminalIp) {
+		return AmxApiResponse.buildList(deviceService.getDevicesByTerminal(terminalId, terminalIp));
+	}
+	
+	@Override
+	@RequestMapping(value = ApiEndPoints.FIND_DEVICES_BY_ID, method = RequestMethod.GET)
+	public AmxApiResponse<DeviceDto, Object> getDevicesByRegId(
+			@RequestParam(name = Params.DEVICE_REG_ID, required=false) BigDecimal deviceRegId, 
+			@RequestParam(name = Params.DEVICE_CLIENT_ID, required=false) String deviceId) {
+		return AmxApiResponse.buildList(deviceService.getDevicesByDeviceRegId( deviceRegId, deviceId));
+	}
 
+	@Override
+	@RequestMapping(value = ApiEndPoints.GENERATE_OFFLINE_OTP_PREFIX, method = RequestMethod.GET)
+	public AmxApiResponse<OfflineOtpData, Object> generateOfflineOtpPrefix(@RequestParam(name = Params.EMPLOYEE_ID) BigDecimal employeeId) {
+		OfflineOtpData response = userAuthService.generateOfflineOtpPrefix(employeeId);
+		return AmxApiResponse.build(response);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.VALIDATE_OFFLINE_OTP, method = RequestMethod.GET)
+	public AmxApiResponse<BoolRespModel, Object> validateOfflineOtp(@RequestParam(name = Params.EMPLOYEE_ID) BigDecimal employeeId,
+			@RequestParam(name = Params.OTP) String otp) {
+		boolean response = userAuthService.validateOfflineOtp(employeeId, otp);
+		return AmxApiResponse.build(new BoolRespModel(response));
+	}
 }

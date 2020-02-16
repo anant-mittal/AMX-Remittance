@@ -313,3 +313,33 @@ h4 {
     border-width: 0 9px 9px;
     border-color: #a93434 transparent;
 }
+
+.loading-inline {
+	position: relative;
+	min-height: 150px;
+}
+
+.loading-inline:before {
+	content: '';
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	display: block;
+	z-index: 9;
+	background: rgba(256, 256, 256, 0.8);
+}
+.loading-inline:after {
+	content: '';
+	display: block;
+	background-image: url('/branch/images/loader.gif');
+	width: 76px;
+	height: 76px;
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: contain;
+	transform: rotate(45deg);
+	position: absolute;
+	left: calc(50% - 38px);
+	top: calc(50% - 38px);
+	z-index: 15;
+}

@@ -32,7 +32,7 @@ import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.FcSaleApplicationDao;
 import com.amx.jax.dao.FcSaleExchangeRateDao;
 import com.amx.jax.dbmodel.ApplicationSetup;
-import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.FxShoppingCartDetails;
 import com.amx.jax.dbmodel.ParameterDetails;
@@ -173,6 +173,10 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 			deactivateApplications(fcSalerequestModel);
 			trnxManager.checkMinDenomination(fcSalerequestModel.getForeignCurrencyId(),fcSalerequestModel.getForeignAmount());
 			ReceiptPaymentApp receiptPayment = this.createFcSaleReceiptApplication(fcSalerequestModel);
+
+			// checking stock and allowing furture
+			trnxManager.checkMaximumAmountPerCurrency(receiptPayment);
+
 			mapAllDetailApplSave.put("EX_APPL_RECEIPT", receiptPayment);
 			fsSaleapplicationDao.saveAllApplicationData(mapAllDetailApplSave);
 			FxOrderShoppingCartResponseModel cartDetails = fetchApplicationDetails();
@@ -183,11 +187,11 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 			responeModel.setDeliveryCharges(getDeliveryChargesFromParameter());
 			return responeModel;
 		} catch (GlobalException e) {
-			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
+			logger.debug("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error("saveApplication", e.getMessage());
+			logger.debug("saveApplication", e.getMessage());
 			throw new GlobalException("FC Sale application creation failed");
 		}
 	}
@@ -286,11 +290,11 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 
 				receiptPaymentAppl.setCustomerName(customerName);
 			} else {
-				logger.error("Customer is not registered" + customerId);
+				logger.debug("Customer is not registered" + customerId);
 				throw new GlobalException(JaxError.CUSTOMER_NOT_REGISTERED_ONLINE, "Customer is not registered");
 			}
 
-			CountryBranch countryBranch = countryBranchRepository
+			CountryBranchMdlv1 countryBranch = countryBranchRepository
 					.findByBranchId(ConstantDocument.ONLINE_BRANCH_LOC_CODE);
 			if (countryBranch != null) {
 				locCode = countryBranch.getBranchId();
@@ -382,7 +386,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 			}
 
 		} catch (GlobalException e) {
-			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
+			logger.debug("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		} catch (Exception e) {
 			logger.error("createFcSaleReceiptApplication", e.getMessage());
@@ -425,7 +429,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 						RoundUtil.roundBigDecimal(
 								parameterList.get(0).getNumericField1() == null ? BigDecimal.ZERO
 										: parameterList.get(0).getNumericField1(),
-								breakup.getLcDecimalNumber().intValue()));
+										breakup.getLcDecimalNumber().intValue()));
 			}
 			if (JaxUtil.isNullZeroBigDecimalCheck(maxExchangeRate) && JaxUtil.isNullZeroBigDecimalCheck(fcAmount)) {
 				breakup.setConvertedLCAmount(maxExchangeRate.multiply(fcAmount));
@@ -445,11 +449,11 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 
 			return breakup;
 		} catch (GlobalException e) {
-			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
+			logger.debug("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error("getExchangeRateFcSaleOrder", e.getMessage());
+			logger.debug("getExchangeRateFcSaleOrder", e.getMessage());
 			throw new GlobalException(JaxError.FS_APPLIATION_CREATION_FAILED, "FC Sale application exchange");
 		}
 	}
@@ -544,7 +548,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 		return list;
 	}
 
-	public BigDecimal generateDocumentNumber(CountryBranch countryBranch, String processInd, BigDecimal finYear) {
+	public BigDecimal generateDocumentNumber(CountryBranchMdlv1 countryBranch, String processInd, BigDecimal finYear) {
 		BigDecimal appCountryId = metaData.getCountryId() == null ? BigDecimal.ZERO : metaData.getCountryId();
 		BigDecimal companyId = metaData.getCompanyId() == null ? BigDecimal.ZERO : metaData.getCompanyId();
 		BigDecimal documentId = ConstantDocument.DOCUMENT_CODE_FOR_FCSALE;
@@ -585,7 +589,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 		return timeSlotList;
 	}*/
 
-	
+
 	public List<TimeSlotDto> fetchTimeSlot(BigDecimal shippingAddressId) {
 		List<TimeSlotDto> timeSlotList = new ArrayList<>();
 		BigDecimal appCountryId = metaData.getCountryId() == null ? BigDecimal.ZERO : metaData.getCountryId();
@@ -700,7 +704,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 			delicharges = RoundUtil.roundBigDecimal(
 					parameterList.get(0).getNumericField1() == null ? BigDecimal.ZERO
 							: parameterList.get(0).getNumericField1(),
-					localDecimalCurr == null ? 0 : localDecimalCurr.intValue());
+							localDecimalCurr == null ? 0 : localDecimalCurr.intValue());
 		}
 		return delicharges;
 	}
@@ -924,11 +928,11 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 				if(shippingAddressDto.getLocalContactDistrict()!=null && !shippingAddressDto.getLocalContactDistrict().equals("")) {
 					sb.append(concat).append(shippingAddressDto.getLocalContactDistrict());
 				}
-				
+
 				if(shippingAddressDto.getLocalContactState()!=null && !shippingAddressDto.getLocalContactState().equals("")) {
 					sb.append(concat).append(shippingAddressDto.getLocalContactState());
 				}
-				
+
 			}
 		}
 		if (sb != null) {

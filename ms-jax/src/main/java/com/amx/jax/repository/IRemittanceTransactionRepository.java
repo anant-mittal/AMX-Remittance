@@ -19,7 +19,12 @@ public interface IRemittanceTransactionRepository extends CrudRepository<Remitta
 
 	@Transactional
 	@Modifying(clearAutomatically = true)
-	@Query("update RemittanceTransaction remit set remit.deliveryInd =:deliveryInd,remit.remarks =:remarks where remit.remittanceTransactionId=:remittanceTransactionId")
-	public void updateDeliveryIndRemarksBySP(@Param("deliveryInd") String deliveryInd,@Param("remarks") String remarks,@Param("remittanceTransactionId") BigDecimal remittanceTransactionId);
+	@Query("update RemittanceTransaction remit set remit.deliveryInd =:deliveryInd,remit.remarks =:remarks,remit.bankReference =:bankReference where remit.remittanceTransactionId=:remittanceTransactionId")
+	public void updateDeliveryIndRemarksBySP(@Param("deliveryInd") String deliveryInd,@Param("remarks") String remarks,@Param("remittanceTransactionId") BigDecimal remittanceTransactionId,@Param("bankReference") String bankReference);
+	
+	@Transactional
+	@Modifying(clearAutomatically = true)
+	@Query("update RemittanceTransaction remit set remit.deliveryInd =:deliveryInd,remit.remarks =:remarks,remit.bankReference =:bankReference,remit.transactionStatus =:transactionStatus where remit.remittanceTransactionId=:remittanceTransactionId")
+	public void updateDeliveryIndRemarksTrnxStatusBySP(@Param("deliveryInd") String deliveryInd,@Param("remarks") String remarks,@Param("remittanceTransactionId") BigDecimal remittanceTransactionId,@Param("bankReference") String bankReference,@Param("transactionStatus") String transactionStatus);
 	
 }

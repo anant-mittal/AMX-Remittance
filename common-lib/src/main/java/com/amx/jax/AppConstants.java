@@ -26,18 +26,30 @@ public class AppConstants extends Constants {
 	public static final String AUTH_KEY_XKEY = "x-app-auth-key";
 	public static final String AUTH_TOKEN_XKEY = "x-app-auth-token";
 	public static final String AUTH_CLIENT_KEY_XKEY = "x-client-auth-key";
+	public static final String AUTH_CLIENT_TOKEN_XKEY = "x-client-auth-token";
+	public static final String SESSION_PREFIX_XKEY = "x-session-prefix";
+	public static final String SESSION_SUFFIX_XKEY = "x-session-suffix";
 	public static final String SESSION_ID_XKEY = "x-session-id";
 	public static final String SESSION_UID_XKEY = "x-session-uid";
 	public static final String TRACE_ID_XKEY = "x-trace-id";
 	public static final String LANG_PARAM_KEY = "lang";
 	public static final String TRACE_TIME_XKEY = "x-time-id";
 	public static final String REQUEST_TYPE_XKEY = "x-request-type";
+	public static final String REQUEST_DETAILS_XKEY = "x-request-details";
 	public static final String REQUEST_WARNING_XKEY = "x-request-warning";
 	public static final String TRANX_ID_XKEY = "x-tranx-id";
 	public static final String CONTEXT_ID_XKEY = "x-cntxt-id";
 	public static final String USER_CLIENT_XKEY = "x-user-client";
-	public static final String APP_VERSION_XKEY = "x-app-version";
 	public static final String USER_DEVICE_XKEY = "x-user-device";
+	
+	/**
+	 * User Device Client Keys
+	 */
+	public static final String UDC_CLIENT_TYPE_XKEY = "x-client-type";
+	public static final String UDC_CLIENT_TYPE_XKEY_CLEAN = UDC_CLIENT_TYPE_XKEY.replaceAll("[-]", "_");
+	public static final String UDC_DEVICE_TYPE_XKEY = "x-device-type";
+	public static final String APP_VERSION_XKEY = "x-app-version";
+	
 	public static final String REQUEST_PARAMS_XKEY = "x-app-auth-params";
 	public static final String REQUESTD_PARAMS_XKEY = "x-app-authd-params";
 
@@ -53,6 +65,7 @@ public class AppConstants extends Constants {
 	public static final String DEVICE_ID_KEY = "did";
 	public static final String DEVICE_ID_XKEY = "x-did";
 	public static final String DEVICE_IP_XKEY = "x-ip";
+	public static final String DEVICE_XID_KEY = "xid";
 	public static final String DEVICE_IP_LOCAL_XKEY = "x-ip-local";
 	public static final String APP_DETAILS = "app";
 	public static final String BROWSER_ID_KEY = "bid";
